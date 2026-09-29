@@ -39,6 +39,7 @@ next build.
 
 ## Rules of the road
 
+
 - Never edit CSS/JS without re-running the test suite.
 - Only use designer brand names on pieces you stand behind as original.
 - Every build round ships a fresh zip - commit it, push it, note the date.
