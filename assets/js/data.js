@@ -31,7 +31,8 @@ window.BAGGED_UP_PRODUCTS = [
    "assets/products/black-crescent-shoulder-bag-1.jpg",
    "assets/products/black-crescent-shoulder-bag-2.jpg",
    "assets/products/black-crescent-shoulder-bag-3.jpg",
-   "assets/products/black-crescent-shoulder-bag-4.jpg"
+   "assets/products/black-crescent-shoulder-bag-4.jpg",
+   "assets/products/black-crescent-shoulder-bag-5.jpg"
   ]
  },
  {
@@ -67,7 +68,9 @@ window.BAGGED_UP_PRODUCTS = [
    "assets/products/monogram-print-handbag-1.jpg",
    "assets/products/monogram-print-handbag-2.jpg",
    "assets/products/monogram-print-handbag-3.jpg",
-   "assets/products/monogram-print-handbag-4.jpg"
+   "assets/products/monogram-print-handbag-4.jpg",
+   "assets/products/monogram-print-handbag-5.jpg",
+   "assets/products/monogram-print-handbag-6.jpg"
   ]
  },
  {
@@ -79,7 +82,9 @@ window.BAGGED_UP_PRODUCTS = [
    "assets/products/charm-shoulder-pouch-1.jpg",
    "assets/products/charm-shoulder-pouch-2.jpg",
    "assets/products/charm-shoulder-pouch-3.jpg",
-   "assets/products/charm-shoulder-pouch-4.jpg"
+   "assets/products/charm-shoulder-pouch-4.jpg",
+   "assets/products/charm-shoulder-pouch-5.jpg",
+   "assets/products/charm-shoulder-pouch-6.jpg"
   ]
  },
  {
@@ -166,7 +171,11 @@ window.BAGGED_UP_PRODUCTS = [
    "assets/products/canvas-tote-bag-1.jpg",
    "assets/products/canvas-tote-bag-2.jpg",
    "assets/products/canvas-tote-bag-3.jpg",
-   "assets/products/canvas-tote-bag-4.jpg"
+   "assets/products/canvas-tote-bag-4.jpg",
+   "assets/products/canvas-tote-bag-5.jpg",
+   "assets/products/canvas-tote-bag-6.jpg",
+   "assets/products/canvas-tote-bag-7.jpg",
+   "assets/products/canvas-tote-bag-8.jpg"
   ]
  },
  {
@@ -322,7 +331,10 @@ window.BAGGED_UP_PRODUCTS = [
    "assets/products/coach-emily-shoulder-bag-1.jpg",
    "assets/products/coach-emily-shoulder-bag-2.jpg",
    "assets/products/coach-emily-shoulder-bag-3.jpg",
-   "assets/products/coach-emily-shoulder-bag-4.jpg"
+   "assets/products/coach-emily-shoulder-bag-4.jpg",
+   "assets/products/coach-emily-shoulder-bag-5.jpg",
+   "assets/products/coach-emily-shoulder-bag-6.jpg",
+   "assets/products/coach-emily-shoulder-bag-7.jpg"
   ]
  },
  {
@@ -334,7 +346,11 @@ window.BAGGED_UP_PRODUCTS = [
    "assets/products/coach-teri-shoulder-bag-1.jpg",
    "assets/products/coach-teri-shoulder-bag-2.jpg",
    "assets/products/coach-teri-shoulder-bag-3.jpg",
-   "assets/products/coach-teri-shoulder-bag-4.jpg"
+   "assets/products/coach-teri-shoulder-bag-4.jpg",
+   "assets/products/coach-teri-shoulder-bag-5.jpg",
+   "assets/products/coach-teri-shoulder-bag-6.jpg",
+   "assets/products/coach-teri-shoulder-bag-7.jpg",
+   "assets/products/coach-teri-shoulder-bag-8.jpg"
   ]
  },
  {
@@ -442,7 +458,9 @@ window.BAGGED_UP_PRODUCTS = [
    "assets/products/demi-lune-crescent-bag-1.jpg",
    "assets/products/demi-lune-crescent-bag-2.jpg",
    "assets/products/demi-lune-crescent-bag-3.jpg",
-   "assets/products/demi-lune-crescent-bag-4.jpg"
+   "assets/products/demi-lune-crescent-bag-4.jpg",
+   "assets/products/demi-lune-crescent-bag-5.jpg",
+   "assets/products/demi-lune-crescent-bag-6.jpg"
   ]
  },
  {
@@ -503,7 +521,9 @@ window.BAGGED_UP_PRODUCTS = [
    "assets/products/faux-leather-handbag-1.jpg",
    "assets/products/faux-leather-handbag-2.jpg",
    "assets/products/faux-leather-handbag-3.jpg",
-   "assets/products/faux-leather-handbag-4.jpg"
+   "assets/products/faux-leather-handbag-4.jpg",
+   "assets/products/faux-leather-handbag-5.jpg",
+   "assets/products/faux-leather-handbag-6.jpg"
   ]
  },
  {
@@ -515,7 +535,9 @@ window.BAGGED_UP_PRODUCTS = [
    "assets/products/pol-ne-cyme-1.jpg",
    "assets/products/pol-ne-cyme-2.jpg",
    "assets/products/pol-ne-cyme-3.jpg",
-   "assets/products/pol-ne-cyme-4.jpg"
+   "assets/products/pol-ne-cyme-4.jpg",
+   "assets/products/pol-ne-cyme-5.jpg",
+   "assets/products/pol-ne-cyme-6.jpg"
   ]
  }
 ];

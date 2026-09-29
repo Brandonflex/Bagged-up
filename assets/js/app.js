@@ -535,6 +535,111 @@
     });
   }
 
+
+  /* ---------- theme: auto -> light -> dark, persisted ---------- */
+  var THEME_KEY = 'bagged-up-theme';
+  var themeBtn = $('#theme-btn');
+  function savedTheme() {
+    var t = null;
+    try { t = storeGet(THEME_KEY); } catch (e) {}
+    return (t === 'light' || t === 'dark') ? t : null;
+  }
+  function applyThemeLabel() {
+    if (!themeBtn) return;
+    var t = document.documentElement.getAttribute('data-theme');
+    var mode = !t ? 'Auto (follows your device)' : (t === 'dark' ? 'Dark' : 'Light');
+    themeBtn.title = 'Theme: ' + mode + ' — tap to change';
+    themeBtn.setAttribute('aria-label', 'Colour theme: ' + mode + '. Tap to change.');
+  }
+  function setTheme(next, persist) {
+    if (next) document.documentElement.setAttribute('data-theme', next);
+    else document.documentElement.removeAttribute('data-theme');
+    if (persist) storeSet(THEME_KEY, next || '');
+    applyThemeLabel();
+  }
+  if (themeBtn) {
+    applyThemeLabel();
+    themeBtn.addEventListener('click', function () {
+      var cur = savedTheme();
+      var osDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      var effective = cur || (osDark ? 'dark' : 'light');
+      if (cur === null) {
+        setTheme(effective === 'dark' ? 'light' : 'dark', true);       // auto -> explicit opposite
+      } else if (cur === 'light' && osDark) {
+        setTheme('dark', true);                                         // light -> dark
+      } else if (cur === 'dark' && !osDark) {
+        setTheme('light', true);                                        // dark -> light
+      } else {
+        setTheme(null, true);                                           // back to auto
+      }
+      var m = document.documentElement.getAttribute('data-theme');
+      toast(m ? ('Theme: ' + (m === 'dark' ? 'Dark' : 'Light')) : 'Theme: Auto — following your device');
+    });
+    /* if the OS switches while user is on auto, the media query handles it (pure CSS) */
+  }
+
+  /* ---------- lightbox (PDP photo viewer) ---------- */
+  var lb = $('#lightbox');
+  if (lb) {
+    var lbImg = $('#lb-img');
+    var lbCount = $('#lb-count');
+    var lbThumbBtns = $all('#lb-thumbs button');
+    var lbSrcs = lbThumbBtns.map(function (b) { return b.querySelector('img').getAttribute('src'); });
+    var lbAlt = ($('#pdp-zoom img') || {}).alt || 'Product photo';
+    var lbI = 0, lbLastFocus = null;
+
+    function lbShow(i) {
+      lbI = (i + lbSrcs.length) % lbSrcs.length;
+      lbImg.src = lbSrcs[lbI];
+      lbImg.alt = lbAlt + ' — photo ' + (lbI + 1);
+      lbCount.textContent = (lbI + 1) + ' / ' + lbSrcs.length;
+      lbThumbBtns.forEach(function (b, j) { b.classList.toggle('active', j === lbI); });
+      var act = lbThumbBtns[lbI];
+      if (act && act.scrollIntoView) act.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    }
+    function lbOpen(i) {
+      lbLastFocus = document.activeElement;
+      lb.classList.add('open');
+      document.body.classList.add('no-scroll');
+      lbShow(i);
+      $('#lb-close').focus();
+    }
+    function lbClose() {
+      lb.classList.remove('open');
+      document.body.classList.remove('no-scroll');
+      if (lbLastFocus) lbLastFocus.focus();
+    }
+    var zoom = $('#pdp-zoom');
+    zoom && zoom.addEventListener('click', function () { lbOpen(0); });
+    zoom && zoom.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); lbOpen(0); }
+    });
+    $all('.thumbs button').forEach(function (btn, i) {
+      btn.addEventListener('dblclick', function () { lbOpen(i); });
+    });
+    lbThumbBtns.forEach(function (btn, i) {
+      btn.addEventListener('click', function () { lbShow(i); });
+    });
+    $('#lb-close').addEventListener('click', lbClose);
+    $('#lb-prev').addEventListener('click', function () { lbShow(lbI - 1); });
+    $('#lb-next').addEventListener('click', function () { lbShow(lbI + 1); });
+    document.addEventListener('keydown', function (e) {
+      if (!lb.classList.contains('open')) return;
+      if (e.key === 'Escape') lbClose();
+      if (e.key === 'ArrowLeft') lbShow(lbI - 1);
+      if (e.key === 'ArrowRight') lbShow(lbI + 1);
+    });
+    /* swipe */
+    var tx = null;
+    lb.addEventListener('touchstart', function (e) { tx = e.touches[0].clientX; }, { passive: true });
+    lb.addEventListener('touchend', function (e) {
+      if (tx === null) return;
+      var dx = e.changedTouches[0].clientX - tx;
+      if (Math.abs(dx) > 40) lbShow(lbI + (dx < 0 ? 1 : -1));
+      tx = null;
+    }, { passive: true });
+  }
+
   /* ---------- init ---------- */
   updateBadge();
 })();
