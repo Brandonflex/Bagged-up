@@ -13,6 +13,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { execSync } from 'node:child_process';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SITE = 'https://bagged-up.vercel.app';
@@ -318,6 +319,18 @@ check('no em dashes in shipped copy', () => {
   if (bad.length) throw new Error(bad.slice(0, 10).join(', '));
   const en = PAGES.reduce((n, p) => n + (read(p).match(/\u2013/g) || []).length, 0);
   return `${scan.length} files clean (en dashes kept for ranges: ${en})`;
+});
+
+check('no tooling or build state is tracked by git', () => {
+  let tracked;
+  try {
+    tracked = execSync('git ls-files', { cwd: ROOT, encoding: 'utf8' }).split('\n').filter(Boolean);
+  } catch {
+    return 'skipped (git not available)';
+  }
+  const junk = tracked.filter((f) => /^(?:node_modules|dist|\.wrangler|\.next|coverage|\.cache)\//.test(f));
+  if (junk.length) throw new Error(`${junk.length} tracked path(s), e.g. ${junk.slice(0, 5).join(', ')}`);
+  return `${tracked.length} tracked files, no tooling state`;
 });
 
 check('sitemap.xml is well-formed and on the live host', () => {
