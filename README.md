@@ -3,12 +3,30 @@
 Static e-commerce site (plain HTML/CSS/JS, no framework, no build step on
 the host). This folder is deployable as-is.
 
-## Deploy (GitHub -> Vercel)
+## Deploy
 
-1. Replace the files in your repo with the contents of this folder.
-2. Commit and push - Vercel redeploys automatically.
-3. vercel.json is included: it enables clean URLs so old links like
-   /shop/<product-slug> keep working after the old site is replaced.
+The site is a static export. `npm run build` writes it to `dist/`, and the
+`dist/` folder is the only thing that should ever be served: it excludes the
+tooling, tests and docs by design.
+
+### Built-in hosting paths
+
+| Host | Config in this repo | What a push produces |
+| --- | --- | --- |
+| Cloudflare Workers Builds | `wrangler.jsonc` (static assets from `./dist`, `html_handling: drop-trailing-slash`) | production build on `main`; on other branches `wrangler versions upload`, which publishes a per-commit preview URL and is posted in the pull request as "Preview Deployments by commit" |
+| Vercel | `vercel.json` (`buildCommand: npm run build`, `outputDirectory: dist`, clean URLs) | a production deployment on `main` and a per-commit preview URL on other branches, commented on the pull request |
+
+Both hosts need the project to be created once in their dashboard and pointed
+at this repository; the build and output settings above are already in the
+repo, so no dashboard build configuration is required beyond that.
+
+### Server-side notes
+
+`cleanUrls` on Vercel and `drop-trailing-slash` on Cloudflare both mean the
+same thing: `/shop/<product-slug>` serves `shop/<product-slug>.html`, and the
+`.html` form redirects to the clean one. Canonical tags, `sitemap.xml` and
+`robots.txt` all use the clean form, so keep them in step if the host changes:
+the integrity suite fails if they drift.
 
 ## Quality gate
 

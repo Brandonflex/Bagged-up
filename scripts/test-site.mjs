@@ -281,6 +281,15 @@ check('robots.txt points at the sitemap and hides the cart clean URL', () => {
   return `sitemap advertised, disallow: ${disallow.join(' ')}`;
 });
 
+check('Vercel config builds and serves the same export', () => {
+  const cfg = JSON.parse(read('vercel.json'));
+  if (cfg.cleanUrls !== true) throw new Error('cleanUrls is not true');
+  if (cfg.trailingSlash !== false) throw new Error('trailingSlash is not false');
+  if (cfg.buildCommand !== 'npm run build') throw new Error(`buildCommand is "${cfg.buildCommand}", expected "npm run build"`);
+  if (cfg.outputDirectory !== 'dist') throw new Error(`outputDirectory is "${cfg.outputDirectory}", expected "dist"`);
+  return 'builds dist/ and serves it with clean URLs';
+});
+
 check('Cloudflare Worker config matches the build output', () => {
   const cfg = JSON.parse(read('wrangler.jsonc').replace(/^\s*\/\/.*$/gm, ''));
   if (cfg.name !== 'bagged-up') throw new Error(`worker name is "${cfg.name}", expected "bagged-up"`);
