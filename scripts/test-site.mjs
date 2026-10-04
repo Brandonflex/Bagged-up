@@ -280,6 +280,22 @@ check('robots.txt points at the sitemap and hides the cart clean URL', () => {
   return `sitemap advertised, disallow: ${disallow.join(' ')}`;
 });
 
+check('Cloudflare Worker config matches the build output', () => {
+  const cfg = JSON.parse(read('wrangler.jsonc').replace(/^\s*\/\/.*$/gm, ''));
+  if (cfg.name !== 'bagged-up') throw new Error(`worker name is "${cfg.name}", expected "bagged-up"`);
+  const dir = (cfg.assets || {}).directory;
+  if (dir !== './dist') throw new Error(`assets.directory is "${dir}", expected "./dist"`);
+  if (!(cfg.build && cfg.build.command)) throw new Error('no build.command: a Cloudflare build would upload a non-existent directory');
+  if (cfg.preview_urls !== true) throw new Error('preview_urls is off: branch builds would not publish a preview URL');
+  if ((cfg.assets || {}).html_handling !== 'drop-trailing-slash') {
+    throw new Error('html_handling must stay "drop-trailing-slash" to match the clean URLs used in canonicals and the sitemap');
+  }
+  const builder = read('scripts/build-site.mjs');
+  const out = (builder.match(/const DIST = path\.join\(ROOT, '([^']+)'\)/) || [])[1];
+  if (out !== 'dist') throw new Error(`scripts/build-site.mjs writes to "${out}" but the Worker serves "./${'dist'}"`);
+  return `worker "${cfg.name}" serves ./dist, cleanup: ${cfg.assets.html_handling}`;
+});
+
 check('sitemap.xml is well-formed and on the live host', () => {
   const xml = read('sitemap.xml');
   if (!/^<\?xml/.test(xml.trim())) throw new Error('missing XML declaration');
