@@ -15,7 +15,7 @@ the host). This folder is deployable as-is.
 Everything that ships is checked with one command:
 
 ```bash
-npm ci          # once — installs the lint/type tools (no runtime deps)
+npm ci          # once - installs the lint/type tools (no runtime deps)
 npm run verify  # lint + typecheck + tests + build
 ```
 
@@ -28,7 +28,7 @@ npm run verify  # lint + typecheck + tests + build
 
 The same gate runs in CI (`.github/workflows/ci.yml`) on every push and pull
 request. Lint rules that are deliberately switched off are listed in
-`.htmlvalidate.json` — all four are cosmetic (DOCTYPE casing, attribute quote
+`.htmlvalidate.json` - all four are cosmetic (DOCTYPE casing, attribute quote
 style, trailing whitespace, inline `style=` attributes), not correctness.
 
 ## Updating products (prices, stock, new pieces)
@@ -38,7 +38,7 @@ product pages under `shop/` are pre-rendered from it. The README used to point a
 `data/products.json` in a build workspace; that workspace is **not part of this
 repository**, so for now the files here are the source of truth: edit
 `assets/js/data.js` and the matching page together, then run `npm run verify`.
-If that generator is restored, it must be updated first — otherwise this HTML is
+If that generator is restored, it must be updated first - otherwise this HTML is
 overwritten on the next build. `npm run build` does not regenerate pages; it only
 produces and checks the deployable `dist/` folder.
 

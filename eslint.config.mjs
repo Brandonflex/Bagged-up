@@ -1,4 +1,4 @@
-// ESLint flat config — plain browser JavaScript, no bundler, no modules.
+// ESLint flat config - plain browser JavaScript, no bundler, no modules.
 import js from '@eslint/js';
 import globals from 'globals';
 

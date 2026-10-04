@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Bagged Up — storefront integrity suite.
+ * Bagged Up - storefront integrity suite.
  *
  * The site is plain HTML/CSS/JS with no framework and no bundler, so the
  * things that actually break in production are reference and consistency
@@ -172,7 +172,7 @@ check('no asset is orphaned', () => {
     }
   }
   info.push(`${orphans.length} asset file(s) not referenced by any page${orphans.length ? ': ' + orphans.join(', ') : ''}`);
-  return orphans.length ? `${orphans.length} orphaned file(s) — see notes` : 'all assets referenced';
+  return orphans.length ? `${orphans.length} orphaned file(s) - see notes` : 'all assets referenced';
 });
 
 /* ---------- per-page head + structure ---------- */
@@ -296,6 +296,30 @@ check('Cloudflare Worker config matches the build output', () => {
   return `worker "${cfg.name}" serves ./dist, cleanup: ${cfg.assets.html_handling}`;
 });
 
+check('no em dashes in shipped copy', () => {
+  // House rule: em dashes read as machine-written. \u2014 is the em dash,
+  // \u2013 the en dash, which stays for genuine ranges like "1–3 days".
+  const EM = '\u2014';
+  const scan = [
+    ...PAGES,
+    ...fs.readdirSync(path.join(ROOT, 'assets/js')).filter((f) => f.endsWith('.js')).map((f) => `assets/js/${f}`),
+    ...fs.readdirSync(path.join(ROOT, 'scripts')).filter((f) => f.endsWith('.mjs')).map((f) => `scripts/${f}`),
+    'assets/css/style.css', 'README.md', 'wrangler.jsonc', 'robots.txt', 'sitemap.xml',
+    'package.json', 'eslint.config.mjs', '.github/workflows/ci.yml',
+  ];
+  const bad = [];
+  for (const file of scan) {
+    const text = read(file);
+    const n = (text.match(new RegExp(EM, 'g')) || []).length;
+    if (n) bad.push(`${file} (${n})`);
+    const entities = ['&' + 'mdash;', '&#' + '8212;', '&#x' + '2014;'];
+    if (entities.some((e) => text.toLowerCase().includes(e))) bad.push(`${file} (HTML entity)`);
+  }
+  if (bad.length) throw new Error(bad.slice(0, 10).join(', '));
+  const en = PAGES.reduce((n, p) => n + (read(p).match(/\u2013/g) || []).length, 0);
+  return `${scan.length} files clean (en dashes kept for ranges: ${en})`;
+});
+
 check('sitemap.xml is well-formed and on the live host', () => {
   const xml = read('sitemap.xml');
   if (!/^<\?xml/.test(xml.trim())) throw new Error('missing XML declaration');
@@ -344,7 +368,7 @@ check('the WhatsApp checkout number is consistent', () => {
 
 /* ---------- report ---------- */
 const pad = (s, n) => (s + ' '.repeat(n)).slice(0, n);
-console.log('\nBagged Up — storefront integrity suite\n');
+console.log('\nBagged Up - storefront integrity suite\n');
 for (const c of checks) console.log(`  ${c.ok ? 'PASS' : 'FAIL'}  ${pad(c.name, 52)} ${c.detail}`);
 for (const note of info) console.log(`  NOTE  ${note}`);
 console.log(`\n  ${checks.filter((c) => c.ok).length}/${checks.length} checks passed\n`);

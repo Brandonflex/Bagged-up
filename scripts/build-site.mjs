@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Bagged Up — static export check.
+ * Bagged Up - static export check.
  *
  * The hosts (Vercel / Cloudflare) can serve this folder exactly as it is, so
  * there is no compile step. What this script does instead is prove the site is
@@ -85,7 +85,7 @@ const totalBytes = files.reduce((n, f) => n + f.bytes, 0);
 const biggest = [...files].sort((a, b) => b.bytes - a.bytes).slice(0, 5);
 const kb = (n) => `${(n / 1024).toFixed(0)} KB`;
 
-console.log('\nBagged Up — static export check\n');
+console.log('\nBagged Up - static export check\n');
 console.log(`  pages exported      ${pages.length}`);
 console.log(`  files exported      ${files.length}`);
 console.log(`  output size         ${(totalBytes / 1024 / 1024).toFixed(1)} MB`);

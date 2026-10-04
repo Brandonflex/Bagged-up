@@ -1,4 +1,4 @@
-// Cloudflare Workers Builds config — this repo is a script-less static Worker.
+// Cloudflare Workers Builds config - this repo is a script-less static Worker.
 // Every push to a non-production branch runs `wrangler versions upload`, which
 // prints a preview URL for that exact commit; `main` runs `wrangler deploy`.
 // The build command below runs first, so ./dist always exists for the upload.

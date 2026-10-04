@@ -1,5 +1,5 @@
 /* ============================================================
-   Bagged Up — storefront behaviour
+   Bagged Up - storefront behaviour
    Cart (localStorage) · Nav overlay · Toasts · Shop filters
    PDP gallery · Review form UX · WhatsApp checkout
    ============================================================ */
@@ -13,7 +13,7 @@
   var CART_KEY = 'bagged-up-cart-v1';
   var DELIVERY_KEY = 'bagged-up-delivery-v1';
 
-  /* Storage can throw in sandboxed/opaque-origin frames — never let it break
+  /* Storage can throw in sandboxed/opaque-origin frames - never let it break
      the storefront; degrade gracefully to in-memory */
   var mem = {};
   function storeGet(k) {
@@ -76,7 +76,7 @@
     cart[slug] = (cart[slug] || 0) + (qty || 1);
     writeCart(cart);
     var p = productBySlug(slug);
-    if (p) toast('Added to bag — ' + p.name);
+    if (p) toast('Added to bag: ' + p.name);
     var badge = $('.cart-count');
     if (badge) {
       badge.classList.remove('pulse');
@@ -233,7 +233,7 @@
       e.preventDefault();
       var name = $('#review-name').value.trim();
       if (!name || !Number(ratingInput.value)) {
-        toast('Please add your name and a rating first.');
+        toast('Add your name and a rating first.');
         return;
       }
       reviewForm.reset();
@@ -318,7 +318,7 @@
         '<h2>Order Summary</h2>' +
         '<div class="row"><span class="muted">Subtotal</span><span>' + money(subtotal) + '</span></div>' +
         '<div class="delivery-pick" role="radiogroup" aria-label="Delivery option">' + optsHtml + '</div>' +
-        '<div class="row"><span class="muted">Delivery' + (fee === 0 ? ' — on us' : '') + '</span>' +
+        '<div class="row"><span class="muted">Delivery' + (fee === 0 ? ' (on us)' : '') + '</span>' +
           '<span>' + (fee === 0
             ? '<span class="free-tag">Free</span>&nbsp;<span class="strike">' + money(opt.fee) + '</span>'
             : money(fee)) + '</span></div>' +
@@ -360,7 +360,7 @@
     function buildWaMessage(cart, opt, fee, total) {
       var lines = Object.keys(cart).map(function (slug, i) {
         var p = productBySlug(slug);
-        return (i + 1) + '. ' + p.name + ' × ' + cart[slug] + ' — ' + money(p.price * cart[slug]);
+        return (i + 1) + '. ' + p.name + ' × ' + cart[slug] + ': ' + money(p.price * cart[slug]);
       });
       var msg =
         'Hello Bagged Up! I would like to place an order:\n\n' +
@@ -409,9 +409,9 @@
     if (!btn) return;
     var pre = $('#wa-msg-preview');
     var text = pre ? pre.textContent : '';
-    if (!text) { toast('Nothing to copy yet — add something to your bag first.'); return; }
-    function done() { toast('Order copied — paste it into WhatsApp.'); }
-    function fail() { toast('Could not copy automatically — long-press the message to copy.'); }
+    if (!text) { toast('Nothing to copy yet. Add something to your bag first.'); return; }
+    function done() { toast('Order copied. Paste it into WhatsApp.'); }
+    function fail() { toast('Could not copy automatically. Long-press the message to copy.'); }
     function legacy() {
       try {
         var ta = document.createElement('textarea');
@@ -425,7 +425,7 @@
         return ok;
       } catch { return false; }
     }
-    /* sync path first — the async clipboard API can stay pending forever
+    /* sync path first - the async clipboard API can stay pending forever
        in embedded/sandboxed frames, so never depend on it for feedback */
     if (legacy()) { done(); return; }
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -462,7 +462,7 @@
       rvs.forEach(function (el) { io.observe(el); });
       /* IO probe: in some sandboxed/opaque-origin frames IntersectionObserver
          reports EVERYTHING as non-intersecting, forever. Observe a sentinel
-         that is always on screen — if even that never "intersects", IO is
+         that is always on screen - if even that never "intersects", IO is
          broken here: reveal everything. An invisible page is never acceptable. */
       var sentinel = document.createElement('div');
       sentinel.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:1px;pointer-events:none;opacity:0';
@@ -542,14 +542,14 @@
   var themeBtn = $('#theme-btn');
   function savedTheme() {
     var t = null;
-    try { t = storeGet(THEME_KEY); } catch { /* storage blocked — follow the OS */ }
+    try { t = storeGet(THEME_KEY); } catch { /* storage blocked - follow the OS */ }
     return (t === 'light' || t === 'dark') ? t : null;
   }
   function applyThemeLabel() {
     if (!themeBtn) return;
     var t = document.documentElement.getAttribute('data-theme');
     var mode = !t ? 'Auto (follows your device)' : (t === 'dark' ? 'Dark' : 'Light');
-    themeBtn.title = 'Theme: ' + mode + ' — tap to change';
+    themeBtn.title = 'Theme: ' + mode + ' (tap to change)';
     themeBtn.setAttribute('aria-label', 'Colour theme: ' + mode + '. Tap to change.');
   }
   function setTheme(next, persist) {
@@ -574,7 +574,7 @@
         setTheme(null, true);                                           // back to auto
       }
       var m = document.documentElement.getAttribute('data-theme');
-      toast(m ? ('Theme: ' + (m === 'dark' ? 'Dark' : 'Light')) : 'Theme: Auto — following your device');
+      toast(m ? ('Theme: ' + (m === 'dark' ? 'Dark' : 'Light')) : 'Theme: Auto (following your device)');
     });
     /* if the OS switches while user is on auto, the media query handles it (pure CSS) */
   }
@@ -592,7 +592,7 @@
     function lbShow(i) {
       lbI = (i + lbSrcs.length) % lbSrcs.length;
       lbImg.src = lbSrcs[lbI];
-      lbImg.alt = lbAlt + ' — photo ' + (lbI + 1);
+      lbImg.alt = lbAlt + ', photo ' + (lbI + 1);
       lbCount.textContent = (lbI + 1) + ' / ' + lbSrcs.length;
       lbThumbBtns.forEach(function (b, j) { b.classList.toggle('active', j === lbI); });
       var act = lbThumbBtns[lbI];

@@ -1,5 +1,5 @@
 /* ============================================================
-   BAGGED UP — Design System
+   BAGGED UP - Design System
    Palette: ivory / espresso / olive / muted gold
    Type: Cormorant Garamond (display) + Jost (text)
    ============================================================ */
@@ -323,7 +323,7 @@ body.nav-open .nav-panel { box-shadow: 0 40px 80px -30px rgba(33,27,21,0.4); }
 }
 .nav-backdrop.show { opacity: 1; visibility: visible; }
 
-/* Inline desktop nav (separate element — the mobile overlay lives outside the
+/* Inline desktop nav (separate element - the mobile overlay lives outside the
    header so backdrop-filter can't trap its fixed positioning) */
 .nav-inline { display: none; }
 @media (min-width: 960px) {
@@ -854,7 +854,7 @@ body.nav-open .nav-panel { box-shadow: 0 40px 80px -30px rgba(33,27,21,0.4); }
 }
 
 /* ============================================================
-   V2 — Experience layer
+   V2 - Experience layer
    Grain · marquee · numbered index · immersive signature rail
    Scroll reveals · second-image hover · giant quote · order preview
    ============================================================ */
@@ -886,7 +886,7 @@ body { animation: pagefade 0.5s ease both; }
 .hero-inner > :nth-child(3) { animation-delay: 0.24s; }
 .hero-inner > :nth-child(4) { animation-delay: 0.36s; }
 
-/* scroll reveals — hidden state only applies when JS is running (.js on <html>) */
+/* scroll reveals - hidden state only applies when JS is running (.js on <html>) */
 .js .rv { opacity: 0; transform: translateY(24px); transition: opacity 0.85s var(--ease), transform 0.85s var(--ease); transition-delay: var(--d, 0s); }
 .js .rv.in { opacity: 1; transform: none; }
 .rv.in { opacity: 1; transform: none; }
@@ -952,11 +952,11 @@ body { animation: pagefade 0.5s ease both; }
   .sig-band .hnav { margin-top: 0.4rem; }
 }
 
-/* ---------- V3 — restraint pass ----------
+/* ---------- V3 - restraint pass ----------
    Removed: marquee, service index, category tiles, signature rail.
    Added: PDP 3D tilt + sheen, ambient motion, styling band, quiet ask-link. */
 
-/* ask about this bag — quiet text link, not a billboard */
+/* ask about this bag - quiet text link, not a billboard */
 .ask-link {
   display: inline-flex;
   align-items: center;
@@ -983,7 +983,7 @@ body { animation: pagefade 0.5s ease both; }
   letter-spacing: 0.01em;
 }
 
-/* PDP main image — tactile 3D tilt (pointer) + ambient breathe (touch) */
+/* PDP main image - tactile 3D tilt (pointer) + ambient breathe (touch) */
 .tilt { perspective: 1100px; }
 .tilt img {
   transition: transform 0.3s var(--ease);
@@ -1043,7 +1043,7 @@ body { animation: pagefade 0.5s ease both; }
 .pdp-video p { font-size: 0.82rem; color: var(--ink-faint); font-style: italic; font-family: var(--serif); }
 
 /* ============================================================
-   V4 — Theme toggle · Lightbox · Cinematic montage · Full review
+   V4 - Theme toggle · Lightbox · Cinematic montage · Full review
    ============================================================ */
 
 /* ---------- theme toggle ---------- */
