@@ -30,13 +30,18 @@ type in the `.wordmark` element, styled with `--serif` (Cormorant Garamond, self
 hosted), which keeps it crisp at any size and costs nothing to download. The SVG
 files here are for places the site cannot reach: packaging, social, print.
 
-Both SVGs rely on the font stack `'Cormorant Garamond', Georgia, serif`. On a
-machine without Cormorant the mark falls back to Georgia, which is close but not
-identical. **Before using these files for print or for any partner, convert the
-text to outlines** (Illustrator: Type → Create Outlines; Inkscape: Path → Object
-to Path; Figma: right click → Outline stroke/fill). After conversion the file no
-longer needs the font installed anywhere, and the checker's colour rule still
-applies.
+Every mark here is outlined: the lettering is vector paths, not live text, so the
+files render identically on a machine that has never heard of Cormorant Garamond.
+That matters for a logo, which travels to printers, partners and favicon
+renderers that will never load the site's fonts. It also means the curves are
+frozen: if the wordmark ever changes, the outlines have to be rebuilt, not
+retyped.
+
+They were built with HarfBuzz and fontTools from `assets/fonts`, the same files
+the site serves, so the shapes are the typeface's own, kerning and the `gg` ligature
+included, and each mark is centred on its ink rather than on its advance
+width. The checker enforces the two rules that keep them usable: a `viewBox` on
+every file, and no `<text>` anywhere.
 
 ## Type licence
 

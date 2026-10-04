@@ -4,7 +4,14 @@ The source of truth is `design/tokens.json`. The stylesheet must match it, and
 `node scripts/check-design.mjs` (part of `npm run verify` and CI) fails the build
 if the two drift apart in either direction, if the two dark-theme blocks in the
 stylesheet disagree, if a declared contrast pair drops below its minimum, or if a
-brand mark uses a colour that is not a token.
+brand mark uses a colour that is not a token, if a mark loses its `viewBox` or
+falls back to `<text>`, or if the stylesheet calls `var()` on something nothing
+declares.
+
+![The system on one sheet: brand marks, both palettes, and the contrast repairs](design-system.png)
+
+Rendered from the shipped fonts and the delivered mark files, so it is a picture
+of these values rather than an illustration near them.
 
 Run `node scripts/check-design.mjs --report` for the full contrast table.
 

@@ -41,7 +41,7 @@ npm run verify  # lint + typecheck + tests + build
 | --- | --- | --- |
 | lint | `npm run lint` | HTML validity/accessibility (`html-validate`) and JS rules (`eslint`) |
 | types | `npm run typecheck` | the storefront JS type-checks under `tsc --checkJs` (JSDoc types) |
-| design | `npm run design` | `design/tokens.json` and the stylesheet agree in both directions, the two dark blocks stay identical, every contrast pair meets its WCAG minimum, brand marks stay on palette |
+| design | `npm run design` | `design/tokens.json` and the stylesheet agree in both directions, the two dark blocks stay identical, every contrast pair meets its WCAG minimum, every `var()` resolves, and the brand marks scale, avoid `<text>` and stay on palette |
 | tests | `npm test` | catalogue ↔ pages ↔ sitemap agree; every link and asset resolves; canonicals, `og:*` and `robots.txt` match the clean-URL host config |
 | build | `npm run build` | the published file set is self-contained in `dist/` and leaks no dev files |
 

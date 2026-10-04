@@ -9,7 +9,8 @@
  *      media query and the explicit [data-theme="dark"] override).
  *   3. Every declared contrast pair still meets its WCAG minimum, computed
  *      from the values actually in the stylesheet, not from the docs.
- *   4. The brand marks in design/brand/ exist and only use palette colours.
+ *   4. The brand marks exist, carry a viewBox, use no <text>, and only use
+ *      palette colours.
  *
  *   node scripts/check-design.mjs      (part of: npm run verify)
  */
@@ -166,8 +167,12 @@ startCount = failures.length;
     const used = [...svg.matchAll(/#[0-9A-Fa-f]{3,6}/g)].map((m) => m[0].toUpperCase());
     const offPalette = used.filter((c) => !approved.has(c));
     if (offPalette.length) fail(`${f} uses off-palette colour(s): ${[...new Set(offPalette)].join(', ')}`);
+    if (!/<svg[^>]*viewBox="/.test(svg)) fail(`${f} has no viewBox, so it cannot be scaled`);
+    if (/<text[\s>]/.test(svg)) {
+      fail(`${f} draws its lettering as <text>, which only renders correctly where that font is installed; outline it to a path`);
+    }
   }
-  group('brand marks exist and stay on palette', `${marks.length} marks, ${approved.size} approved colours`);
+  group('brand marks exist, scale, and stay on palette', `${marks.length} marks, ${approved.size} approved colours`);
 }
 
 /* ---------- 5. every var() reference resolves ---------- */
