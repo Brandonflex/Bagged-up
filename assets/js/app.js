@@ -9,6 +9,7 @@
   var DEPTH = (Number(document.documentElement.dataset.depth) || 0);
   var ROOT = DEPTH === 0 ? '' : new Array(DEPTH + 1).join('../');
   var PRODUCTS = window.BAGGED_UP_PRODUCTS || [];
+  var REVIEWS = window.BAGGED_UP_REVIEWS || [];
   var WA_NUMBER = '254113599345';
   var CART_KEY = 'bagged-up-cart-v1';
   var DELIVERY_KEY = 'bagged-up-delivery-v1';
@@ -862,6 +863,71 @@
     $all('[data-save="' + slug + '"]').forEach(function (b) { paintSaveButton(b, nowSaved); });
     if (product) toast(nowSaved ? 'Saved ' + product.name : 'Removed ' + product.name);
     document.dispatchEvent(new CustomEvent('bagged:saved'));
+  });
+
+  /* ---------- reviews (Amazon, Etsy: proof beside the thing being bought) ----------
+     A review is one person's words. Name, date, rating and text are rendered as
+     a single card so they cannot read as separate things, and the whole page set
+     comes from window.BAGGED_UP_REVIEWS rather than from markup copied into 51
+     files. */
+  function starRow(rating) {
+    var out = '';
+    for (var i = 1; i <= 5; i++) {
+      out += '<svg viewBox="0 0 24 24" aria-hidden="true" class="' + (i <= rating ? 'on' : 'off') + '">' +
+        '<path d="m12 2.6 2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5l-5.8 3.05 1.1-6.5-4.7-4.6 6.5-.95L12 2.6Z"/></svg>';
+    }
+    return out;
+  }
+  function monthYear(iso) {
+    var mo = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    var parts = String(iso || '').split('-');
+    if (parts.length < 2) return escHtml(iso || '');
+    return mo[parseInt(parts[1], 10) - 1] + ' ' + parts[0];
+  }
+  function reviewCard(r) {
+    var product = r.product ? productBySlug(r.product) : null;
+    var initial = (r.name || '?').trim().charAt(0).toUpperCase();
+    return '<article class="review-item">' +
+      '<div class="review-head">' +
+        '<span class="review-avatar" aria-hidden="true">' + escHtml(initial) + '</span>' +
+        '<span class="review-who">' +
+          '<b>' + escHtml(r.name) + '</b>' +
+          (r.verified ? '<span class="review-verified" title="Order confirmed">Verified order</span>' : '') +
+          '<time datetime="' + escHtml(r.date) + '">' + monthYear(r.date) + '</time>' +
+        '</span>' +
+        '<span class="review-score" role="img" aria-label="' + r.rating + ' out of 5 stars">' + starRow(r.rating) + '</span>' +
+      '</div>' +
+      '<blockquote class="review-words">' + escHtml(r.body) + '</blockquote>' +
+      (product ? '<p class="review-about">On the <a href="' + ROOT + 'shop/' + product.slug + '.html">' + escHtml(product.name) + '</a></p>' : '') +
+    '</article>';
+  }
+  function reviewSummary(list) {
+    if (!list.length) return '';
+    var total = list.reduce(function (n, r) { return n + (r.rating || 0); }, 0);
+    var avg = (total / list.length).toFixed(1);
+    return '<p class="review-summary">' +
+      '<span class="review-score" role="img" aria-label="Average ' + avg + ' out of 5">' + starRow(Math.round(total / list.length)) + '</span>' +
+      '<span><b>' + avg + '</b> average from ' + list.length + ' review' + (list.length === 1 ? '' : 's') +
+      ', all from delivered orders</span>' +
+    '</p>';
+  }
+
+  $all('[data-reviews]').forEach(function (host) {
+    var slug = host.getAttribute('data-reviews');
+    var list = slug === 'all'
+      ? REVIEWS.slice()
+      : REVIEWS.filter(function (r) { return r.product === slug; });
+    var empty = host.getAttribute('data-reviews-empty') || 'No reviews yet for this piece. Be the first.';
+    var intro = host.querySelector('[data-reviews-keep]');
+    var body = list.length
+      ? reviewSummary(list) + list.map(reviewCard).join('')
+      : '<p class="review-empty">' + escHtml(empty) + '</p>';
+    if (intro) {
+      intro.insertAdjacentHTML('afterend', body);
+    } else {
+      host.insertAdjacentHTML('afterbegin', body);
+    }
+    host.setAttribute('data-reviews-ready', 'true');
   });
 
   /* ---------- init ---------- */

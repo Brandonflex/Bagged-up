@@ -19,7 +19,7 @@ import { createRequire } from 'node:module';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = path.join(ROOT, 'dist');
 const OUT = path.join(ROOT, 'docs/screenshots');
-const PORT = 4611;
+const PORT = 4613;
 
 if (!fs.existsSync(DIST)) {
   console.error('\n  dist/ is missing. Run: npm run build\n');
@@ -29,13 +29,19 @@ if (!fs.existsSync(DIST)) {
 const require = createRequire(import.meta.url);
 let chromium;
 let puppeteer;
-try {
-  chromium = (await import('@sparticuz/chromium')).default;
-  puppeteer = (await import('puppeteer-core')).default;
-} catch {
+for (const from of [import.meta.url, 'file:///tmp/shot/package.json']) {
+  try {
+    const req = createRequire(from);
+    chromium = chromium || req('@sparticuz/chromium');
+    puppeteer = puppeteer || req('puppeteer-core');
+  } catch { /* try the next location */ }
+}
+if (!chromium || !puppeteer) {
   console.error('\n  The screenshot browser is not installed. See docs/screenshots/README.md.\n');
   process.exit(1);
 }
+chromium = chromium.default;
+puppeteer = puppeteer.default;
 
 const TYPES = {
   '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.jpg': 'image/jpeg',
@@ -80,6 +86,8 @@ const SHOTS = [
   { name: '07-cart-free-delivery-progress', url: '/cart', h: 700, seed: CART, selector: '#cart-summary' },
   { name: '08-cart-unlocked', url: '/cart', h: 700, seed: CART_BIG, selector: '#cart-summary' },
   { name: '09-home-desktop', url: '/', w: 1280, h: 860, scale: 1 },
+  { name: '10-review-card', url: '/reviews', h: 760, selector: '.review-block' },
+  { name: '11-product-reviews-empty', url: '/shop/canvas-tote-bag', h: 620, selector: 'section[aria-label="Reviews for this piece"]' },
 ];
 
 const browser = await puppeteer.launch({

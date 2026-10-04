@@ -11,7 +11,8 @@
     "lint:js": "eslint assets/js",
     "typecheck": "tsc -p jsconfig.json",
     "build": "node scripts/build-site.mjs",
-    "design": "node scripts/check-design.mjs"
+    "design": "node scripts/check-design.mjs",
+    "layout": "node scripts/check-layout.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",

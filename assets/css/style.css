@@ -475,7 +475,11 @@ body.nav-open .nav-panel { box-shadow: 0 40px 80px -30px rgba(33,27,21,0.4); }
 }
 .card:hover .quick, .card:focus-within .quick { opacity: 1; transform: none; }
 .quick:hover { background: var(--ink); color: var(--bg); }
-@media (hover: none) { .card-media .quick { opacity: 1; transform: none; } }
+/* On a touch screen the hover overlay has nothing to hover with, and the card
+   already carries a full width add button below the price. Showing both put two
+   add-to-bag buttons on every card, one of them floating up inside the photo,
+   so the overlay is for pointer devices only. */
+@media (hover: none), (pointer: coarse) { .card-media .quick { display: none; } }
 
 .flag {
   position: absolute;
@@ -507,7 +511,12 @@ body.nav-open .nav-panel { box-shadow: 0 40px 80px -30px rgba(33,27,21,0.4); }
 }
 .card-name a:hover { color: var(--green-deep); }
 .card-price { font-size: 0.95rem; font-weight: 450; letter-spacing: 0.03em; margin-top: 0.15rem; }
-.card-actions { margin-top: 0.8rem; }
+.card-actions {
+  /* pushed to the bottom of the card, so a one line name and a two line name
+     still put their buttons on the same line across a row */
+  margin-top: auto;
+  padding-top: 0.8rem;
+}
 .card-actions .btn { width: 100%; padding: 0.78rem 1rem; font-size: 0.7rem; }
 
 /* ---------- Editorial split (about teaser) ---------- */
@@ -711,12 +720,87 @@ body.nav-open .nav-panel { box-shadow: 0 40px 80px -30px rgba(33,27,21,0.4); }
 
 /* ---------- Reviews (PDP + page) ---------- */
 .review-block { border-top: 1px solid var(--line); margin-top: 2.6rem; padding-top: 2rem; }
-.review-item { border-bottom: 1px solid var(--line); padding-block: 1.4rem; }
-.review-item .who { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
-.review-item .who b { font-weight: 500; }
-.review-item .who time { font-size: 0.78rem; color: var(--ink-faint); }
-.review-item p { margin-top: 0.55rem; color: var(--ink-soft); }
-.review-empty { color: var(--ink-soft); font-style: italic; }
+/* A review is one person speaking, so the name, the date, the rating and the
+   words sit in one card with one border, not as three loose fragments. */
+.review-block { display: grid; }
+.review-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-top: 0.9rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+}
+.review-summary b { color: var(--ink); font-weight: 500; }
+.review-summary .review-score { margin-left: 0; }
+.review-item {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg-raised);
+  padding: 1.1rem 1.2rem 1.2rem;
+  margin-top: 0.9rem;
+}
+.review-head {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+.review-avatar {
+  width: 34px;
+  height: 34px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--green);
+  color: var(--bg);
+  font-family: var(--serif);
+  font-size: 1rem;
+  line-height: 1;
+}
+.review-who { display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; min-width: 0; }
+.review-who b { font-weight: 500; color: var(--ink); }
+.review-who time { font-size: 0.78rem; color: var(--ink-faint); }
+.review-verified {
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--green-deep);
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  padding: 0.15rem 0.5rem;
+}
+.review-score { display: inline-flex; align-items: center; gap: 0.12rem; margin-left: auto; }
+.review-score svg { width: 14px; height: 14px; }
+.review-score svg.on { fill: var(--gold); }
+.review-score svg.off { fill: none; stroke: var(--line-strong); stroke-width: 1.4; }
+/* named to stay clear of .review-quote, which is the big pull quote on the
+   homepage and carries its own max-width */
+.review-words {
+  margin: 0.85rem 0 0;
+  padding: 0;
+  border: 0;
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  line-height: 1.45;
+  color: var(--ink);
+  max-width: none;
+}
+.review-words::before { content: '\201C'; }
+.review-words::after { content: '\201D'; }
+.review-about { margin-top: 0.6rem; font-size: 0.82rem; color: var(--ink-soft); }
+.review-about a { border-bottom: 1px solid var(--link-line); }
+.review-empty {
+  color: var(--ink-soft);
+  font-style: italic;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius);
+  padding: 1.1rem 1.2rem;
+  margin-top: 0.9rem;
+}
 
 /* review form */
 .review-form { display: grid; gap: 1rem; margin-top: 1.6rem; max-width: 560px; }

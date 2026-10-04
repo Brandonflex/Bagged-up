@@ -12,3 +12,18 @@ interface BaggedUpProduct {
 interface Window {
   BAGGED_UP_PRODUCTS?: BaggedUpProduct[];
 }
+
+/* A review belongs to a person and to a product, or to no product when it is
+   about the shop itself. */
+interface BaggedUpReview {
+  name: string;
+  date: string;
+  rating: number;
+  product: string | null;
+  body: string;
+  verified?: boolean;
+}
+
+interface Window {
+  BAGGED_UP_REVIEWS?: BaggedUpReview[];
+}

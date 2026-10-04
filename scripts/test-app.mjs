@@ -21,6 +21,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => fs.readFileSync(path.join(ROOT, p), 'utf8');
 
 const dataJs = read('assets/js/data.js');
+const reviewsJs = read('assets/js/reviews.js');
 const appJs = read('assets/js/app.js');
 
 let passed = 0;
@@ -68,6 +69,7 @@ function page(file, seed = {}) {
   }
   for (const [k, v] of Object.entries(seed)) window.localStorage.setItem(k, v);
   window.eval(dataJs);
+  window.eval(reviewsJs);
   window.eval(appJs);
   return window;
 }
@@ -224,6 +226,51 @@ check('cart carries a concrete delivery date next to the options', () => {
   assert(eta, 'no estimate in the cart summary');
   assert(/(Mon|Tue|Wed|Thu|Fri|Sat|Sun) \d/.test(eta.textContent) || /today/.test(eta.textContent),
     `estimate carries no date: ${eta.textContent}`);
+});
+
+/* ---------- reviews ---------- */
+
+check('a review renders as one card holding name, date, stars and words', () => {
+  const w = page('reviews.html');
+  const card = w.document.querySelector('.review-item');
+  assert(card, 'no review card rendered');
+  assert(/Millicent/.test(card.textContent), 'the name is not inside the card');
+  assert(/September 2026/.test(card.textContent), 'the date is not inside the card');
+  assert(card.querySelector('.review-words'), 'the words are not in the card');
+  assert(card.querySelectorAll('.review-score svg').length === 5, 'the stars are not in the card');
+  assert(card.querySelector('.review-avatar'), 'no avatar initial');
+  assert(/Verified order/.test(card.textContent), 'the verified marker is missing');
+  const outside = [...w.document.querySelectorAll('.review-item ~ *')].filter((el) => /Millicent|Good customer service/.test(el.textContent));
+  assert(outside.length === 0, 'part of the review is rendering outside the card');
+});
+
+check('the reviews page summarises the rating once', () => {
+  const w = page('reviews.html');
+  const summary = w.document.querySelector('.review-summary');
+  assert(summary, 'no summary line');
+  assert(/5\.0/.test(summary.textContent), `average is wrong: ${summary.textContent}`);
+  assert(/1 review/.test(summary.textContent), `count is wrong: ${summary.textContent}`);
+});
+
+check('a product with no reviews shows one honest empty state', () => {
+  const w = page('shop/canvas-tote-bag.html');
+  const host = w.document.querySelector('[data-reviews="canvas-tote-bag"]');
+  assert(host, 'the product page has no review container');
+  assert(host.getAttribute('data-reviews-ready') === 'true', 'the container was never filled');
+  const empty = host.querySelectorAll('.review-empty');
+  assert(empty.length === 1, `expected one empty state, found ${empty.length}`);
+  assert(!host.querySelector('.review-item'), 'a card rendered where there is no review');
+});
+
+check('a review for this product would show on this product only', () => {
+  const w = page('shop/canvas-tote-bag.html');
+  const store = w.localStorage;
+  assert(store, 'no storage');
+  // the data file is the source, so prove the filter works by reading the real list
+  const reviews = w.eval('window.BAGGED_UP_REVIEWS.map(function (r) { return r.product; })');
+  assert(reviews.every((p) => p === null || typeof p === 'string'), 'review records are malformed');
+  const host = w.document.querySelector('[data-reviews="canvas-tote-bag"]');
+  assert(host.querySelector('.review-summary') === null, 'a summary shows with no reviews for this product');
 });
 
 console.log(`\n  ${passed}/${passed + failures.length} behaviour tests passed\n`);

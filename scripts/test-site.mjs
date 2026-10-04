@@ -107,6 +107,30 @@ check('every product has a page', () => {
   return `${slugs.size} products → ${pdpSlugs.size} pages`;
 });
 
+check('reviews parse and point at real products (assets/js/reviews.js)', () => {
+  const src = read('assets/js/reviews.js');
+  const json = src.replace(/^[\s\S]*?window\.BAGGED_UP_REVIEWS\s*=\s*/, '').replace(/;\s*$/, '');
+  const list = JSON.parse(json);
+  if (!Array.isArray(list)) throw new Error('reviews are not a list');
+  const slugs = new Set(products.map((p) => p.slug));
+  list.forEach((r, i) => {
+    if (!r.name) throw new Error(`review ${i} has no name`);
+    if (!/^\d{4}-\d{2}$/.test(r.date || '')) throw new Error(`review ${i} has no month, found ${r.date}`);
+    if (!(r.rating >= 1 && r.rating <= 5)) throw new Error(`review ${i} rating is ${r.rating}`);
+    if (!r.body) throw new Error(`review ${i} has no words`);
+    if (r.product !== null && !slugs.has(r.product)) {
+      throw new Error(`review ${i} is about "${r.product}", which is not in the catalogue`);
+    }
+  });
+  return `${list.length} review(s), ${list.filter((r) => r.product).length} about a product`;
+});
+
+check('every page loads the reviews script', () => {
+  const missing = PAGES.filter((page) => !read(page).includes('assets/js/reviews.js'));
+  if (missing.length) throw new Error(`${missing.length} page(s) do not load it: ${missing.slice(0, 3).join(', ')}`);
+  return `${PAGES.length} pages`;
+});
+
 check('every product page has a catalogue entry', () => {
   const orphans = [...pdpSlugs].filter((s) => !slugs.has(s));
   if (orphans.length) throw new Error(orphans.join(', '));
