@@ -32,6 +32,9 @@ jobs:
       - name: typecheck (JS via JSDoc)
         run: npm run typecheck
 
+      - name: design system (tokens, contrast, brand marks)
+        run: npm run design
+
       - name: tests (storefront integrity suite)
         run: npm test
 

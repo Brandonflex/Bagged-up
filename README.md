@@ -41,8 +41,22 @@ npm run verify  # lint + typecheck + tests + build
 | --- | --- | --- |
 | lint | `npm run lint` | HTML validity/accessibility (`html-validate`) and JS rules (`eslint`) |
 | types | `npm run typecheck` | the storefront JS type-checks under `tsc --checkJs` (JSDoc types) |
+| design | `npm run design` | `design/tokens.json` and the stylesheet agree in both directions, the two dark blocks stay identical, every contrast pair meets its WCAG minimum, brand marks stay on palette |
 | tests | `npm test` | catalogue ↔ pages ↔ sitemap agree; every link and asset resolves; canonicals, `og:*` and `robots.txt` match the clean-URL host config |
 | build | `npm run build` | the published file set is self-contained in `dist/` and leaks no dev files |
+
+## Design and architecture
+
+- `design/tokens.json` - the palette, type, spacing and motion tokens, plus the
+  contrast pairs and their minimums. The stylesheet must match it.
+- `design/brand/` - wordmark (light and reversed), monogram and favicon, with
+  usage rules.
+- `docs/design-system.md` - the system, the contrast table, and what changed when
+  the palette was corrected to pass WCAG AA.
+- `docs/architecture.md` - how the site is put together, where to change what,
+  and the known weaknesses worth fixing next.
+
+`node scripts/check-design.mjs --report` prints the full contrast table.
 
 The same gate runs in CI (`.github/workflows/ci.yml`) on every push and pull
 request. Lint rules that are deliberately switched off are listed in
