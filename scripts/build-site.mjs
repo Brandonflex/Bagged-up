@@ -26,7 +26,7 @@ const DEV_ONLY = [
   'package.json', 'package-lock.json', 'README.md', 'scripts', 'node_modules',
   'dist', '.github', '.gitignore', '.gitattributes', 'eslint.config.mjs',
   'jsconfig.json', '.htmlvalidate.json', '.wrangler', 'wrangler.jsonc',
-  'design', 'docs',.
+  'design', 'docs',
 ];
 
 function fail(msg) {
