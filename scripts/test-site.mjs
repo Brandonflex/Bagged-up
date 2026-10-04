@@ -38,6 +38,15 @@ function check(name, fn) {
 }
 
 const rel = (p) => path.relative(ROOT, p).split(path.sep).join('/');
+/* every text file under a directory, relative to the repo root */
+function walk(dir) {
+  const abs = path.join(ROOT, dir);
+  if (!fs.existsSync(abs)) return [];
+  return fs.readdirSync(abs, { withFileTypes: true }).flatMap((e) => {
+    const child = path.join(dir, e.name);
+    return e.isDirectory() ? walk(child) : [child];
+  }).filter((f) => /\.(?:md|mjs|js|json|jsonc|css|html|svg|txt|yml|xml)$/.test(f));
+}
 const read = (p) => fs.readFileSync(path.join(ROOT, p), 'utf8');
 const exists = (p) => fs.existsSync(path.join(ROOT, p));
 
@@ -316,6 +325,7 @@ check('no em dashes in shipped copy', () => {
     ...fs.readdirSync(path.join(ROOT, 'scripts')).filter((f) => f.endsWith('.mjs')).map((f) => `scripts/${f}`),
     'assets/css/style.css', 'README.md', 'wrangler.jsonc', 'robots.txt', 'sitemap.xml',
     'package.json', 'eslint.config.mjs', '.github/workflows/ci.yml',
+    ...walk('docs'), ...walk('design'),
   ];
   const bad = [];
   for (const file of scan) {
