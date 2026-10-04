@@ -5,7 +5,7 @@
   "description": "Bagged Up storefront \u2014 static site (plain HTML/CSS/JS), no framework.",
   "scripts": {
     "verify": "npm run lint && npm run typecheck && npm run design && npm test && npm run build",
-    "test": "node scripts/test-site.mjs",
+    "test": "node scripts/test-site.mjs && node scripts/test-app.mjs",
     "lint": "npm run lint:html && npm run lint:js",
     "lint:html": "html-validate \"*.html\" \"shop/*.html\"",
     "lint:js": "eslint assets/js",
@@ -18,6 +18,7 @@
     "eslint": "^9.39.5",
     "globals": "^15.15.0",
     "html-validate": "^9.7.1",
+    "jsdom": "^30.1.1",
     "typescript": "^5.9.3"
   },
   "engines": {

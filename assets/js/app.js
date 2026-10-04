@@ -12,6 +12,8 @@
   var WA_NUMBER = '254113599345';
   var CART_KEY = 'bagged-up-cart-v1';
   var DELIVERY_KEY = 'bagged-up-delivery-v1';
+  var SAVED_KEY = 'bagged-up-saved-v1';
+  var RECENT_KEY = 'bagged-up-recent-v1';
 
   /* Storage can throw in sandboxed/opaque-origin frames - never let it break
      the storefront; degrade gracefully to in-memory */
@@ -37,6 +39,62 @@
   }
   function waLink(text) {
     return 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(text);
+  }
+  function slugFromHref(href) {
+    var m = String(href || '').match(/([a-z0-9-]+)\.html(?:[?#]|$)/);
+    return m ? m[1] : '';
+  }
+  function readList(key) {
+    try {
+      var v = JSON.parse(storeGet(key) || '[]');
+      return Object.prototype.toString.call(v) === '[object Array]' ? v : [];
+    } catch { return []; }
+  }
+  function writeList(key, list) { storeSet(key, JSON.stringify(list)); }
+  function isSaved(slug) { return readList(SAVED_KEY).indexOf(slug) !== -1; }
+  function toggleSaved(slug) {
+    var list = readList(SAVED_KEY);
+    var i = list.indexOf(slug);
+    if (i === -1) list.unshift(slug); else list.splice(i, 1);
+    writeList(SAVED_KEY, list);
+    return i === -1;
+  }
+  /* ---------- delivery dates (Amazon and Jumia pattern) ---------- */
+  function shortDate(d) {
+    var wd = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    var mo = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return wd[d.getDay()] + ' ' + d.getDate() + ' ' + mo[d.getMonth()];
+  }
+  function businessDaysFrom(from, n) {
+    var d = new Date(from.getTime());
+    var added = 0;
+    while (added < n) {
+      d.setDate(d.getDate() + 1);
+      if (d.getDay() !== 0 && d.getDay() !== 6) added++;
+    }
+    return d;
+  }
+  /* Nairobi is same day when the order lands before the 3pm rider cut-off,
+     otherwise the next business day. Countrywide is a two to four day window. */
+  function deliveryEta() {
+    var now = new Date();
+    var beforeCutoff = now.getHours() < 15;
+    return {
+      cutoff: beforeCutoff,
+      nairobi: beforeCutoff ? 'today' : shortDate(businessDaysFrom(now, 1)),
+      country: shortDate(businessDaysFrom(now, 2)) + ' to ' + shortDate(businessDaysFrom(now, 4))
+    };
+  }
+  function deliveryEtaLine() {
+    var e = deliveryEta();
+    return (e.cutoff ? 'Order before 3pm: Nairobi delivery today. ' : 'Order now: Nairobi delivery ' + e.nairobi + '. ') +
+      'Countrywide ' + e.country + '.';
+  }
+
+  function escHtml(v) {
+    return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
   }
   function productBySlug(slug) {
     for (var i = 0; i < PRODUCTS.length; i++) if (PRODUCTS[i].slug === slug) return PRODUCTS[i];
@@ -165,12 +223,38 @@
     var sortSel = $('#sort-select');
     var note = $('#result-note');
 
+    /* The saved filter is built here rather than in the markup, so every shop
+       page keeps one source of truth for the chips. */
+    if (chips.length) {
+      var savedChip = document.createElement('button');
+      savedChip.type = 'button';
+      savedChip.className = 'chip chip-saved';
+      savedChip.setAttribute('data-cat', '__saved');
+      savedChip.innerHTML = 'Saved <span class="chip-count"></span>';
+      chips[0].parentNode.appendChild(savedChip);
+      chips = $all('.chip[data-cat]');
+      var countEl = savedChip.querySelector('.chip-count');
+      var paintCount = function () {
+        var n = readList(SAVED_KEY).length;
+        countEl.textContent = n ? String(n) : '';
+      };
+      paintCount();
+      document.addEventListener('bagged:saved', paintCount);
+    }
+
     function applyShop() {
       var cat = (chips.filter(function (c) { return c.classList.contains('active'); })[0] || {}).getAttribute('data-cat') || 'all';
       var cards = $all('.card', shopGrid);
+      var saved = readList(SAVED_KEY);
       var visible = 0;
       cards.forEach(function (card) {
-        var show = cat === 'all' || card.getAttribute('data-cat') === cat;
+        var show;
+        if (cat === '__saved') {
+          var link = card.querySelector('a[href]');
+          show = saved.indexOf(slugFromHref(link && link.getAttribute('href'))) !== -1;
+        } else {
+          show = cat === 'all' || card.getAttribute('data-cat') === cat;
+        }
         card.classList.toggle('hidden', !show);
         if (show) visible++;
       });
@@ -188,8 +272,13 @@
         });
         sorted.forEach(function (c) { shopGrid.appendChild(c); });
       }
-      if (note) note.textContent = visible + ' piece' + (visible === 1 ? '' : 's') + (cat === 'all' ? '' : ' in this edit');
+      if (note) {
+        note.textContent = cat === '__saved'
+          ? (visible ? visible + ' saved piece' + (visible === 1 ? '' : 's') : 'Nothing saved yet')
+          : visible + ' piece' + (visible === 1 ? '' : 's') + (cat === 'all' ? '' : ' in this edit');
+      }
     }
+    document.addEventListener('bagged:saved', function () { applyShop(); });
     chips.forEach(function (chip) {
       chip.addEventListener('click', function () {
         chips.forEach(function (c) { c.classList.remove('active'); });
@@ -260,6 +349,21 @@
       return opt.fee;
     }
 
+    function freeDeliveryBar(subtotal) {
+      if (subtotal >= FREE_DELIVERY_OVER) {
+        return '<div class="free-bar done" role="status">' +
+          '<div class="fb-txt"><b>Free delivery unlocked.</b> This order ships on us.</div>' +
+          '<div class="fb-track"><span style="width:100%"></span></div>' +
+        '</div>';
+      }
+      var left = FREE_DELIVERY_OVER - subtotal;
+      var pct = Math.max(4, Math.round((subtotal / FREE_DELIVERY_OVER) * 100));
+      return '<div class="free-bar" role="status">' +
+        '<div class="fb-txt">' + money(left) + ' more and delivery is free.</div>' +
+        '<div class="fb-track"><span style="width:' + pct + '%"></span></div>' +
+      '</div>';
+    }
+
     function renderCart() {
       var cart = readCart();
       var slugs = Object.keys(cart);
@@ -318,13 +422,12 @@
         '<h2>Order Summary</h2>' +
         '<div class="row"><span class="muted">Subtotal</span><span>' + money(subtotal) + '</span></div>' +
         '<div class="delivery-pick" role="radiogroup" aria-label="Delivery option">' + optsHtml + '</div>' +
+        '<p class="eta">' + esc(deliveryEtaLine()) + '</p>' +
         '<div class="row"><span class="muted">Delivery' + (fee === 0 ? ' (on us)' : '') + '</span>' +
           '<span>' + (fee === 0
             ? '<span class="free-tag">Free</span>&nbsp;<span class="strike">' + money(opt.fee) + '</span>'
             : money(fee)) + '</span></div>' +
-        (subtotal < FREE_DELIVERY_OVER
-          ? '<div class="row" style="font-size:.8rem"><span class="muted">Free delivery from ' + money(FREE_DELIVERY_OVER) + '</span><span></span></div>'
-          : '') +
+        freeDeliveryBar(subtotal) +
         '<div class="row total"><span>Total</span><span class="amt">' + money(total) + '</span></div>' +
         '<p style="margin-top:1.2rem"><a class="btn btn-green btn-block" id="wa-checkout" href="#">' +
           'Checkout via WhatsApp' +
@@ -638,6 +741,128 @@
       tx = null;
     }, { passive: true });
   }
+
+  /* ---------- sticky add to bag on product pages (Amazon pattern) ---------- */
+  var pdpInfo = $('.pdp-info');
+  if (pdpInfo) {
+    var pdpAdd = pdpInfo.querySelector('[data-add]');
+    var pdpSlug = pdpAdd && pdpAdd.getAttribute('data-add');
+    var pdpNameEl = pdpInfo.querySelector('h1');
+    var pdpName = pdpNameEl ? pdpNameEl.textContent.trim() : '';
+    var pdpPriceEl = pdpInfo.querySelector('.pdp-price .amount');
+    var pdpPrice = pdpPriceEl ? pdpPriceEl.textContent.trim() : '';
+    var pdpImgEl = $('#pdp-main-img');
+    var pdpImg = pdpImgEl ? pdpImgEl.getAttribute('src') : '';
+
+    if (pdpAdd && pdpSlug) {
+      var bar = document.createElement('div');
+      bar.className = 'sticky-atc';
+      bar.id = 'sticky-atc';
+      bar.hidden = true;
+      bar.innerHTML =
+        '<img src="' + pdpImg + '" alt="" width="48" height="48" loading="lazy">' +
+        '<div class="sa-txt">' +
+          '<span class="sa-name">' + escHtml(pdpName) + '</span>' +
+          '<span class="sa-price">' + escHtml(pdpPrice) + ' · ' + escHtml(deliveryEta().country) + '</span>' +
+        '</div>' +
+        '<button class="btn btn-solid" type="button" data-add="' + pdpSlug + '">Add to bag</button>';
+      document.body.appendChild(bar);
+
+      var showBar = function (on) {
+        bar.hidden = !on;
+        document.body.classList.toggle('has-sticky', on);
+      };
+      if (typeof IntersectionObserver === 'function') {
+        new IntersectionObserver(function (entries) {
+          entries.forEach(function (en) {
+            showBar(!en.isIntersecting && en.boundingClientRect.top < 0);
+          });
+        }, { threshold: 0 }).observe(pdpAdd);
+      } else {
+        window.addEventListener('scroll', function () {
+          showBar(pdpAdd.getBoundingClientRect().bottom < 0);
+        }, { passive: true });
+      }
+    }
+
+    /* product page delivery date, right under the button */
+    var etaLine = document.createElement('p');
+    etaLine.className = 'eta eta-pdp';
+    etaLine.textContent = deliveryEtaLine();
+    pdpAdd.parentNode.insertBefore(etaLine, pdpAdd.nextSibling);
+
+    /* save this bag, next to the button (Etsy and Vinted pattern) */
+    var saveBtn = document.createElement('button');
+    saveBtn.type = 'button';
+    saveBtn.className = 'btn btn-ghost saved-inline';
+    saveBtn.setAttribute('data-save', pdpSlug);
+    pdpAdd.parentNode.insertBefore(saveBtn, pdpAdd.nextSibling.nextSibling);
+
+    /* remember what was viewed, and show the trail (Amazon pattern) */
+    var watched = readList(RECENT_KEY).filter(function (r) { return r && r.slug && r.slug !== pdpSlug; });
+    writeList(RECENT_KEY, [{ slug: pdpSlug, name: pdpName, price: pdpPrice, img: pdpImg }]
+      .concat(watched).slice(0, 8));
+
+    if (watched.length) {
+      var anchor = document.querySelector('section[aria-label="You may also like"]') || document.querySelector('.pdp-info');
+      var rail = document.createElement('section');
+      rail.className = 'section';
+      rail.setAttribute('aria-label', 'Recently viewed');
+      rail.innerHTML =
+        '<div class="container">' +
+          '<div class="section-head"><div><span class="overline">Pick up where you left off</span>' +
+          '<h2>Recently viewed</h2></div></div>' +
+          '<div class="rail">' + watched.slice(0, 4).map(function (r) {
+            return '<a class="rail-card" href="' + ROOT + 'shop/' + r.slug + '.html">' +
+              '<img src="' + ROOT + (r.img || '').replace(/^\.\.\//, '') + '" alt="' + escHtml(r.name) + '" loading="lazy" width="160" height="160">' +
+              '<span class="rail-name">' + escHtml(r.name) + '</span>' +
+              '<span class="rail-price">' + escHtml(r.price) + '</span>' +
+            '</a>';
+          }).join('') + '</div>' +
+        '</div>';
+      if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(rail, anchor.nextSibling);
+    }
+  }
+
+  /* ---------- saved items (Etsy and Vinted pattern) ---------- */
+  function paintSaveButton(btn, on) {
+    var name = btn.getAttribute('data-save-name') || 'this bag';
+    btn.classList.toggle('on', on);
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    if (btn.classList.contains('saved-inline')) {
+      btn.textContent = on ? 'Saved' : 'Save for later';
+    } else {
+      btn.setAttribute('aria-label', (on ? 'Remove from saved: ' : 'Save for later: ') + name);
+    }
+  }
+  $all('.card').forEach(function (card) {
+    var link = card.querySelector('a[href]');
+    var slug = slugFromHref(link && link.getAttribute('href'));
+    var product = slug && productBySlug(slug);
+    if (!product) return;
+    var heart = document.createElement('button');
+    heart.type = 'button';
+    heart.className = 'saved-btn';
+    heart.setAttribute('data-save', slug);
+    heart.setAttribute('data-save-name', product.name);
+    paintSaveButton(heart, isSaved(slug));
+    var media = card.querySelector('.card-media') || card;
+    media.appendChild(heart);
+  });
+  $all('.saved-inline').forEach(function (btn) { paintSaveButton(btn, isSaved(btn.getAttribute('data-save'))); });
+
+  document.addEventListener('click', function (e) {
+    var btn = /** @type {Element} */ (e.target).closest('[data-save]');
+    if (!btn) return;
+    e.preventDefault();
+    e.stopPropagation();
+    var slug = btn.getAttribute('data-save');
+    var product = productBySlug(slug);
+    var nowSaved = toggleSaved(slug);
+    $all('[data-save="' + slug + '"]').forEach(function (b) { paintSaveButton(b, nowSaved); });
+    if (product) toast(nowSaved ? 'Saved ' + product.name : 'Removed ' + product.name);
+    document.dispatchEvent(new CustomEvent('bagged:saved'));
+  });
 
   /* ---------- init ---------- */
   updateBadge();
