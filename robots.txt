@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
+Disallow: /cart
 Disallow: /cart.html
 
 Sitemap: https://bagged-up.vercel.app/sitemap.xml

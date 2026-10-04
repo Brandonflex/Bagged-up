@@ -1,0 +1,25 @@
+{
+  "name": "bagged-up",
+  "version": "3.0.0",
+  "private": true,
+  "description": "Bagged Up storefront \u2014 static site (plain HTML/CSS/JS), no framework.",
+  "scripts": {
+    "verify": "npm run lint && npm run typecheck && npm test && npm run build",
+    "test": "node scripts/test-site.mjs",
+    "lint": "npm run lint:html && npm run lint:js",
+    "lint:html": "html-validate \"*.html\" \"shop/*.html\"",
+    "lint:js": "eslint assets/js",
+    "typecheck": "tsc -p jsconfig.json",
+    "build": "node scripts/build-site.mjs"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "eslint": "^9.39.5",
+    "globals": "^15.15.0",
+    "html-validate": "^9.7.1",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

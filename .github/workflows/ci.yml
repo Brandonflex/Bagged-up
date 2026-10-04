@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gate:
+    name: gate (lint · types · tests · build)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: lint (HTML + JS)
+        run: npm run lint
+
+      - name: typecheck (JS via JSDoc)
+        run: npm run typecheck
+
+      - name: tests (storefront integrity suite)
+        run: npm test
+
+      - name: build (static export check)
+        run: npm run build
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: site-export-${{ github.sha }}
+          path: dist
+          retention-days: 7

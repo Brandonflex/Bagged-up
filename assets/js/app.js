@@ -17,10 +17,10 @@
      the storefront; degrade gracefully to in-memory */
   var mem = {};
   function storeGet(k) {
-    try { return window.localStorage.getItem(k); } catch (e) { return (k in mem) ? mem[k] : null; }
+    try { return window.localStorage.getItem(k); } catch { return (k in mem) ? mem[k] : null; }
   }
   function storeSet(k, v) {
-    try { window.localStorage.setItem(k, v); } catch (e) { mem[k] = v; }
+    try { window.localStorage.setItem(k, v); } catch { mem[k] = v; }
   }
 
   var DELIVERY_OPTIONS = [
@@ -53,7 +53,7 @@
         if (q > 0 && productBySlug(k)) out[k] = Math.min(q, 99);
       });
       return out;
-    } catch (e) { return {}; }
+    } catch { return {}; }
   }
   function writeCart(cart) {
     storeSet(CART_KEY, JSON.stringify(cart));
@@ -152,7 +152,7 @@
 
   /* ---------- add-to-cart bindings ---------- */
   document.addEventListener('click', function (e) {
-    var btn = e.target.closest('[data-add]');
+    var btn = /** @type {Element} */ (e.target).closest('[data-add]');
     if (!btn) return;
     e.preventDefault();
     addToCart(btn.getAttribute('data-add'), 1);
@@ -380,7 +380,7 @@
     }
 
     cartLines.addEventListener('click', function (e) {
-      var line = e.target.closest('.cart-line');
+      var line = /** @type {Element} */ (e.target).closest('.cart-line');
       if (!line) return;
       var slug = line.getAttribute('data-slug');
       if (e.target.closest('[data-inc]')) {
@@ -405,7 +405,7 @@
 
   /* ---------- copy order details (clipboard with fallback) ---------- */
   document.addEventListener('click', function (e) {
-    var btn = e.target.closest('[data-copy-order]');
+    var btn = /** @type {Element} */ (e.target).closest('[data-copy-order]');
     if (!btn) return;
     var pre = $('#wa-msg-preview');
     var text = pre ? pre.textContent : '';
@@ -423,7 +423,7 @@
         var ok = document.execCommand('copy');
         document.body.removeChild(ta);
         return ok;
-      } catch (err) { return false; }
+      } catch { return false; }
     }
     /* sync path first — the async clipboard API can stay pending forever
        in embedded/sandboxed frames, so never depend on it for feedback */
@@ -494,14 +494,14 @@
         window.addEventListener('scroll', onScroll, { passive: true });
         onScroll();
       }, 900);
-    } catch (e) { revealAll(); }
+    } catch { revealAll(); }
   }
 
   /* ---------- card second image on first hover ---------- */
   var canHover = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   if (canHover) {
     document.addEventListener('pointerover', function (e) {
-      var media = e.target.closest('.card-media[data-alt-src]');
+      var media = /** @type {Element} */ (e.target).closest('.card-media[data-alt-src]');
       if (!media || media.getAttribute('data-loaded')) return;
       media.setAttribute('data-loaded', '1');
       var img = document.createElement('img');
@@ -514,13 +514,14 @@
   }
 
   /* ---------- PDP 3D tilt (fine pointers only; ambient breathe on touch via CSS) ---------- */
-  var tiltStage = document.querySelector('.pdp-gallery .tilt');
+  var tiltStage = /** @type {HTMLElement|null} */ (document.querySelector('.pdp-gallery .tilt'));
   if (tiltStage && canHover && !reduced) {
-    var tImg = tiltStage.querySelector('img');
+    var tImg = /** @type {HTMLImageElement} */ (tiltStage.querySelector('img'));
     tiltStage.addEventListener('pointermove', function (e) {
+      var pe = /** @type {PointerEvent} */ (e);
       var r = tiltStage.getBoundingClientRect();
-      var x = (e.clientX - r.left) / r.width - 0.5;
-      var y = (e.clientY - r.top) / r.height - 0.5;
+      var x = (pe.clientX - r.left) / r.width - 0.5;
+      var y = (pe.clientY - r.top) / r.height - 0.5;
       tImg.style.transform = 'perspective(1100px) rotateX(' + (-y * 6).toFixed(2) + 'deg) rotateY(' +
         (x * 8).toFixed(2) + 'deg) scale(1.02)';
       tiltStage.style.setProperty('--shx', (x * 100 + 50).toFixed(1) + '%');
@@ -541,7 +542,7 @@
   var themeBtn = $('#theme-btn');
   function savedTheme() {
     var t = null;
-    try { t = storeGet(THEME_KEY); } catch (e) {}
+    try { t = storeGet(THEME_KEY); } catch { /* storage blocked — follow the OS */ }
     return (t === 'light' || t === 'dark') ? t : null;
   }
   function applyThemeLabel() {
@@ -610,10 +611,8 @@
       if (lbLastFocus) lbLastFocus.focus();
     }
     var zoom = $('#pdp-zoom');
+    /* #pdp-zoom is a native <button>, so Enter/Space already fire click */
     zoom && zoom.addEventListener('click', function () { lbOpen(0); });
-    zoom && zoom.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); lbOpen(0); }
-    });
     $all('.thumbs button').forEach(function (btn, i) {
       btn.addEventListener('dblclick', function () { lbOpen(i); });
     });

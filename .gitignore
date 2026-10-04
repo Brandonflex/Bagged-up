@@ -1,0 +1,9 @@
+# tooling
+node_modules/
+
+# build output (scripts/build-site.mjs)
+dist/
+
+# OS / editor noise
+.DS_Store
+*.log
