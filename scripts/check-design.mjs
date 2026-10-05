@@ -198,6 +198,84 @@ startCount = failures.length;
   group('every var() reference resolves', `${declared.size} tokens declared, ${inline.size} set in markup/JS`);
 }
 
+/* ---------- 6. raw colours outside the token blocks are deliberate ---------- */
+startCount = failures.length;
+{
+  // a raw colour that is not a token cannot flip with the theme, so every one
+  // of them has to be on this list with a reason. Anything that is not is
+  // either a bug (it will drift in the other theme) or a token that was
+  // never declared.
+  const allow = {
+    '#F5F1E9': 'ivory text on the always-dark surfaces: hero, footer, .on-dark, flags, lightbox',
+    '#C9B99A': 'tan icons on the always-dark surfaces (hero strip, footer, lightbox)',
+    '#FAF7F1': 'hero headline, which sits on --bg-dark in both themes',
+    '#E9DDC8': 'hero accent word, on --bg-dark in both themes',
+    '#F7F3EB': 'hero caption, on --bg-dark in both themes',
+    '#EFE9DE': 'footer text, footer is --bg-dark in both themes',
+    '#fff': 'footer link hover, footer is always dark',
+    '#F4F6F0': 'text on the green pill; the green token carries a dark override that keeps the contrast',
+    'rgba(250,247,241,0.55)': '.overline.light, used on always-dark surfaces',
+    'rgba(250,247,241,0.72)': '.on-dark .overline, used on always-dark surfaces',
+    'rgba(250,247,241,0.85)': '.btn-light border, only used on always-dark surfaces',
+    'rgba(250,247,241,0.7)': '.text-link.light, only used on always-dark surfaces',
+    'rgba(250,247,241,0.78)': 'hero subline, on --bg-dark in both themes',
+    'rgba(250,247,241,0.8)': 'hero strip, on --bg-dark in both themes',
+    'rgba(250,247,241,0.6)': '.review-by on the homepage, which sits in an always-dark section',
+    'rgba(245,241,233,0.62)': 'footer, always dark',
+    'rgba(245,241,233,0.78)': 'footer links and contact lines, always dark',
+    'rgba(245,241,233,0.5)': 'footer fine print, always dark',
+    'rgba(24,18,13,0.9)': 'hero scrim over the photo',
+    'rgba(24,18,13,0.62)': 'hero scrim over the photo',
+    'rgba(24,18,13,0.08)': 'hero scrim over the photo',
+    'rgba(24,18,13,0.42)': 'hero scrim over the photo',
+    'rgba(24,18,13,0.55)': 'hero and montage scrim over the photo',
+    'rgba(24,18,13,0.66)': 'hero caption scrim over the photo',
+    'rgba(24,18,13,0)': 'scrim gradient stop over the photo',
+    'rgba(33,27,21,0.4)': 'shadow under the open nav panel',
+    'rgba(33,27,21,0.75)': 'sold out flag, dark in both themes',
+    'rgba(46,58,38,0.55)': 'shadow of the WhatsApp button',
+    'rgba(255,252,244,0.16)': 'the tilt highlight over a card photo',
+    'rgba(16,12,9,0.96)': 'lightbox backdrop, always dark',
+    'rgba(250,247,241,0.3)': 'lightbox nav border over the dark backdrop',
+    'rgba(250,247,241,0.12)': 'lightbox nav hover over the dark backdrop',
+    'rgba(0,0,0,0.5)': 'text shadow over photos',
+  };
+  const norm = (v) => v.replace(/\s+/g, '');
+  const tokenBlocks = [':root {', ':root:not([data-theme="light"]) {', ':root[data-theme="dark"] {']
+    .map((marker) => {
+      const start = css.indexOf(marker);
+      const open = css.indexOf('{', start);
+      let depth = 0;
+      for (let i = open; i < css.length; i++) {
+        if (css[i] === '{') depth++;
+        else if (css[i] === '}') { depth--; if (depth === 0) return [open + 1, i]; }
+      }
+      throw new Error(`unbalanced braces after ${marker}`);
+    });
+  const inTokenBlock = (pos) => tokenBlocks.some(([a, b]) => pos >= a && pos < b);
+
+  const found = new Map();
+  const lines = css.split('\n');
+  let offset = 0;
+  for (let n = 0; n < lines.length; n++) {
+    const line = lines[n];
+    for (const m of line.matchAll(/(#[0-9A-Fa-f]{3,6}\b|rgba?\([^)]*\))/g)) {
+      if (!inTokenBlock(offset + m.index)) {
+        const v = norm(m[1]);
+        const at = found.get(v) || [];
+        at.push(n + 1);
+        found.set(v, at);
+      }
+    }
+    offset += line.length + 1;
+  }
+  const unlisted = [...found.entries()].filter(([v]) => !(v in allow));
+  const stale = Object.keys(allow).filter((v) => !found.has(v));
+  if (unlisted.length) fail(`raw colour outside the token blocks with no entry in the allow list: ${unlisted.map(([v, ls]) => `${v} (line ${ls[0]})`).join('; ')}`);
+  if (stale.length) fail(`allow list entries that no longer match anything in the stylesheet: ${stale.join(', ')}`);
+  group('raw colours outside tokens are deliberate', `${found.size} raw colours, all accounted for`);
+}
+
 /* ---------- report ---------- */
 console.log('\nBagged Up - design system check\n');
 for (const c of checks) console.log(`  ${c.ok ? 'PASS' : 'FAIL'}  ${c.name.padEnd(42)} ${c.detail}`);
