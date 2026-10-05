@@ -84,6 +84,44 @@ produces and checks the deployable `dist/` folder.
   pages or scripts renders a player yet, so dropping an mp4 in today does not
   produce one. Treat video as unbuilt until a player is wired up.
 
+## Handing the site to a non-technical owner
+
+The site has no build step on the host and no database, so it hands over as a
+single folder. `handover/` holds the pack, rebuilt with one command:
+
+```bash
+npm run handover
+```
+
+| File | What it is |
+| --- | --- |
+| `handover/Bagged-Up-website.zip` | the site, `index.html` at the zip root - the only file the new owner uploads |
+| `handover/Bagged-Up-price-list.csv` | all 50 products with prices, opens in Excel |
+| `handover/START-HERE.html` | plain-English guide, double-click to open, no install |
+
+The recommended home for a no-Git owner is a drag-and-drop host - **Netlify
+Drop** (`app.netlify.com/drop`) or **Cloudflare Pages → Upload assets**. Both
+take the zip directly. Tell them to avoid the "Connect to Git" / "Import from
+GitHub" options on either host: those are the paths that need a developer.
+
+Vercel is a poor fit for this handover: the project is wired to this GitHub
+repo, and with Git disconnected it only deploys from the CLI.
+
+Two things the new owner must not hand-edit:
+
+- **The WhatsApp number.** It appears ~830 times across the pages, in both
+  `254XXXXXXXXX` (links) and `+254 XXX XXX XXX` (display text). Use the script:
+  ```bash
+  npm run set-contact -- 0712345678   # accepts 0712…, 254712…, or +254 712…
+  npm run verify && npm run handover
+  ```
+- **Prices.** One price lives in `assets/js/data.js`, in the card in
+  `shop.html`, and in about seven places in `shop/<slug>.html`. There is no
+  script for this yet, so route price changes back through the repo.
+
+Every deploy on Netlify is kept and can be rolled back with one click, so an
+upload can't permanently break anything.
+
 ## Changelog
 
 - v3 (current) - restraint pass: removed marquee/service-index/style tiles/

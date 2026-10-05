@@ -12,7 +12,9 @@
     "typecheck": "tsc -p jsconfig.json",
     "build": "node scripts/build-site.mjs",
     "design": "node scripts/check-design.mjs",
-    "layout": "node scripts/check-layout.mjs"
+    "layout": "node scripts/check-layout.mjs",
+    "set-contact": "node scripts/set-contact.mjs",
+    "handover": "node scripts/build-site.mjs && node scripts/make-handover.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",

@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bagged Up — Website Handover: Start Here</title>
+<style>
+  :root{
+    --ink:#1c1a17; --ink-soft:#5b554d; --ink-faint:#8a837a;
+    --paper:#fbfaf8; --card:#ffffff; --line:#e6e1d9;
+    --green:#1f6f4a; --green-bg:#eaf5ef;
+    --amber:#8a5a00; --amber-bg:#fdf3e0;
+    --red:#a33125; --red-bg:#fdeceb;
+    --blue:#1f4f8f; --blue-bg:#eaf1fa;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0; padding:0 20px 100px;
+    background:var(--paper); color:var(--ink);
+    font:17px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  }
+  .wrap{max-width:760px; margin:0 auto}
+  header{padding:56px 0 32px; border-bottom:1px solid var(--line); margin-bottom:8px}
+  .kicker{font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-faint); font-weight:600}
+  h1{font-size:38px; line-height:1.15; margin:14px 0 10px; letter-spacing:-.02em}
+  .sub{font-size:19px; color:var(--ink-soft); margin:0}
+  .stamp{display:inline-block; margin-top:18px; font-size:14px; color:var(--ink-soft);
+         background:var(--card); border:1px solid var(--line); border-radius:999px; padding:6px 14px}
+
+  h2{font-size:25px; margin:52px 0 6px; letter-spacing:-.01em; scroll-margin-top:20px}
+  h2 .num{display:inline-block; min-width:34px; height:34px; line-height:34px; text-align:center;
+          background:var(--ink); color:#fff; border-radius:8px; font-size:16px; margin-right:12px;
+          vertical-align:3px; font-weight:700}
+  .lede{color:var(--ink-soft); margin:0 0 20px; font-size:17px}
+  h3{font-size:18px; margin:30px 0 8px}
+  p{margin:0 0 14px}
+  a{color:var(--blue)}
+  strong{font-weight:650}
+
+  /* steps */
+  ol.steps{counter-reset:s; list-style:none; padding:0; margin:20px 0}
+  ol.steps>li{counter-increment:s; position:relative; padding:0 0 22px 52px; min-height:40px}
+  ol.steps>li:before{
+    content:counter(s); position:absolute; left:0; top:0;
+    width:34px; height:34px; border-radius:50%;
+    background:var(--ink); color:#fff; font-size:15px; font-weight:700;
+    display:flex; align-items:center; justify-content:center;
+  }
+  ol.steps>li:after{content:""; position:absolute; left:16.5px; top:40px; bottom:4px; width:1px; background:var(--line)}
+  ol.steps>li:last-child:after{display:none}
+  ol.steps>li:last-child{padding-bottom:0}
+
+  /* callouts */
+  .note{border-radius:12px; padding:16px 20px; margin:22px 0; border:1px solid}
+  .note p:last-child{margin-bottom:0}
+  .note .tag{display:block; font-size:12px; letter-spacing:.1em; text-transform:uppercase; font-weight:700; margin-bottom:6px}
+  .green{background:var(--green-bg); border-color:#c6e4d4; color:#164d33}
+  .green .tag{color:var(--green)}
+  .amber{background:var(--amber-bg); border-color:#f0dcb4; color:#6b4700}
+  .amber .tag{color:var(--amber)}
+  .red{background:var(--red-bg); border-color:#f2cdc9; color:#7d2519}
+  .red .tag{color:var(--red)}
+  .blue{background:var(--blue-bg); border-color:#c9dcf2; color:#173c6c}
+  .blue .tag{color:var(--blue)}
+
+  code{
+    font:0.9em ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    background:#f0ece5; padding:2px 7px; border-radius:5px; word-break:break-all;
+  }
+  .url{
+    display:block; font:16px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    background:#f0ece5; border:1px solid var(--line); border-radius:8px;
+    padding:10px 14px; margin:8px 0 4px; word-break:break-all;
+  }
+
+  table{width:100%; border-collapse:collapse; margin:18px 0; font-size:16px}
+  th,td{text-align:left; padding:11px 12px; border-bottom:1px solid var(--line); vertical-align:top}
+  th{font-size:13px; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-faint); font-weight:700}
+  tbody tr:last-child td{border-bottom:none}
+  td:first-child{white-space:nowrap; font-weight:600}
+
+  ul{padding-left:22px; margin:0 0 14px}
+  li{margin-bottom:7px}
+
+  .card{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:24px 26px; margin:22px 0}
+  .card h3{margin-top:0}
+
+  .facts{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:1px;
+         background:var(--line); border:1px solid var(--line); border-radius:12px; overflow:hidden; margin:22px 0}
+  .fact{background:var(--card); padding:16px 18px}
+  .fact .n{font-size:26px; font-weight:700; letter-spacing:-.02em; display:block}
+  .fact .l{font-size:13px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.06em}
+
+  .check{list-style:none; padding:0; margin:16px 0}
+  .check li{padding-left:32px; position:relative; margin-bottom:11px}
+  .check li:before{content:""; position:absolute; left:0; top:3px; width:18px; height:18px;
+                   border:2px solid var(--ink-faint); border-radius:4px}
+
+  footer{margin-top:64px; padding-top:26px; border-top:1px solid var(--line);
+         color:var(--ink-faint); font-size:14px}
+  @media print{
+    body{background:#fff; font-size:11pt}
+    .note,.card,.facts,.fact,.url,code{-webkit-print-color-adjust:exact; print-color-adjust:exact}
+    h2{page-break-after:avoid}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">Website handover</div>
+  <h1>Bagged Up — Start Here</h1>
+  <p class="sub">Everything you need to own and run the website, in plain English. No coding, no GitHub, nothing to install.</p>
+  <div class="stamp">Prepared 5 October 2026 &nbsp;·&nbsp; 50 products &nbsp;·&nbsp; Site version 3</div>
+</header>
+
+<!-- ============ 1 ============ -->
+<h2><span class="num">1</span>What's in this folder</h2>
+<p class="lede">Three files. That's the whole website.</p>
+
+<table>
+  <thead><tr><th>File</th><th>What it is</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>Bagged-Up-website.zip</td>
+      <td><strong>The website itself.</strong> This is the only file you ever upload. Don't unzip it to browse it — just upload it as-is.</td>
+    </tr>
+    <tr>
+      <td>START-HERE.html</td>
+      <td><strong>This page.</strong> Double-click to open it in your browser any time. Keep it forever.</td>
+    </tr>
+    <tr>
+      <td>Bagged-Up-price-list.csv</td>
+      <td>All 50 bags with their prices. Opens in Excel, Google Sheets or Numbers — handy for checking prices at a glance.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="note blue">
+  <span class="tag">Good to know</span>
+  <p>The website is a <em>static site</em> — a folder of finished pages and photos. There's no database, no login area, and nothing that can be "hacked" in the usual sense. It also means there's nothing to maintain or update behind the scenes. It just sits there and works.</p>
+</div>
+
+<!-- ============ 2 ============ -->
+<h2><span class="num">2</span>The 60-second version</h2>
+<p class="lede">If you only read one section, read this one.</p>
+
+<ol class="steps">
+  <li><strong>Go to</strong> <span class="url" style="display:inline;padding:3px 8px">app.netlify.com/drop</span></li>
+  <li><strong>Drag</strong> <code>Bagged-Up-website.zip</code> onto the big dashed box on that page. Let go.</li>
+  <li><strong>Wait</strong> about a minute. You'll get a live website at an address like <code>sparkly-cupcake-12345.netlify.app</code></li>
+  <li><strong>Sign up free</strong> with your email address when it asks, so the site is tied to you and doesn't disappear.</li>
+</ol>
+
+<div class="note green">
+  <span class="tag">That's it</span>
+  <p>You now own a working copy of the shop. No credit card, no GitHub account, no software to install. Netlify's free plan is more than enough for a shop this size.</p>
+</div>
+
+<!-- ============ 3 ============ -->
+<h2><span class="num">3</span>Getting it online, properly</h2>
+<p class="lede">The quick version above works, but here's the version where you keep it.</p>
+
+<h3>Option A — Netlify Drop (recommended, easiest)</h3>
+<ol class="steps">
+  <li>Open <span class="url" style="display:inline;padding:3px 8px">app.netlify.com/drop</span> in Chrome, Safari or Edge.</li>
+  <li>Drag the zip file onto the page.</li>
+  <li>When it finishes, click <strong>"Claim site"</strong> (or similar) and create a free account with your email.</li>
+  <li>Bookmark <span class="url" style="display:inline;padding:3px 8px">app.netlify.com</span> — that's your dashboard, where your site lives from now on.</li>
+</ol>
+
+<h3>Option B — Cloudflare Pages (if you'd rather stay on Cloudflare)</h3>
+<ol class="steps">
+  <li>Log in at <span class="url" style="display:inline;padding:3px 8px">dash.cloudflare.com</span></li>
+  <li>Go to <strong>Workers &amp; Pages</strong> → <strong>Create</strong> → <strong>Pages</strong> → <strong>Upload assets</strong>.</li>
+  <li>Give it a name (e.g. <code>bagged-up</code>) and drag in the zip file.</li>
+  <li>Click <strong>Deploy</strong>.</li>
+</ol>
+
+<div class="note amber">
+  <span class="tag">Heads up</span>
+  <p>Both options above upload a folder directly — that's the whole point. <strong>Do not</strong> choose the "Connect to Git" or "Import from GitHub" option on either site. That's the path that needs a developer, and it's the one thing that will make this confusing. You want the plain <em>upload / drag-and-drop</em> option every time.</p>
+</div>
+
+<h3>Picking a nicer address</h3>
+<p>Both hosts give you a free web address. On Netlify you can change it: <strong>Site configuration → Change site name</strong>. Something like <code>bagged-up.netlify.app</code> is fine and free.</p>
+
+<!-- ============ 4 ============ -->
+<h2><span class="num">4</span>Using your own domain name</h2>
+<p class="lede">If you have a domain like <code>baggedup.co.ke</code>, this is how it points at the new site.</p>
+
+<p>A <strong>domain name</strong> (the address) and <strong>hosting</strong> (where the files live) are two separate things you can buy from two different companies. You're moving the hosting; the domain stays where you bought it.</p>
+
+<p><strong>The short version:</strong> this is the one step worth a 10-minute phone call with whoever built the site. It involves logging into where you bought the domain and changing a setting called <em>nameservers</em> or <em>DNS records</em>. Get it slightly wrong and the site goes offline for a few hours — annoying, but not permanent and never destructive.</p>
+
+<div class="card">
+  <h3>What your developer needs from you</h3>
+  <p>Send them these three things and they can usually do it themselves in five minutes:</p>
+  <ul>
+    <li>Where you bought the domain (e.g. Kenya Web Experts, Truehost, Safaricom, Namecheap, GoDaddy)</li>
+    <li>The username and password for that account</li>
+    <li>The address of your new Netlify or Cloudflare site</li>
+  </ul>
+</div>
+
+<div class="note red">
+  <span class="tag">Do not let the domain expire</span>
+  <p>Domains are rented yearly, not bought once. If the renewal lapses, the website vanishes from the internet even though the files are fine. Put a reminder in your phone a month before it renews. This is the single most common way a small site "breaks".</p>
+</div>
+
+<!-- ============ 5 ============ -->
+<h2><span class="num">5</span>How the shop actually works</h2>
+<p class="lede">Worth knowing before your first order comes in.</p>
+
+<div class="facts">
+  <div class="fact"><span class="n">50</span><span class="l">Products</span></div>
+  <div class="fact"><span class="n">5</span><span class="l">Categories</span></div>
+  <div class="fact"><span class="n">KSh 949–3,500</span><span class="l">Price range</span></div>
+  <div class="fact"><span class="n">WhatsApp</span><span class="l">How orders arrive</span></div>
+</div>
+
+<p><strong>There is no card payment on the site.</strong> Customers browse, add bags to a cart, and when they check out the site hands them over to <strong>WhatsApp</strong> with a ready-written message. You then talk to them, agree on payment (M-Pesa, bank transfer, etc.) and arrange delivery. That's deliberate — it suits how people actually buy in Kenya, and it means no payment fees and no chargeback risk.</p>
+
+<div class="note amber">
+  <span class="tag">Orders land on WhatsApp — check it daily</span>
+  <p>Every "Ask about this bag" button, every cart checkout and every contact form sends the customer to <strong>WhatsApp number 254113599345</strong>. If that number isn't one you check constantly, orders will sit unread. If you're taking over with a <em>different</em> number, see the warning in section 6 — it's a job for your developer, not a find-and-replace.</p>
+</div>
+
+<h3>Delivery prices (currently built in)</h3>
+<table>
+  <thead><tr><th>Where</th><th>Cost</th><th>Timing</th></tr></thead>
+  <tbody>
+    <tr><td>Nairobi &amp; environs</td><td>KSh 250</td><td>Same day or next day, via rider</td></tr>
+    <tr><td>Rest of Kenya</td><td>KSh 400</td><td>1–3 days, via courier</td></tr>
+    <tr><td>Any order over KSh 5,000</td><td>Free</td><td>—</td></tr>
+  </tbody>
+</table>
+
+<!-- ============ 6 ============ -->
+<h2><span class="num">6</span>Making changes</h2>
+<p class="lede">What you can safely do yourself, and what to send back to your developer.</p>
+
+<div class="note green">
+  <span class="tag">✅ Safe to do yourself</span>
+  <p><strong>Upload a new version of the site.</strong> Your developer sends you a fresh <code>Bagged-Up-website.zip</code>. In your Netlify dashboard, go to <strong>Deploys</strong>, and simply drag the new zip onto the page. It replaces the old one in about a minute. You can do this as often as you like, and you can't break anything permanently — every deploy is kept in a list, and you can roll back to any earlier one with one click (<strong>Publish deploy</strong> on an older entry).</p>
+</div>
+
+<div class="note amber">
+  <span class="tag">⚠️ Send these to your developer</span>
+  <p>These are all doable, they just need someone with the right tools. A message like <em>"change the Pearl Accent bag from 1,199 to 1,350"</em> is a five-minute job and should cost you nothing if you're on good terms.</p>
+  <ul style="margin-top:10px;margin-bottom:0">
+    <li><strong>Change a price</strong> — say the bag name and the new price</li>
+    <li><strong>Mark something sold out</strong> — say the bag name</li>
+    <li><strong>Add a new bag</strong> — send the name, price, category, and the photos</li>
+    <li><strong>Change delivery fees</strong> — tell them the new amounts</li>
+    <li><strong>Edit the About / FAQ / Delivery pages</strong> — send the new wording</li>
+  </ul>
+  <p style="margin-top:12px"><strong>Why you shouldn't do these yourself:</strong> a single price appears in about <em>seven different places</em> per product — the shop page, the product page, the WhatsApp message, Google's preview text, and the "you may also like" cards on other bags. Change one and miss another and you get a shop showing two different prices for the same bag. It's not hard, it's just easy to get wrong by hand.</p>
+</div>
+
+<div class="note red">
+  <span class="tag">🚫 Never hand-edit these</span>
+  <p><strong>Do not open the website files in Notepad or TextEdit and change things yourself.</strong> Specifically:</p>
+  <ul style="margin-top:10px;margin-bottom:0">
+    <li><strong>Don't try to change the WhatsApp number by hand.</strong> It's baked into <strong>288 links</strong> across the site. Miss a few and some buttons silently message the old number. There's a script for this — ask your developer, it takes them two minutes.</li>
+    <li><strong>Don't rename or move any file</strong> inside the zip. The pages reference each other by exact path; one rename and a page 404s.</li>
+    <li><strong>Don't edit <code>assets/js/</code> or the <code>.css</code> files.</strong> That's the layout and behaviour of the whole site.</li>
+  </ul>
+</div>
+
+<!-- ============ 7 ============ -->
+<h2><span class="num">7</span>If something goes wrong</h2>
+
+<table>
+  <thead><tr><th>What you see</th><th>What it usually means</th></tr></thead>
+  <tbody>
+    <tr><td>Site shows "Page not found"</td><td>Wrong address, or the deploy is still processing. Wait two minutes and refresh.</td></tr>
+    <tr><td>Site loads but photos are missing</td><td>The zip wasn't uploaded complete. Re-upload it.</td></tr>
+    <tr><td>Looks broken after an upload</td><td>Go to <strong>Deploys</strong> in Netlify, find the previous one, click <strong>Publish deploy</strong>. You're back to the old version instantly.</td></tr>
+    <tr><td>Site is completely gone</td><td>Almost always the <strong>domain expired</strong>, not the site. Check the renewal email from where you bought the domain.</td></tr>
+    <tr><td>Netlify asks for money</td><td>You won't hit the free limits on a shop this size. If you get a bill, check nobody added a paid plan.</td></tr>
+  </tbody>
+</table>
+
+<div class="note green">
+  <span class="tag">You cannot lose the website</span>
+  <p>The zip in this folder <em>is</em> the website. Even if every account everywhere disappeared, you could drag this zip onto any host and be back online in an hour. Which leads to…</p>
+</div>
+
+<!-- ============ 8 ============ -->
+<h2><span class="num">8</span>Keeping it safe</h2>
+<p class="lede">Two minutes now saves a lot of pain later.</p>
+
+<ul class="check">
+  <li><strong>Copy this whole folder to Google Drive or Dropbox.</strong> Then it survives a lost or stolen laptop.</li>
+  <li><strong>Email yourself a copy of the zip.</strong> A second backup costs nothing.</li>
+  <li><strong>Save your Netlify/Cloudflare login in a password manager</strong> (or write it down somewhere safe). Losing this is the annoying one to recover.</li>
+  <li><strong>Put the domain renewal date in your phone calendar</strong> with a reminder a month early.</li>
+</ul>
+
+<!-- ============ 9 ============ -->
+<h2><span class="num">9</span>Handover checklist</h2>
+<p class="lede">Tick these off together so nobody's guessing later.</p>
+
+<ul class="check">
+  <li>Site is live at the new address and looks right</li>
+  <li>Old Vercel site is switched off (so Google doesn't see two copies of the same shop)</li>
+  <li>Domain points at the new site, if there is one</li>
+  <li>WhatsApp number on the site is one the new owner actually checks</li>
+  <li>New owner has the Netlify/Cloudflare login</li>
+  <li>New owner has this folder backed up in two places</li>
+  <li>New owner knows who to message for changes</li>
+</ul>
+
+<div class="card">
+  <h3>Who to contact for changes</h3>
+  <p style="margin-bottom:6px">Fill this in before you hand it over:</p>
+  <p style="color:var(--ink-faint); font-size:16px; margin:0">
+    Name: ______________________________<br>
+    Phone / WhatsApp: ______________________________<br>
+    Email: ______________________________<br>
+    Last updated: ______________________________
+  </p>
+</div>
+
+<div class="card" style="border-style:dashed; background:transparent">
+  <h3>👷 For the developer only — new owner, you can skip this</h3>
+  <p>Two commands cover every change the new owner is likely to ask for. Run them from the project
+  folder, then send over a fresh zip from <code>handover/</code>.</p>
+  <p style="margin-bottom:6px"><strong>Rebuild the whole handover pack</strong> (site + price list + re-dates this guide):</p>
+  <span class="url">npm run handover</span>
+  <p style="margin:14px 0 6px"><strong>Change the WhatsApp number</strong> everywhere — 400+ places across the
+  pre-rendered pages, in both <code>254XXXXXXXXX</code> and <code>+254 XXX XXX XXX</code> form:</p>
+  <span class="url">npm run set-contact -- 0712345678</span>
+  <p style="margin:14px 0 6px">Then sanity-check and rebuild:</p>
+  <span class="url">npm run verify && npm run handover</span>
+  <p style="margin:14px 0 0; color:var(--ink-soft); font-size:16px">
+  Price changes are the one thing with no script yet: a price appears in <code>assets/js/data.js</code>,
+  the card in <code>shop.html</code>, and roughly seven spots in <code>shop/&lt;slug&gt;.html</code>
+  (price tag, meta description, <code>og:description</code>, two WhatsApp links, and the
+  "you may also like" cards on other pages). Until that's scripted, treat price edits as a manual job.</p>
+</div>
+
+<footer>
+  <p><strong>Bagged Up</strong> — website handover pack, prepared 5 October 2026.<br>
+  The site is a plain static site: 61 pages, 50 products, about 14 MB. It has no moving parts, needs no updates, and will run unchanged for years.</p>
+  <p style="margin-bottom:0">If you ever lose this file, the technical documentation for the site lives with the developer.</p>
+</footer>
+
+</div>
+</body>
+</html>
