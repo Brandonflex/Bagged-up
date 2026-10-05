@@ -13,8 +13,8 @@ tooling, tests and docs by design.
 
 | Host | Config in this repo | What a push produces |
 | --- | --- | --- |
-| Cloudflare Workers Builds | `wrangler.jsonc` (static assets from `./dist`, `html_handling: drop-trailing-slash`) | production build on `main`; on other branches `wrangler versions upload`, which publishes a per-commit preview URL and is posted in the pull request as "Preview Deployments by commit" |
-| Vercel | `vercel.json` (`buildCommand: npm run build`, `outputDirectory: dist`, clean URLs) | a production deployment on `main` and a per-commit preview URL on other branches, commented on the pull request |
+| Cloudflare Workers Builds | `wrangler.jsonc` (static assets from `./dist`, `html_handling: drop-trailing-slash`) and `_headers` | production build on `main`; on other branches `wrangler versions upload`, which publishes a per-commit preview URL and is posted in the pull request as "Preview Deployments by commit" |
+| Vercel | `vercel.json` (`buildCommand: npm run build`, `outputDirectory: dist`, clean URLs and security headers) | a production deployment on `main` and a per-commit preview URL on other branches, commented on the pull request |
 
 Both hosts need the project to be created once in their dashboard and pointed
 at this repository; the build and output settings above are already in the
@@ -28,22 +28,45 @@ same thing: `/shop/<product-slug>` serves `shop/<product-slug>.html`, and the
 `robots.txt` all use the clean form, so keep them in step if the host changes:
 the integrity suite fails if they drift.
 
+Security headers are defined in both host formats (`vercel.json` and the
+Cloudflare Workers Static Assets `_headers` file) and checked for parity. They
+include a restrictive Content Security Policy (`script-src 'self'`, no inline
+scripts or event handlers), clickjacking/MIME/referrer protections, a one-year
+HSTS policy, and a restrictive Permissions Policy. `_headers` is copied into
+`dist/` by the build. Inline styles remain allowed because existing templates
+use style attributes; there are no third-party scripts or remotely hosted
+assets.
+
+The storefront has no server-side cart or payment authority. Local storage is
+client-controlled and is validated against the shipped catalogue; final order
+confirmation happens in WhatsApp. Do not use browser-supplied cart values as
+payment or inventory authority if a backend is added later.
+
 ## Quality gate
 
 Everything that ships is checked with one command:
 
 ```bash
-npm ci          # once - installs the lint/type tools (no runtime deps)
-npm run verify  # lint + typecheck + tests + build
+npm ci --ignore-scripts  # once - installs the locked tools without dependency lifecycle scripts
+npm run verify  # audit + lint + typecheck + design + tests + build
 ```
+
+The verification toolchain requires Node `^22.22.2`, `^24.15.0`, or `>=26.0.0`
+(as declared in `package.json`).
 
 | Step | Command | What it proves |
 | --- | --- | --- |
+| dependency audit | `npm audit --audit-level=low` | the locked dependency tree has no published advisories |
 | lint | `npm run lint` | HTML validity/accessibility (`html-validate`) and JS rules (`eslint`) |
 | types | `npm run typecheck` | the storefront JS type-checks under `tsc --checkJs` (JSDoc types) |
 | design | `npm run design` | `design/tokens.json` and the stylesheet agree in both directions, the two dark blocks stay identical, every contrast pair meets its WCAG minimum, every `var()` resolves, and the brand marks scale, avoid `<text>` and stay on palette |
-| tests | `npm test` | catalogue ↔ pages ↔ sitemap agree; every link and asset resolves; canonicals, `og:*` and `robots.txt` match the clean-URL host config |
-| build | `npm run build` | the published file set is self-contained in `dist/` and leaks no dev files |
+| tests | `npm test` | catalogue ↔ pages ↔ sitemap agree; stored cart/recent/review data is treated as untrusted; scripts, security headers and CI pins follow the security policy |
+| build | `npm run build` | the published file set is self-contained in `dist/`, includes Cloudflare response headers, rejects symlinks, and leaks no dev files |
+
+CI uses least-privilege read-only GitHub permissions, disables persisted checkout
+credentials, pins every action to a full commit SHA, and installs locked packages
+without lifecycle scripts. Dependabot checks npm packages and GitHub Actions
+weekly.
 
 ## Design and architecture
 

@@ -327,6 +327,76 @@ check('Vercel config builds and serves the same export', () => {
   return 'builds dist/ and serves it with clean URLs';
 });
 
+check('Vercel and Cloudflare apply the same security headers', () => {
+  const vercel = JSON.parse(read('vercel.json'));
+  if (!read('scripts/build-site.mjs').includes("'_headers'")) throw new Error('Cloudflare _headers file is not included in the static export');
+  const rule = (vercel.headers || []).find((entry) => entry.source === '/(.*)');
+  if (!rule) throw new Error('Vercel has no catch-all security-header rule');
+  const vercelHeaders = new Map((rule.headers || []).map((header) => [header.key.toLowerCase(), header.value]));
+  const cloudflareHeaders = new Map();
+  for (const line of read('_headers').split(/\r?\n/)) {
+    const match = line.match(/^\s{2}([^:\s]+):\s*(.+)$/);
+    if (match) cloudflareHeaders.set(match[1].toLowerCase(), match[2]);
+  }
+  const required = [
+    'content-security-policy', 'referrer-policy', 'x-content-type-options',
+    'x-frame-options', 'permissions-policy', 'strict-transport-security',
+    'cross-origin-opener-policy',
+  ];
+  for (const name of required) {
+    const a = vercelHeaders.get(name);
+    const b = cloudflareHeaders.get(name);
+    if (!a || !b || a !== b) throw new Error(`${name} differs or is missing (Vercel: ${a || 'missing'}, Cloudflare: ${b || 'missing'})`);
+  }
+  const csp = vercelHeaders.get('content-security-policy');
+  const directives = new Map(csp.split(';').map((part) => {
+    const [name, ...values] = part.trim().split(/\s+/);
+    return [name, values.join(' ')];
+  }));
+  const requiredDirectives = {
+    'default-src': "'self'", 'base-uri': "'self'", 'object-src': "'none'",
+    'script-src': "'self'", 'script-src-attr': "'none'",
+    'frame-ancestors': "'none'", 'form-action': "'self'",
+  };
+  for (const [name, value] of Object.entries(requiredDirectives)) {
+    if (directives.get(name) !== value) throw new Error(`CSP ${name} must be ${value}`);
+  }
+  if (!directives.has('upgrade-insecure-requests')) throw new Error('CSP must upgrade insecure requests');
+  return `${required.length} matching response headers; CSP blocks inline scripts, objects and framing`;
+});
+
+check('every page uses only external scripts under the strict CSP', () => {
+  const bad = [];
+  for (const page of PAGES) {
+    const html = read(page);
+    const depth = page.includes('/') ? '../' : '';
+    if (!html.includes(`<script src="${depth}assets/js/theme-init.js"></script>`)) bad.push(`${page}: theme initializer`);
+    for (const match of html.matchAll(/<script\b([^>]*)>/gi)) {
+      if (!/\bsrc\s*=/.test(match[1])) bad.push(`${page}: inline script`);
+    }
+    if (/\son[a-z][a-z0-9_-]*\s*=/i.test(html)) bad.push(`${page}: inline event handler`);
+    if (/(?:href|src)\s*=\s*["']?\s*javascript\s*:/i.test(html)) bad.push(`${page}: javascript URL`);
+  }
+  if (bad.length) throw new Error(bad.slice(0, 8).join('; '));
+  return `${PAGES.length} pages have no inline JavaScript, event handlers or javascript: URLs`;
+});
+
+check('new-tab links prevent access to the opener', () => {
+  const bad = [];
+  let checked = 0;
+  for (const page of PAGES) {
+    for (const match of read(page).matchAll(/<a\b[^>]*>/gi)) {
+      const tag = match[0];
+      if (!/\btarget="_blank"/i.test(tag)) continue;
+      checked++;
+      const rel = (tag.match(/\brel="([^"]*)"/i) || [])[1] || '';
+      if (!/(?:^|\s)noopener(?:\s|$)/i.test(rel)) bad.push(`${page}: ${tag.slice(0, 100)}`);
+    }
+  }
+  if (bad.length) throw new Error(bad.slice(0, 5).join('; '));
+  return `${checked} new-tab links use rel=noopener`;
+});
+
 check('Cloudflare Worker config matches the build output', () => {
   const cfg = JSON.parse(read('wrangler.jsonc').replace(/^\s*\/\/.*$/gm, ''));
   if (cfg.name !== 'bagged-up') throw new Error(`worker name is "${cfg.name}", expected "bagged-up"`);
@@ -439,6 +509,40 @@ check('CI workflow files parse as YAML with jobs', () => {
     return `${f} (${Object.keys(doc.jobs).length} job)`;
   });
   return summary.join(', ');
+});
+
+check('GitHub Actions are pinned to immutable commit SHAs', () => {
+  const refs = [...read('.github/workflows/ci.yml').matchAll(/^\s*- uses:\s*([^\s#]+)/gm)].map((match) => match[1]);
+  const mutable = refs.filter((ref) => !/^[^@]+@[0-9a-f]{40}$/i.test(ref));
+  if (!refs.length || mutable.length) throw new Error(`unpinned refs: ${mutable.join(', ') || 'no action refs found'}`);
+  return `${refs.length} actions pinned to full SHAs`;
+});
+
+check('CI runs with read-only permissions and skips install scripts', () => {
+  const cfg = yamlLoad(read('.github/workflows/ci.yml'));
+  if (!cfg.permissions || cfg.permissions.contents !== 'read' || Object.keys(cfg.permissions).length !== 1) {
+    throw new Error('workflow permissions are not restricted to contents: read');
+  }
+  const steps = cfg.jobs.gate.steps;
+  const checkout = steps.find((step) => String(step.uses || '').startsWith('actions/checkout@'));
+  if (!checkout || !checkout.with || checkout.with['persist-credentials'] !== false) {
+    throw new Error('checkout credentials are persisted');
+  }
+  if (!steps.some((step) => step.run === 'npm ci --ignore-scripts')) throw new Error('npm install lifecycle scripts are not disabled');
+  if (!steps.some((step) => /npm audit --audit-level=low/.test(step.run || ''))) throw new Error('dependency audit is missing');
+  return 'contents:read only, no persisted checkout token, locked install scripts disabled';
+});
+
+check('Dependabot checks npm and GitHub Actions updates weekly', () => {
+  const cfg = yamlLoad(read('.github/dependabot.yml'));
+  if (!cfg || cfg.version !== 2 || !Array.isArray(cfg.updates)) throw new Error('invalid Dependabot v2 config');
+  for (const ecosystem of ['npm', 'github-actions']) {
+    const update = cfg.updates.find((entry) => entry['package-ecosystem'] === ecosystem && entry.directory === '/');
+    if (!update || !update.schedule || update.schedule.interval !== 'weekly') {
+      throw new Error(`${ecosystem} updates are not scheduled weekly`);
+    }
+  }
+  return 'npm dependencies and action SHA pins have weekly update PRs';
 });
 
 const pad = (s, n) => (s + ' '.repeat(n)).slice(0, n);

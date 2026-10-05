@@ -4,15 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
-<script>
-document.documentElement.classList.add('js');
-/* resolve theme before first paint: stored override wins, else follow the OS */
-(function () {
-  var t = null;
-  try { t = localStorage.getItem('bagged-up-theme'); } catch (e) {}
-  if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
-})();
-</script>
+<script src="../assets/js/theme-init.js"></script>
 <title>Charm Shoulder Pouch | Bagged Up</title>
 <meta name="description" content="Charm Shoulder Pouch, KSh 1,399. A nostalgic nod to early-2000s maximalism, this pouch celebrates the playful &quot;more-is-more&quot; aesthetic of the e…">
 <link rel="canonical" href="https://bagged-up.vercel.app/shop/charm-shoulder-pouch">

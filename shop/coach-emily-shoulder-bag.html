@@ -4,15 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
-<script>
-document.documentElement.classList.add('js');
-/* resolve theme before first paint: stored override wins, else follow the OS */
-(function () {
-  var t = null;
-  try { t = localStorage.getItem('bagged-up-theme'); } catch (e) {}
-  if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
-})();
-</script>
+<script src="../assets/js/theme-init.js"></script>
 <title>Coach Emily Shoulder Bag | Bagged Up</title>
 <meta name="description" content="Coach Emily Shoulder Bag, KSh 1,199. Captures the essence of modern romance, sculpting an iconic monogram canvas into a fluid, graceful crescent si…">
 <link rel="canonical" href="https://bagged-up.vercel.app/shop/coach-emily-shoulder-bag">

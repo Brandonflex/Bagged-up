@@ -4,15 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
-<script>
-document.documentElement.classList.add('js');
-/* resolve theme before first paint: stored override wins, else follow the OS */
-(function () {
-  var t = null;
-  try { t = localStorage.getItem('bagged-up-theme'); } catch (e) {}
-  if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
-})();
-</script>
+<script src="assets/js/theme-init.js"></script>
 <title>Privacy Policy | Bagged Up</title>
 <meta name="description" content="How Bagged Up handles your data: cart stored on your device only, order details used to fulfil delivery, no ad trackers.">
 <link rel="canonical" href="https://bagged-up.vercel.app/privacy">
@@ -90,7 +82,7 @@ document.documentElement.classList.add('js');
 <div class="container section-tight">
   <div class="prose" style="max-width:820px">
     <h2>What we collect</h2>
-    <p>Bagged Up is an online storefront that checks out via WhatsApp. When you browse the site, your bag is stored <strong>only in your own browser</strong> (localStorage). It is never transmitted to us until you choose to send a WhatsApp order.</p>
+    <p>Bagged Up is an online storefront that checks out via WhatsApp. Your cart, saved pieces, recently viewed products, delivery preference and theme are stored <strong>only in your browser</strong> (localStorage). They are not transmitted to us unless you choose to send a WhatsApp order.</p>
     <ul>
       <li><strong>Order details you send us:</strong> the items, quantities and delivery option in your WhatsApp message, plus whatever contact and delivery information you type in the chat.</li>
       <li><strong>Reviews you submit:</strong> the name and text you provide, published only after we read them.</li>
@@ -103,7 +95,7 @@ document.documentElement.classList.add('js');
     <h2>Data retention &amp; your rights</h2>
     <p>We keep order records only as long as needed for deliveries, warranties and accounting. Ask us any time to correct or delete your details: message <strong>+254 113 599 345</strong> and we'll action it within 7 days.</p>
     <h2>Cookies &amp; local storage</h2>
-    <p>We use browser localStorage for your cart and delivery preference. No advertising or cross-site tracking cookies are set by the shop.</p>
+    <p>We use browser localStorage for your cart, saved pieces, recently viewed products, delivery preference and theme choice. You can clear this data in your browser settings. No advertising or cross-site tracking cookies are set by the shop.</p>
   </div>
 </div>
 </main>

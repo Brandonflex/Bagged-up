@@ -4,15 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
-<script>
-document.documentElement.classList.add('js');
-/* resolve theme before first paint: stored override wins, else follow the OS */
-(function () {
-  var t = null;
-  try { t = localStorage.getItem('bagged-up-theme'); } catch (e) {}
-  if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
-})();
-</script>
+<script src="../assets/js/theme-init.js"></script>
 <title>Top-Handle Crossbody Bag | Bagged Up</title>
 <meta name="description" content="Top-Handle Crossbody Bag, KSh 1,699. Elevate your everyday look with this chic mini square handbag. Crafted from high-quality PU faux leather, it f…">
 <link rel="canonical" href="https://bagged-up.vercel.app/shop/top-handle-crossbody-bag">

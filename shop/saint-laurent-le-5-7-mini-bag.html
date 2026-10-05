@@ -4,15 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
-<script>
-document.documentElement.classList.add('js');
-/* resolve theme before first paint: stored override wins, else follow the OS */
-(function () {
-  var t = null;
-  try { t = localStorage.getItem('bagged-up-theme'); } catch (e) {}
-  if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
-})();
-</script>
+<script src="../assets/js/theme-init.js"></script>
 <title>Saint Laurent Le 5 à 7 Mini Bag | Bagged Up</title>
 <meta name="description" content="Saint Laurent Le 5 à 7 Mini Bag, KSh 2,299. Made of glossy patent leather. It showcases a structured, '90s-inspired hobo silhouette with clean, elegant cu…">
 <link rel="canonical" href="https://bagged-up.vercel.app/shop/saint-laurent-le-5-7-mini-bag">

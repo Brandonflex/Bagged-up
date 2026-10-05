@@ -64,7 +64,7 @@ try {
 }
 if (!puppeteer) {
   console.log('\n  puppeteer-core is not installed, so layout checks are skipped.');
-  console.log('  npm i --no-save puppeteer-core, or see docs/screenshots/README.md\n');
+  console.log('  Run npm ci for the locked test tools, or see docs/screenshots/README.md\n');
   server.close();
   process.exit(0);
 }

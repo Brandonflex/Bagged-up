@@ -11,34 +11,39 @@ WhatsApp checkout, and a host that can serve files for free.
 index.html  shop.html  cart.html  about.html  reviews.html  contact.html
 faq.html  delivery.html  returns.html  privacy.html  terms.html   ← 11 root pages
 shop/                    50 product pages, one per catalogue slug
-assets/css/style.css     1,216 lines: tokens, base, components, PDP, utilities
+assets/css/style.css    1,713 lines: tokens, components, PDP and editorial layer
 assets/js/data.js         543 lines: window.BAGGED_UP_PRODUCTS (the catalogue)
-assets/js/app.js          645 lines: one IIFE, all behaviour, no dependencies
+assets/js/app.js        1,096 lines: one IIFE, all behaviour, no runtime dependencies
+assets/js/reviews.js      reviews in one file; name, date, rating, text, product slug
+assets/js/theme-init.js     15 lines: pre-paint theme, external for strict CSP
+assets/js/globals.d.ts   browser globals used by the JS typecheck
 assets/img/               8 shared images (hero, about, favicon, 5 styling frames)
 assets/products/          141 product photos, named <slug>-<n>.jpg
 assets/fonts/             3 .woff2 files, currently unreferenced (see below)
-scripts/                  test-site.mjs, check-design.mjs, build-site.mjs
-design/                   tokens.json + brand marks (source, not shipped)
-docs/                     this file and design-system.md
+scripts/                  tests, checks, build, and optional browser tooling
+_headers                  Cloudflare Workers Static Assets security headers
 wrangler.jsonc  vercel.json  robots.txt  sitemap.xml
+design/                   tokens.json + brand marks (source, not shipped)
+docs/                     architecture and design notes
 ```
 
-61 pages, ~18,900 lines of HTML, 16 KB of CSS and 44 KB of JS before fonts.
+61 pages, ~18,900 lines of HTML, 184 KB of CSS (including about 118 KB of
+inline font data) and about 63 KB of JavaScript.
 
 ## Page types
 
 | Type | Count | Shape |
 | --- | --- | --- |
-| Home | 1 | hero, new arrivals, review, WhatsApp band |
-| Collection | 1 | toolbar (category chips, sort), 50 cards |
+| Home | 1 | campaign hero, latest edit, interactive occasion finder, story, review, WhatsApp band |
+| Collection | 1 | oversized editorial introduction, deep-linked category chips, sort, 50 cards |
 | Product (PDP) | 50 | gallery + lightbox, buy box, assurance accordions, styling band, review block, related pieces |
 | Cart | 1 | line items, delivery choice, totals, WhatsApp checkout, message preview |
 | Trust and policy | 7 | about, reviews, contact, faq, delivery, returns, privacy, terms |
 
 Every page carries the same skeleton: skip link, sticky header with theme toggle
-and cart badge, slide-in nav panel, footer, floating WhatsApp button, and the two
-scripts. The footer markup is byte-identical on all 61 pages apart from its
-relative path prefix.
+and cart badge, slide-in nav panel, footer, floating WhatsApp button, and four
+external scripts (theme setup, reviews, catalogue, app). The footer markup is
+byte-identical on all 61 pages apart from its relative path prefix.
 
 ## Data flow
 
@@ -73,16 +78,41 @@ all use the clean form, which is why the suite pins them together.
 ## Behaviour (`assets/js/app.js`)
 
 One IIFE, no modules, sections in order: storage helpers, cart store, badge,
-toast, nav overlay, add-to-cart delegation, shop filter/sort, PDP gallery +
-lightbox, review form, cart rendering and WhatsApp message building, clipboard,
-scroll reveals with fallbacks, hover second-image, PDP tilt, theme cycle,
-lightbox keyboard/swipe. It degrades rather than throws: `localStorage` can fail
+toast, nav overlay, add-to-cart delegation, shop filter/sort with category
+query links, home edit finder, PDP gallery + lightbox, review form, cart rendering
+and WhatsApp message building, clipboard, scroll reveals with fallbacks, hover
+second-image, PDP tilt, theme cycle, lightbox keyboard/swipe. It degrades rather than throws: `localStorage` can fail
 in sandboxed frames, `IntersectionObserver` can report nothing as visible, and the
 async clipboard API can hang. Each has a documented fallback.
 
-State lives in `localStorage` under `bagged-up-cart-v1`, `bagged-up-delivery-v1`
-and `bagged-up-theme`. There is no account, no server, no payment integration: the
-order leaves as a pre-filled WhatsApp message.
+State lives in `localStorage` under `bagged-up-cart-v1`, `bagged-up-delivery-v1`,
+`bagged-up-saved-v1`, `bagged-up-recent-v1` and `bagged-up-theme`. Saved and
+recent items contain catalogue slugs only; display names, prices and image paths
+are re-derived from the shipped catalogue. Reads reject malformed/unknown values,
+cap quantities and list sizes, and treat storage as untrusted. There is no account,
+no server, no payment integration: the order leaves as a pre-filled WhatsApp
+message.
+
+## Security
+
+`vercel.json` and the Cloudflare Workers Static Assets `_headers` file define the
+same response policy: CSP, HSTS, MIME sniffing and framing protections, a
+cross-origin opener policy, referrer control and a restrictive permissions
+policy. The export includes `_headers`, and tests compare the two host configs.
+The pre-paint theme initializer is external, so CSP can use `script-src 'self'`
+without `unsafe-inline` or inline event handlers. `style-src` still allows inline
+styles because the existing templates use style attributes; that is the remaining
+CSP exception to remove if those styles are migrated to classes.
+
+CI pins GitHub Actions to full commit SHAs, uses read-only permissions and does
+not persist checkout credentials. `npm ci --ignore-scripts` is followed by an
+`npm audit`; Dependabot checks npm and action updates weekly. The export builder
+rejects symbolic links so an unexpected source link cannot copy files from outside
+the repository into the deployed artifact.
+
+The cart is browser-side UI, not a payment boundary. Local storage can always be
+edited by the shopper; if a payment, inventory or account backend is introduced,
+prices, quantities and fulfillment must be verified server-side.
 
 ## Styling (`assets/css/style.css`)
 
@@ -95,8 +125,9 @@ values live in `design/tokens.json` and the check keeps the two in step.
 ## Build and deploy
 
 `npm run build` copies the publishable set into `dist/` and proves it is
-self-contained: 61 pages, 220 files, 14.4 MB, every reference resolving inside the
-export, no tooling or docs leaked in. Both hosts serve that folder:
+self-contained: 61 pages, 223 files, 14.5 MB, every reference resolving inside the
+export, the Cloudflare `_headers` file present, no symbolic links, and no tooling
+or docs leaked in. Both hosts serve that folder:
 
 | Host | Config | Branch behaviour |
 | --- | --- | --- |
@@ -105,12 +136,13 @@ export, no tooling or docs leaked in. Both hosts serve that folder:
 
 ## The gate
 
-`npm run verify` runs lint (html-validate over every page, eslint over the JS),
-types (`tsc --checkJs` with JSDoc annotations), the integrity suite (26 checks:
-catalogue agreement, links, meta URLs, robots, structure, no em dashes, no tracked
-tooling state), the design check (4 groups: tokens vs stylesheet, contrast, brand marks),
-and the export check. CI runs the same five steps on every push and pull request
-and uploads `dist/` as an artifact.
+`npm run verify` runs `npm audit`, lint (html-validate over every page, eslint
+over the JS), types (`tsc --checkJs` with JSDoc annotations), design checks (7
+groups), 35 storefront integrity checks, 24 behaviour/security tests, and the
+export check. The suite covers response-header parity, strict-CSP compatibility,
+SHA-pinned workflow actions, Dependabot, and malicious local-storage/review inputs.
+CI runs the audit and verification steps plus browser layout checks on every push
+and pull request, then uploads the static export as an artifact.
 
 ## Known weaknesses, and what to do about them
 
@@ -123,11 +155,11 @@ and uploads `dist/` as an artifact.
 2. **No real photography pipeline.** Photos are committed at full size (12 MB
    total, up to 273 KB each) with no responsive variants. Next step worth doing
    before any traffic push: two widths per product photo and `srcset`.
-3. **Unreferenced font files.** `assets/fonts/*.woff2` (88 KB) ship to nobody but
-   sit in the repo while the same fonts are base64-inlined in the stylesheet,
-   which inflates every page load by 166 KB. Pick one: reference the woff2 files
-   from `@font-face` and drop the inline copies from the CSS, or delete the files.
-   The latter is the smaller change and improves first paint the most.
+3. **Unreferenced font files.** `assets/fonts/*.woff2` (88 KB) sit in the repo
+   unused while the same fonts are base64-inlined in the shared stylesheet,
+   adding about 118 KB to its transfer. Either switch `@font-face` to the files
+   and remove the inline data (so fonts can be cached independently), or delete
+   the unused files; only the first option changes what the browser downloads.
 4. **Video is styled but not built.** `.pdp-video` exists in CSS; nothing renders
    a player. Either wire it up in the PDP template or remove the dead block.
 5. **Catalogue metadata is thin.** Category, price and photos only. Sizes,
