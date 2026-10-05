@@ -1,0 +1,673 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="description" content="A working Bagged Up identity concept combining the City Collectors route with Modern Atelier restraint.">
+<title>Bagged Up | City Collectors, Atelier Cut</title>
+<style>
+@font-face {
+  font-family: "Cormorant Garamond";
+  src: url("../../assets/fonts/CormorantGaramond-var.woff2") format("woff2");
+  font-weight: 300 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: Jost;
+  src: url("../../assets/fonts/Jost-var.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+}
+:root {
+  color-scheme: light;
+  --paper: #F2EBDF;
+  --paper-light: #FAF7F1;
+  --stone: #D9D0C3;
+  --forest: #293A31;
+  --forest-deep: #1E2C25;
+  --clay: #96543F;
+  --brass: #D0A450;
+  --espresso: #2A211C;
+  --muted: #665E54;
+  --line: rgba(41, 58, 49, 0.18);
+  --line-light: rgba(242, 235, 223, 0.2);
+  --serif: "Cormorant Garamond", Georgia, serif;
+  --sans: Jost, "Avenir Next", Arial, sans-serif;
+  --gutter: clamp(1.25rem, 5vw, 5rem);
+  --width: 1440px;
+  font-family: var(--sans);
+  color: var(--espresso);
+  background: var(--paper);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { min-width: 320px; margin: 0; background: var(--paper); }
+img, svg { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+a, button { -webkit-tap-highlight-color: transparent; }
+button { font: inherit; }
+:focus-visible { outline: 3px solid var(--clay); outline-offset: 4px; }
+::selection { color: var(--paper-light); background: var(--forest); }
+.skip-link { position: absolute; top: .8rem; left: .8rem; z-index: 10; padding: .65rem .85rem; transform: translateY(-160%); color: var(--paper-light); background: var(--forest); }
+.skip-link:focus { transform: none; }
+.page-width { width: min(var(--width), calc(100% - var(--gutter) * 2)); margin-inline: auto; }
+.section { padding-block: clamp(4rem, 8vw, 7.5rem); }
+.eyebrow { display: flex; align-items: center; gap: .75rem; color: var(--clay); font-size: .69rem; font-weight: 650; letter-spacing: .2em; line-height: 1.3; text-transform: uppercase; }
+.eyebrow::before { width: 1.5rem; height: 1px; background: currentColor; content: ""; }
+.section-heading { max-width: 14ch; margin: .85rem 0 0; font-family: var(--serif); font-size: clamp(2.8rem, 5.7vw, 5rem); font-weight: 500; letter-spacing: -.035em; line-height: .91; }
+.section-intro { max-width: 52ch; margin: 1rem 0 0; color: var(--muted); font-size: 1rem; line-height: 1.7; }
+.site-header { position: sticky; top: 0; z-index: 5; border-bottom: 1px solid var(--line); background: rgba(242, 235, 223, .94); backdrop-filter: blur(16px); }
+.header-inner { display: flex; min-height: 78px; align-items: center; justify-content: space-between; gap: 1.25rem; }
+.brand-lockup { display: inline-flex; min-width: max-content; align-items: center; gap: .7rem; }
+.handle-mark { width: 42px; height: 42px; flex: none; overflow: visible; }
+.mark-loop-a, .mark-loop-b, .mark-stitch { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.mark-loop-a { stroke: var(--logo-ink, var(--forest)); stroke-width: 4.2; }
+.mark-loop-b { stroke: var(--logo-clay, var(--clay)); stroke-width: 4.2; }
+.mark-stitch { stroke: var(--logo-brass, var(--brass)); stroke-width: 3.1; }
+.brand-wordmark { display: flex; align-items: baseline; gap: .24em; color: var(--logo-ink, var(--forest)); font-family: var(--serif); font-size: 1.8rem; font-weight: 600; letter-spacing: -.045em; line-height: 1; }
+.brand-wordmark em { color: var(--logo-clay, var(--clay)); font-weight: 500; }
+.main-nav { display: flex; align-items: center; gap: clamp(1rem, 2.5vw, 2.4rem); }
+.main-nav a, .bag-link { font-size: .72rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; }
+.main-nav a { position: relative; padding-block: .5rem; }
+.main-nav a::after { position: absolute; right: 100%; bottom: .15rem; left: 0; height: 1px; background: var(--clay); content: ""; transition: right .2s ease; }
+.main-nav a:hover::after { right: 0; }
+.bag-link { display: flex; min-height: 42px; align-items: center; gap: .55rem; padding-inline: .75rem; border: 1px solid var(--line); }
+.bag-count { display: grid; width: 21px; height: 21px; place-items: center; border-radius: 50%; color: var(--paper-light); background: var(--forest); font-size: .63rem; }
+.route-status { padding: .55rem 1rem; color: var(--paper); background: var(--forest); font-size: .65rem; font-weight: 600; letter-spacing: .14em; text-align: center; text-transform: uppercase; }
+.route-status strong { color: #F1D89E; font-weight: 600; }
+.hero { display: grid; min-height: min(760px, calc(100svh - 110px)); grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr); align-items: center; gap: clamp(2rem, 6vw, 6.5rem); padding-block: clamp(3rem, 6vw, 5.8rem); }
+.hero-copy { position: relative; z-index: 1; padding-block: 1rem; }
+.hero-kicker { margin-bottom: 1.1rem; }
+.hero h1 { max-width: 9ch; margin: 0; color: var(--forest); font-family: var(--serif); font-size: clamp(4.1rem, 8.2vw, 8.3rem); font-weight: 500; letter-spacing: -.055em; line-height: .79; }
+.hero h1 em { color: var(--clay); font-weight: 400; }
+.hero-copy > p { max-width: 42ch; margin: 1.5rem 0 0; color: var(--muted); font-size: clamp(1rem, 1.3vw, 1.15rem); line-height: 1.7; }
+.hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .85rem 1.4rem; margin-top: 1.7rem; }
+.button { display: inline-flex; min-height: 50px; align-items: center; justify-content: center; gap: .85rem; padding: .8rem 1rem .8rem 1.25rem; border: 1px solid var(--forest); color: var(--paper-light); background: var(--forest); font-size: .73rem; font-weight: 650; letter-spacing: .12em; text-transform: uppercase; transition: background .2s, color .2s, transform .2s; }
+.button:hover { transform: translateY(-2px); color: var(--forest); background: var(--paper); }
+.button-arrow { display: grid; width: 27px; height: 27px; place-items: center; border: 1px solid currentColor; border-radius: 50%; font-size: 1rem; line-height: 1; }
+.text-link { display: inline-flex; align-items: center; gap: .4rem; border-bottom: 1px solid currentColor; color: var(--forest); font-size: .76rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+.hero-facts { display: flex; flex-wrap: wrap; gap: .7rem 1.4rem; margin: 2.1rem 0 0; padding: 1rem 0 0; border-top: 1px solid var(--line); color: var(--muted); font-size: .69rem; font-weight: 550; letter-spacing: .08em; text-transform: uppercase; }
+.hero-facts span { display: inline-flex; align-items: center; gap: .45rem; }
+.hero-facts span::before { width: 5px; height: 5px; border-radius: 50%; background: var(--clay); content: ""; }
+.hero-visual { position: relative; min-width: 0; padding: 0 0 2.8rem 2.3rem; }
+.hero-photo { position: relative; height: clamp(420px, 58vw, 690px); overflow: hidden; background: var(--stone); }
+.hero-photo::after { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(30, 44, 37, .48), transparent 44%); content: ""; pointer-events: none; }
+.hero-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 52% 44%; }
+.hero-photo figcaption { position: absolute; right: 1.4rem; bottom: 1.25rem; left: 1.5rem; z-index: 1; display: flex; align-items: end; justify-content: space-between; gap: 1rem; color: var(--paper-light); }
+.hero-caption-label { font-size: .65rem; font-weight: 650; letter-spacing: .17em; text-transform: uppercase; }
+.hero-caption-note { font-family: var(--serif); font-size: 1.8rem; font-style: italic; line-height: 1; }
+.hero-seal { position: absolute; top: 1.2rem; right: -1.15rem; z-index: 2; display: grid; width: 94px; height: 94px; align-content: center; justify-items: center; border-radius: 50%; color: var(--forest); background: var(--brass); text-align: center; transform: rotate(7deg); }
+.hero-seal .handle-mark { width: 34px; height: 34px; }
+.hero-seal span { margin-top: .12rem; font-size: .5rem; font-weight: 700; letter-spacing: .13em; line-height: 1.25; text-transform: uppercase; }
+.image-index { position: absolute; bottom: .2rem; left: .25rem; display: flex; align-items: baseline; gap: .45rem; color: var(--forest); font-family: var(--serif); }
+.image-index strong { font-size: 3.4rem; font-weight: 500; line-height: .9; }
+.image-index span { font-family: var(--sans); font-size: .64rem; font-weight: 600; letter-spacing: .15em; text-transform: uppercase; }
+.direction-note { display: grid; grid-template-columns: minmax(0, .72fr) minmax(0, 1.28fr); gap: clamp(2rem, 8vw, 8rem); padding-block: 1.8rem; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.direction-note h2 { margin: 0; color: var(--forest); font-family: var(--serif); font-size: clamp(1.6rem, 2.4vw, 2.35rem); font-weight: 500; line-height: 1.05; }
+.direction-note p { max-width: 68ch; margin: 0; color: var(--muted); font-size: .92rem; line-height: 1.7; }
+.direction-note strong { color: var(--espresso); font-weight: 600; }
+.system { display: grid; grid-template-columns: minmax(0, .68fr) minmax(0, 1.32fr); align-items: start; gap: clamp(2rem, 6vw, 6rem); }
+.system-lede { position: sticky; top: 120px; }
+.system-lede .section-heading { max-width: 9ch; }
+.system-lede p { max-width: 40ch; margin: 1rem 0 0; color: var(--muted); line-height: 1.7; }
+.logo-studies { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.logo-card { display: flex; min-height: 220px; flex-direction: column; justify-content: space-between; padding: clamp(1.2rem, 2.3vw, 2.1rem); border: 1px solid var(--line); background: var(--paper-light); }
+.logo-card--dark { color: var(--paper); background: var(--forest); }
+.logo-card--clay { color: var(--paper-light); background: var(--clay); }
+.logo-card--dark .brand-lockup, .logo-card--clay .brand-lockup { --logo-ink: var(--paper-light); --logo-clay: var(--brass); --logo-brass: var(--paper-light); }
+.logo-card--dark .brand-wordmark, .logo-card--clay .brand-wordmark { color: var(--paper-light); }
+.logo-card--dark .brand-wordmark em, .logo-card--clay .brand-wordmark em { color: var(--brass); }
+.logo-card--dark .mark-loop-a, .logo-card--clay .mark-loop-a { stroke: var(--paper-light); }
+.logo-card--dark .mark-loop-b, .logo-card--clay .mark-loop-b { stroke: var(--brass); }
+.logo-card--dark .mark-stitch, .logo-card--clay .mark-stitch { stroke: var(--paper-light); }
+.logo-card--symbol { align-items: center; justify-content: center; background: var(--stone); }
+.logo-card--symbol .handle-mark { width: 94px; height: 94px; }
+.logo-card-label { color: var(--muted); font-size: .63rem; font-weight: 650; letter-spacing: .16em; text-transform: uppercase; }
+.logo-card--dark .logo-card-label, .logo-card--clay .logo-card-label { color: rgba(242, 235, 223, .77); }
+.logo-card-note { max-width: 28ch; margin: .7rem 0 0; color: var(--muted); font-size: .76rem; line-height: 1.5; }
+.logo-card--dark .logo-card-note, .logo-card--clay .logo-card-note { color: rgba(242, 235, 223, .84); }
+.palette-section { color: var(--paper); background: var(--forest); }
+.palette-section .eyebrow { color: #E7C77F; }
+.palette-section .section-heading { max-width: 13ch; }
+.palette-section .section-intro { color: rgba(242, 235, 223, .8); }
+.palette-grid { display: grid; grid-template-columns: 1.25fr 1fr 1.1fr .9fr .9fr; gap: .65rem; margin-top: 2.8rem; }
+.swatch-card { display: flex; min-height: 220px; flex-direction: column; justify-content: end; padding: 1rem; border: 1px solid rgba(242, 235, 223, .2); }
+.swatch-card strong { font-size: .76rem; font-weight: 650; letter-spacing: .08em; text-transform: uppercase; }
+.swatch-card code { margin-top: .25rem; font-family: var(--sans); font-size: .68rem; }
+.swatch-paper { color: var(--espresso); background: var(--paper); }
+.swatch-stone { color: var(--espresso); background: var(--stone); }
+.swatch-forest { color: var(--paper); background: var(--forest-deep); }
+.swatch-clay { color: var(--paper-light); background: var(--clay); }
+.swatch-brass { color: var(--forest-deep); background: var(--brass); }
+.palette-roles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.2rem; margin-top: 1.3rem; }
+.palette-role { display: grid; grid-template-columns: auto 1fr; align-items: start; gap: .7rem; color: rgba(242, 235, 223, .86); font-size: .77rem; line-height: 1.55; }
+.role-mark { display: grid; width: 25px; height: 25px; place-items: center; border: 1px solid rgba(242, 235, 223, .38); border-radius: 50%; color: #F1D89E; font-size: .7rem; }
+.palette-role strong { display: block; color: var(--paper-light); font-weight: 600; }
+.contrast-strip { display: flex; flex-wrap: wrap; gap: .55rem; margin-top: 2rem; padding-top: 1.3rem; border-top: 1px solid var(--line-light); }
+.contrast-chip { padding: .5rem .7rem; border: 1px solid var(--line-light); color: var(--paper); font-size: .65rem; letter-spacing: .06em; }
+.contrast-chip strong { color: #F1D89E; font-weight: 650; }
+.type-section { display: grid; grid-template-columns: minmax(0, .7fr) minmax(0, 1.3fr); align-items: start; gap: clamp(2rem, 7vw, 7rem); }
+.type-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.type-card { min-height: 290px; padding: clamp(1.4rem, 3vw, 2.6rem); border: 1px solid var(--line); background: var(--paper-light); }
+.type-card--display { background: var(--stone); }
+.type-meta { display: flex; justify-content: space-between; gap: .8rem; padding-bottom: .8rem; border-bottom: 1px solid var(--line); color: var(--muted); font-size: .62rem; font-weight: 650; letter-spacing: .14em; text-transform: uppercase; }
+.type-sample-display { max-width: 9ch; margin: 1.6rem 0 0; color: var(--forest); font-family: var(--serif); font-size: clamp(2.9rem, 5vw, 5.1rem); font-weight: 500; letter-spacing: -.045em; line-height: .84; }
+.type-sample-display em { color: var(--clay); font-weight: 400; }
+.type-sample-sans { margin: 1.7rem 0 0; color: var(--forest); font-size: clamp(1.8rem, 3vw, 2.6rem); font-weight: 520; letter-spacing: -.045em; line-height: 1; }
+.type-card p { max-width: 36ch; margin: 1.3rem 0 0; color: var(--muted); font-size: .84rem; line-height: 1.65; }
+.type-scale { display: flex; flex-wrap: wrap; align-items: baseline; gap: .55rem 1rem; margin-top: 1.8rem; padding-top: 1.2rem; border-top: 1px solid var(--line); }
+.type-scale span { color: var(--forest); }
+.type-scale .scale-display { font-family: var(--serif); font-size: 2rem; }
+.type-scale .scale-body { font-size: 1rem; }
+.type-scale .scale-label { font-size: .69rem; font-weight: 650; letter-spacing: .14em; text-transform: uppercase; }
+.imagery-section { background: #E8DFD2; }
+.imagery-head { display: flex; align-items: end; justify-content: space-between; gap: 2rem; }
+.imagery-head .section-heading { max-width: 10ch; }
+.imagery-head .section-intro { max-width: 42ch; margin-bottom: .25rem; }
+.image-grid { display: grid; grid-template-columns: 1.2fr .8fr .9fr; gap: .8rem; margin-top: 2.4rem; }
+.image-card { position: relative; min-height: 390px; overflow: hidden; background: var(--stone); }
+.image-card:nth-child(2) { margin-top: 3rem; }
+.image-card:nth-child(3) { margin-top: 1.3rem; }
+.image-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .7s cubic-bezier(.2,.65,.25,1); }
+.image-card:hover img { transform: scale(1.035); }
+.image-card::after { position: absolute; inset: 40% 0 0; background: linear-gradient(0deg, rgba(30, 44, 37, .78), transparent); content: ""; pointer-events: none; }
+.image-card figcaption { position: absolute; right: 1.1rem; bottom: 1rem; left: 1.1rem; z-index: 1; display: flex; align-items: end; justify-content: space-between; gap: 1rem; color: var(--paper-light); }
+.image-card figcaption span:first-child { font-family: var(--serif); font-size: 1.7rem; line-height: 1; }
+.image-card figcaption span:last-child { font-size: .61rem; font-weight: 650; letter-spacing: .13em; text-align: right; text-transform: uppercase; }
+.image-principles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.3rem; margin-top: 1.5rem; }
+.image-principle { padding-top: .8rem; border-top: 1px solid var(--line); }
+.image-principle strong { display: block; color: var(--forest); font-size: .7rem; font-weight: 650; letter-spacing: .14em; text-transform: uppercase; }
+.image-principle span { display: block; max-width: 42ch; margin-top: .35rem; color: var(--muted); font-size: .76rem; line-height: 1.55; }
+.store-section { padding-bottom: clamp(4rem, 7vw, 6rem); }
+.store-header { display: flex; align-items: end; justify-content: space-between; gap: 2rem; }
+.store-header .section-heading { max-width: 10ch; }
+.store-header-note { max-width: 34ch; margin: 0 0 .4rem; color: var(--muted); font-size: .84rem; line-height: 1.6; }
+.browser-frame { margin-top: 2.3rem; overflow: hidden; border: 1px solid rgba(41, 58, 49, .28); background: var(--paper-light); box-shadow: 0 30px 70px -55px rgba(42, 33, 28, .65); }
+.browser-bar { display: flex; height: 42px; align-items: center; justify-content: space-between; gap: 1rem; padding-inline: 1rem; border-bottom: 1px solid var(--line); background: #E8DFD2; }
+.browser-dots { display: flex; gap: 5px; }
+.browser-dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--clay); }
+.browser-dots i:nth-child(2) { background: var(--brass); }
+.browser-dots i:nth-child(3) { background: var(--forest); }
+.browser-url { color: var(--muted); font-size: .62rem; letter-spacing: .08em; }
+.browser-label { color: var(--forest); font-size: .6rem; font-weight: 650; letter-spacing: .13em; text-transform: uppercase; }
+.store-mock { padding: clamp(.8rem, 2.4vw, 2rem); }
+.mock-nav { display: flex; min-height: 68px; align-items: center; justify-content: space-between; gap: 1rem; padding: .6rem .8rem; border-bottom: 1px solid var(--line); }
+.mock-nav .brand-lockup { gap: .45rem; }
+.mock-nav .handle-mark { width: 31px; height: 31px; }
+.mock-nav .brand-wordmark { font-size: 1.4rem; }
+.mock-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 1.2rem; color: var(--forest); font-size: .61rem; font-weight: 650; letter-spacing: .12em; text-transform: uppercase; }
+.mock-links span:last-child { color: var(--clay); }
+.mock-cart { padding: .65rem .85rem; border: 1px solid var(--line); color: var(--forest); font-size: .62rem; font-weight: 650; letter-spacing: .12em; text-transform: uppercase; }
+.mock-hero { display: grid; min-height: 430px; grid-template-columns: 1fr 1fr; margin-top: .8rem; background: var(--forest); }
+.mock-hero-copy { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding: clamp(1.4rem, 5vw, 4.6rem); color: var(--paper-light); }
+.mock-hero-copy .eyebrow { color: #F1D89E; font-size: .62rem; }
+.mock-hero-copy h3 { max-width: 8ch; margin: 1rem 0 0; font-family: var(--serif); font-size: clamp(3.3rem, 6.1vw, 6rem); font-weight: 500; letter-spacing: -.05em; line-height: .81; }
+.mock-hero-copy h3 em { color: #E8B69E; font-weight: 400; }
+.mock-hero-copy p { max-width: 34ch; margin: 1rem 0 1.2rem; color: rgba(242, 235, 223, .86); font-size: .86rem; line-height: 1.6; }
+.mock-hero-copy .button { min-height: 44px; border-color: var(--paper); color: var(--forest); background: var(--paper); }
+.mock-hero-copy .button:hover { color: var(--paper); background: transparent; }
+.mock-hero-image { min-height: 100%; overflow: hidden; }
+.mock-hero-image img { width: 100%; height: 100%; object-fit: cover; object-position: 62% center; }
+.assurance-row { display: flex; flex-wrap: wrap; justify-content: space-around; gap: .5rem 1rem; padding: .85rem .3rem; border-bottom: 1px solid var(--line); color: var(--forest); font-size: .63rem; font-weight: 650; letter-spacing: .1em; text-align: center; text-transform: uppercase; }
+.assurance-row span { display: inline-flex; align-items: center; gap: .4rem; }
+.assurance-row span::before { width: 6px; height: 6px; border-radius: 50%; background: var(--clay); content: ""; }
+.product-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .8rem; padding-top: 1.2rem; }
+.product-card { min-width: 0; }
+.product-image { position: relative; aspect-ratio: 4 / 4.8; overflow: hidden; background: var(--stone); }
+.product-image img { width: 100%; height: 100%; object-fit: cover; transition: transform .55s ease; }
+.product-card:hover .product-image img { transform: scale(1.035); }
+.product-label { position: absolute; top: .65rem; left: .65rem; padding: .38rem .48rem; color: var(--forest); background: var(--paper-light); font-size: .55rem; font-weight: 650; letter-spacing: .1em; text-transform: uppercase; }
+.product-info { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .2rem .6rem; padding: .72rem .1rem 0; }
+.product-category { grid-column: 1 / -1; color: var(--clay); font-size: .57rem; font-weight: 650; letter-spacing: .13em; text-transform: uppercase; }
+.product-info h4 { min-width: 0; margin: .15rem 0 0; color: var(--forest); font-family: var(--serif); font-size: clamp(1rem, 1.65vw, 1.45rem); font-weight: 600; line-height: 1.05; }
+.product-price { align-self: start; margin-top: .2rem; color: var(--espresso); font-size: .76rem; font-weight: 650; white-space: nowrap; }
+.mock-add { display: inline-flex; align-items: center; gap: .4rem; margin-top: .45rem; border-bottom: 1px solid var(--forest); color: var(--forest); font-size: .61rem; font-weight: 650; letter-spacing: .09em; text-transform: uppercase; }
+.applications { background: #E8DFD2; }
+.applications-inner { display: grid; grid-template-columns: minmax(0, .7fr) minmax(0, 1.3fr); align-items: start; gap: clamp(2rem, 6vw, 6rem); }
+.application-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem; }
+.application-card { min-height: 235px; padding: 1.2rem; border: 1px solid var(--line); background: var(--paper-light); }
+.application-card--forest { color: var(--paper); background: var(--forest); }
+.application-card--clay { color: var(--paper); background: var(--clay); }
+.application-card .mini-label { display: block; color: var(--clay); font-size: .6rem; font-weight: 650; letter-spacing: .14em; text-transform: uppercase; }
+.application-card--forest .mini-label, .application-card--clay .mini-label { color: #F1D89E; }
+.social-study { display: flex; height: 100%; flex-direction: column; justify-content: space-between; }
+.social-study h3 { max-width: 9ch; margin: .9rem 0; font-family: var(--serif); font-size: 2.5rem; font-weight: 500; line-height: .88; }
+.social-study p { max-width: 29ch; margin: 0; color: var(--muted); font-size: .76rem; line-height: 1.55; }
+.application-card--forest p, .application-card--clay p { color: rgba(242, 235, 223, .84); }
+.package-study { display: grid; height: 100%; grid-template-columns: auto 1fr; align-items: center; gap: 1rem; }
+.paper-bag { position: relative; display: grid; width: 116px; height: 135px; place-items: center; border: 1px solid rgba(41, 58, 49, .18); background: var(--stone); box-shadow: 8px 10px 0 rgba(41, 58, 49, .08); }
+.paper-bag::before { position: absolute; top: -16px; width: 49px; height: 27px; border: 2px solid var(--clay); border-bottom: 0; border-radius: 25px 25px 0 0; content: ""; }
+.paper-bag .handle-mark { width: 58px; height: 58px; }
+.package-study p { max-width: 24ch; margin: 0; color: var(--muted); font-size: .75rem; line-height: 1.55; }
+.voice-block { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; margin-top: 1.2rem; }
+.voice-sample { padding: 1rem; border-left: 2px solid var(--clay); background: var(--paper-light); }
+.voice-sample strong { display: block; color: var(--forest); font-size: .66rem; font-weight: 650; letter-spacing: .12em; text-transform: uppercase; }
+.voice-sample p { margin: .45rem 0 0; color: var(--muted); font-size: .75rem; line-height: 1.55; }
+.decision { color: var(--paper); background: var(--forest-deep); }
+.decision-inner { display: grid; grid-template-columns: .72fr 1.28fr; gap: clamp(2rem, 7vw, 7rem); }
+.decision .eyebrow { color: #F1D89E; }
+.decision .section-heading { max-width: 10ch; }
+.decision .section-intro { color: rgba(242, 235, 223, .82); }
+.decision-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem; margin: 0; padding: 0; list-style: none; counter-reset: decisions; }
+.decision-list li { position: relative; min-height: 130px; padding: 1.2rem 1rem 1rem 3.3rem; border: 1px solid var(--line-light); color: rgba(242, 235, 223, .85); font-size: .83rem; line-height: 1.55; counter-increment: decisions; }
+.decision-list li::before { position: absolute; top: .9rem; left: 1rem; color: #F1D89E; font-family: var(--serif); font-size: 1.8rem; content: "0" counter(decisions); }
+.project-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; padding-block: 1.2rem; color: var(--muted); font-size: .7rem; }
+.project-footer strong { color: var(--forest); font-weight: 650; }
+.project-footer a { color: var(--clay); font-weight: 650; }
+@media (max-width: 1050px) {
+  .hero { min-height: auto; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 2rem; }
+  .hero h1 { font-size: clamp(4rem, 8vw, 6.8rem); }
+  .hero-visual { padding-left: 1.4rem; }
+  .hero-photo { height: 560px; }
+  .palette-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .swatch-card { min-height: 185px; padding: .75rem; }
+  .applications-inner, .system, .type-section { grid-template-columns: minmax(0, .75fr) minmax(0, 1.25fr); }
+}
+@media (max-width: 760px) {
+  .header-inner { min-height: 68px; }
+  .main-nav { display: none; }
+  .route-status { font-size: .58rem; }
+  .hero { grid-template-columns: 1fr; gap: 2.2rem; padding-block: 3.2rem 2.4rem; }
+  .hero h1 { max-width: 9ch; font-size: clamp(4.3rem, 14vw, 6.6rem); }
+  .hero-copy > p { max-width: 48ch; }
+  .hero-visual { width: min(100%, 580px); justify-self: end; padding-left: 1.3rem; }
+  .hero-photo { height: min(118vw, 640px); }
+  .hero-seal { right: -.65rem; width: 78px; height: 78px; }
+  .hero-seal .handle-mark { width: 29px; height: 29px; }
+  .hero-seal span { font-size: .44rem; }
+  .direction-note, .system, .type-section, .applications-inner, .decision-inner { grid-template-columns: 1fr; gap: 1.4rem; }
+  .system-lede { position: static; }
+  .system-lede .section-heading, .imagery-head .section-heading, .store-header .section-heading { max-width: 12ch; }
+  .palette-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .swatch-card { min-height: 145px; }
+  .palette-roles { grid-template-columns: 1fr; gap: .8rem; }
+  .contrast-strip { margin-top: 1.4rem; }
+  .imagery-head, .store-header { align-items: flex-start; flex-direction: column; gap: .6rem; }
+  .image-grid { grid-template-columns: 1.1fr .9fr; }
+  .image-card { min-height: 330px; }
+  .image-card:first-child { grid-column: 1 / -1; min-height: 440px; }
+  .image-card:nth-child(2), .image-card:nth-child(3) { margin-top: 0; }
+  .mock-hero { min-height: 370px; }
+  .mock-hero-copy { padding: 1.4rem; }
+  .mock-hero-copy h3 { font-size: clamp(3rem, 10vw, 4.5rem); }
+  .product-info { grid-template-columns: 1fr; }
+  .product-price { grid-row: 3; }
+  .mock-add { grid-row: 4; justify-self: start; }
+  .decision-list { grid-template-columns: 1fr; }
+}
+@media (max-width: 520px) {
+  :root { --gutter: 1.15rem; }
+  .brand-wordmark { font-size: 1.58rem; }
+  .handle-mark { width: 36px; height: 36px; }
+  .bag-link { min-height: 38px; padding-inline: .55rem; font-size: .64rem; }
+  .hero h1 { font-size: clamp(4rem, 16vw, 5.25rem); }
+  .hero-facts { gap: .6rem .9rem; font-size: .61rem; }
+  .direction-note { gap: .8rem; }
+  .logo-studies, .type-grid { grid-template-columns: 1fr; }
+  .logo-card { min-height: 185px; }
+  .logo-card--symbol { min-height: 160px; }
+  .palette-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .swatch-card { min-height: 130px; }
+  .image-grid, .application-grid { grid-template-columns: 1fr; }
+  .image-card:first-child, .image-card { grid-column: auto; min-height: 390px; }
+  .image-card:nth-child(2), .image-card:nth-child(3) { margin-top: 0; }
+  .image-principles, .voice-block { grid-template-columns: 1fr; }
+  .browser-bar { padding-inline: .7rem; }
+  .browser-label { display: none; }
+  .store-mock { padding: .5rem; }
+  .mock-nav { min-height: 58px; padding-inline: .4rem; }
+  .mock-nav .brand-wordmark { font-size: 1.12rem; }
+  .mock-nav .handle-mark { width: 26px; height: 26px; }
+  .mock-links { gap: .45rem; font-size: .48rem; letter-spacing: .06em; }
+  .mock-links span:nth-child(3) { display: none; }
+  .mock-cart { padding: .5rem; font-size: .52rem; }
+  .mock-hero { grid-template-columns: 1fr; }
+  .mock-hero-copy { min-height: 320px; padding: 1.6rem; }
+  .mock-hero-image { min-height: 270px; max-height: 320px; }
+  .mock-hero-image img { min-height: 270px; }
+  .assurance-row { justify-content: flex-start; padding: .75rem .15rem; font-size: .54rem; letter-spacing: .06em; }
+  .product-row { gap: .45rem; }
+  .product-info { gap: .25rem; padding-top: .55rem; }
+  .product-info h4 { font-size: .98rem; }
+  .product-price { font-size: .69rem; }
+  .product-category { font-size: .48rem; letter-spacing: .08em; }
+  .product-label { top: .4rem; left: .4rem; padding: .32rem; font-size: .46rem; }
+  .project-footer { align-items: flex-start; flex-direction: column; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to concept</a>
+<header class="site-header">
+  <div class="page-width header-inner">
+    <a class="brand-lockup" href="../../index.html" aria-label="Bagged Up, current storefront">
+      <svg class="handle-mark" viewBox="0 0 80 80" aria-hidden="true" focusable="false">
+        <path class="mark-loop-a" d="M18 64V28a14 14 0 0 1 28 0v36"/>
+        <path class="mark-loop-b" d="M34 64V28a14 14 0 0 1 28 0v36"/>
+        <path class="mark-stitch" d="M32 46h16"/>
+      </svg>
+      <span class="brand-wordmark"><span>Bagged</span><em>Up</em></span>
+    </a>
+    <nav class="main-nav" aria-label="Concept sections">
+      <a href="#identity">Identity</a>
+      <a href="#palette">Palette</a>
+      <a href="#shop-study">Shop study</a>
+      <a href="#applications">Applications</a>
+    </nav>
+    <a class="bag-link" href="../../shop.html">View store <span class="bag-count" aria-hidden="true">↗</span></a>
+  </div>
+</header>
+<div class="route-status"><strong>Direction approved for development</strong> &nbsp;|&nbsp; City Collectors, Atelier Cut &nbsp;|&nbsp; concept only, not live branding</div>
+<main id="main">
+  <section class="page-width hero" aria-labelledby="hero-title">
+    <div class="hero-copy">
+      <span class="eyebrow hero-kicker">City Collectors / Atelier cut</span>
+      <h1 id="hero-title">The city,<br>carried <em>well.</em></h1>
+      <p>A considered edit of handbags, shaped by city life and finished with a little atelier precision. Expressive in the details, calm around the product.</p>
+      <div class="hero-actions">
+        <a class="button" href="../../shop.html">Explore the edit <span class="button-arrow" aria-hidden="true">↗</span></a>
+        <a class="text-link" href="#identity">See the identity system</a>
+      </div>
+      <div class="hero-facts" role="group" aria-label="Store facts">
+        <span>Inspected in person</span>
+        <span>Pay on delivery</span>
+        <span>Countrywide delivery</span>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <figure class="hero-photo">
+        <img src="../../assets/img/style-crossbody.jpg" alt="A model carrying a small crossbody bag on a city street" fetchpriority="high">
+        <figcaption><span class="hero-caption-label">The City Edit / 01</span><span class="hero-caption-note">Out in the world</span></figcaption>
+      </figure>
+      <div class="hero-seal" aria-hidden="true">
+        <svg class="handle-mark" viewBox="0 0 80 80" aria-hidden="true" focusable="false">
+          <path class="mark-loop-a" d="M18 64V28a14 14 0 0 1 28 0v36"/>
+          <path class="mark-loop-b" d="M34 64V28a14 14 0 0 1 28 0v36"/>
+          <path class="mark-stitch" d="M32 46h16"/>
+        </svg>
+        <span>Considered<br>in the city</span>
+      </div>
+      <div class="image-index" aria-hidden="true"><strong>01</strong><span>Point of view</span></div>
+    </div>
+  </section>
+
+  <div class="page-width direction-note" id="identity">
+    <h2>City roots.<br>Atelier finish.</h2>
+    <p><strong>The City Collectors route brings the point of view. Modern Atelier brings the edit and the finish.</strong> Mineral paper and forest ink set a grounded base. Clay adds a confident signal; brass stays on small details. Spacious layouts and precise product information keep the store easy to shop.</p>
+  </div>
+
+  <section class="section page-width system" aria-labelledby="logo-title">
+    <div class="system-lede">
+      <span class="eyebrow">01 / Logo studies</span>
+      <h2 class="section-heading" id="logo-title">A mark with a reason to exist.</h2>
+      <p>A pair of linked handles is the starting sketch. It nods to the shape of a bag without drawing one literally. The wordmark stays readable first; the symbol earns its place only if it holds up at small sizes.</p>
+    </div>
+    <div class="logo-studies">
+      <article class="logo-card">
+        <div>
+          <span class="logo-card-label">Primary / light</span>
+          <p class="logo-card-note">The two-tone serif wordmark keeps a human edge. The handle mark adds one ownable detail.</p>
+        </div>
+        <a class="brand-lockup" href="../../index.html" aria-label="Bagged Up primary concept lockup">
+          <svg class="handle-mark" viewBox="0 0 80 80" aria-hidden="true" focusable="false">
+            <path class="mark-loop-a" d="M18 64V28a14 14 0 0 1 28 0v36"/>
+            <path class="mark-loop-b" d="M34 64V28a14 14 0 0 1 28 0v36"/>
+            <path class="mark-stitch" d="M32 46h16"/>
+          </svg>
+          <span class="brand-wordmark"><span>Bagged</span><em>Up</em></span>
+        </a>
+      </article>
+      <article class="logo-card logo-card--dark">
+        <div>
+          <span class="logo-card-label">Reverse / forest</span>
+          <p class="logo-card-note">Use the reversed wordmark on dark campaign panels and packaging. Brass becomes a restrained stitch, not a fill.</p>
+        </div>
+        <a class="brand-lockup" href="../../index.html" aria-label="Bagged Up reversed concept lockup">
+          <svg class="handle-mark" viewBox="0 0 80 80" aria-hidden="true" focusable="false">
+            <path class="mark-loop-a" d="M18 64V28a14 14 0 0 1 28 0v36"/>
+            <path class="mark-loop-b" d="M34 64V28a14 14 0 0 1 28 0v36"/>
+            <path class="mark-stitch" d="M32 46h16"/>
+          </svg>
+          <span class="brand-wordmark"><span>Bagged</span><em>Up</em></span>
+        </a>
+      </article>
+      <article class="logo-card logo-card--clay">
+        <div>
+          <span class="logo-card-label">Stamp / clay</span>
+          <p class="logo-card-note">A one-color stamp for tissue, order cards and small social marks. Test the loop at 24px before locking it.</p>
+        </div>
+        <a class="brand-lockup" href="../../index.html" aria-label="Bagged Up stamp concept lockup">
+          <svg class="handle-mark" viewBox="0 0 80 80" aria-hidden="true" focusable="false">
+            <path class="mark-loop-a" d="M18 64V28a14 14 0 0 1 28 0v36"/>
+            <path class="mark-loop-b" d="M34 64V28a14 14 0 0 1 28 0v36"/>
+            <path class="mark-stitch" d="M32 46h16"/>
+          </svg>
+          <span class="brand-wordmark"><span>Bagged</span><em>Up</em></span>
+        </a>
+      </article>
+      <article class="logo-card logo-card--symbol">
+        <svg class="handle-mark" viewBox="0 0 80 80" role="img" aria-label="Concept mark of two interlocking bag handles">
+          <path class="mark-loop-a" d="M18 64V28a14 14 0 0 1 28 0v36"/>
+          <path class="mark-loop-b" d="M34 64V28a14 14 0 0 1 28 0v36"/>
+          <path class="mark-stitch" d="M32 46h16"/>
+        </svg>
+      </article>
+    </div>
+  </section>
+
+  <section class="section palette-section" id="palette" aria-labelledby="palette-title">
+    <div class="page-width">
+      <span class="eyebrow">02 / Color system</span>
+      <h2 class="section-heading" id="palette-title">Grounded first.<br>Distinctive by degrees.</h2>
+      <p class="section-intro">The warm base carries product photography. Forest ink does the work of structure and action. Clay is the readable accent; marigold is reserved for metallic-feeling details and small highlights.</p>
+      <div class="palette-grid" role="group" aria-label="Proposed color palette">
+        <div class="swatch-card swatch-paper"><strong>Oat paper</strong><code>#F2EBDF</code></div>
+        <div class="swatch-card swatch-stone"><strong>Mineral stone</strong><code>#D9D0C3</code></div>
+        <div class="swatch-card swatch-forest"><strong>Forest ink</strong><code>#293A31</code></div>
+        <div class="swatch-card swatch-clay"><strong>Burnished clay</strong><code>#96543F</code></div>
+        <div class="swatch-card swatch-brass"><strong>Soft brass</strong><code>#D0A450</code></div>
+      </div>
+      <div class="palette-roles">
+        <div class="palette-role"><span class="role-mark" aria-hidden="true">01</span><span><strong>Surface and image</strong>Oat paper and mineral stone frame photos without washing them out.</span></div>
+        <div class="palette-role"><span class="role-mark" aria-hidden="true">02</span><span><strong>Commerce and navigation</strong>Forest ink carries buttons, links, filters and important text.</span></div>
+        <div class="palette-role"><span class="role-mark" aria-hidden="true">03</span><span><strong>Accent, used with intent</strong>Clay can label and signal. Brass stays decorative, not small body copy.</span></div>
+      </div>
+      <div class="contrast-strip" role="group" aria-label="Proposed contrast checks">
+        <span class="contrast-chip">Forest on oat <strong>10.2:1</strong></span>
+        <span class="contrast-chip">Oat on forest <strong>10.2:1</strong></span>
+        <span class="contrast-chip">Clay on oat <strong>4.9:1</strong></span>
+        <span class="contrast-chip">Brass reserved for accents</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section page-width type-section" aria-labelledby="type-title">
+    <div>
+      <span class="eyebrow">03 / Typography</span>
+      <h2 class="section-heading" id="type-title">Soft expression.<br>Clear decisions.</h2>
+      <p class="section-intro">The working pair uses the locally hosted Cormorant Garamond and Jost files already in the project. Their roles become more deliberate here. A second typeface round can compare alternatives before the identity is locked.</p>
+    </div>
+    <div>
+      <div class="type-grid">
+        <article class="type-card type-card--display">
+          <div class="type-meta"><span>Display / Cormorant</span><span>Weight 500</span></div>
+          <div class="type-sample-display">Carry your<br><em>own rhythm.</em></div>
+          <p>Large editorial headlines, occasional italic phrases and the primary wordmark. Keep line lengths short and let the form breathe.</p>
+        </article>
+        <article class="type-card">
+          <div class="type-meta"><span>Interface / Jost</span><span>Weight 400 to 650</span></div>
+          <div class="type-sample-sans">Made for<br>the everyday.</div>
+          <p>Navigation, product details, prices, delivery notes and actions. Compact labels use tracking, while buying information stays plain and legible.</p>
+        </article>
+      </div>
+      <div class="type-scale" role="group" aria-label="Proposed typography roles">
+        <span class="scale-display">Campaign</span>
+        <span class="scale-body">Product details</span>
+        <span class="scale-label">Small label / 01</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section imagery-section" aria-labelledby="imagery-title">
+    <div class="page-width">
+      <div class="imagery-head">
+        <div><span class="eyebrow">04 / Image direction</span><h2 class="section-heading" id="imagery-title">Let the bag lead.<br>Let the city show.</h2></div>
+        <p class="section-intro">Use lived-in light, architecture and texture to give the edit a sense of place. Keep the bag visible and true to the item for sale. Avoid costume-like local signifiers and generic luxury props.</p>
+      </div>
+      <div class="image-grid">
+        <figure class="image-card">
+          <img src="../../assets/img/style-crossbody.jpg" alt="Crossbody bag styled for a city walk" loading="lazy">
+          <figcaption><span>In motion</span><span>Street light<br>and useful shape</span></figcaption>
+        </figure>
+        <figure class="image-card">
+          <img src="../../assets/img/style-top-handle-structured.jpg" alt="Structured handbag styled beside a coffee cup and scarf" loading="lazy">
+          <figcaption><span>At rest</span><span>Texture<br>without clutter</span></figcaption>
+        </figure>
+        <figure class="image-card">
+          <img src="../../assets/img/style-mini-occasion.jpg" alt="Small occasion handbag photographed in warm evening light" loading="lazy">
+          <figcaption><span>After hours</span><span>Warm light<br>kept simple</span></figcaption>
+        </figure>
+      </div>
+      <div class="image-principles">
+        <div class="image-principle"><strong>01 / Context</strong><span>Show believable settings and materials, not status props.</span></div>
+        <div class="image-principle"><strong>02 / Product truth</strong><span>Do not hide color, scale or construction behind heavy grading.</span></div>
+        <div class="image-principle"><strong>03 / Rhythm</strong><span>Alternate close product views with a few wider campaign frames.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section page-width store-section" id="shop-study" aria-labelledby="shop-title">
+    <div class="store-header">
+      <div><span class="eyebrow">05 / Storefront application</span><h2 class="section-heading" id="shop-title">The identity has to sell bags.</h2></div>
+      <p class="store-header-note">A campaign moment can feel editorial. Navigation, categories, price, delivery and the add action remain immediate and familiar.</p>
+    </div>
+    <div class="browser-frame">
+      <div class="browser-bar">
+        <span class="browser-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span class="browser-url">baggedup.example / the-edit</span>
+        <span class="browser-label">Storefront study / concept only</span>
+      </div>
+      <div class="store-mock">
+        <div class="mock-nav">
+          <a class="brand-lockup" href="../../index.html" aria-label="Bagged Up concept home">
+            <svg class="handle-mark" viewBox="0 0 80 80" aria-hidden="true" focusable="false">
+              <path class="mark-loop-a" d="M18 64V28a14 14 0 0 1 28 0v36"/>
+              <path class="mark-loop-b" d="M34 64V28a14 14 0 0 1 28 0v36"/>
+              <path class="mark-stitch" d="M32 46h16"/>
+            </svg>
+            <span class="brand-wordmark"><span>Bagged</span><em>Up</em></span>
+          </a>
+          <nav class="mock-links" aria-label="Store preview categories"><span>Shoulder</span><span>Totes</span><span>Mini</span><span>New in</span></nav>
+          <a class="mock-cart" href="../../cart.html">Bag / 0</a>
+        </div>
+        <div class="mock-hero">
+          <div class="mock-hero-copy">
+            <span class="eyebrow">The city edit / 01</span>
+            <h3>A bag for<br><em>your day.</em></h3>
+            <p>Inspected in person. Selected for the days that do not stand still.</p>
+            <a class="button" href="../../shop.html">Shop the edit <span class="button-arrow" aria-hidden="true">↗</span></a>
+          </div>
+          <div class="mock-hero-image"><img src="../../assets/img/style-top-handle-structured.jpg" alt="A structured top-handle bag in a warm, everyday setting" loading="lazy"></div>
+        </div>
+        <div class="assurance-row" role="group" aria-label="Shopping information">
+          <span>Inspected in person</span><span>Pay on delivery</span><span>Countrywide delivery</span>
+        </div>
+        <div class="product-row">
+          <article class="product-card">
+            <a href="../../shop/black-crescent-shoulder-bag.html" aria-label="View Black Crescent Shoulder Bag">
+              <div class="product-image"><img src="../../assets/products/black-crescent-shoulder-bag-1.jpg" alt="Black Crescent Shoulder Bag" loading="lazy"><span class="product-label">City shape</span></div>
+            </a>
+            <div class="product-info"><span class="product-category">Shoulder and Crescent</span><h4>Black Crescent Shoulder Bag</h4><span class="product-price">KSh 1,499</span><a class="mock-add" href="../../shop/black-crescent-shoulder-bag.html">View details <span aria-hidden="true">↗</span></a></div>
+          </article>
+          <article class="product-card">
+            <a href="../../shop/canvas-tote-bag.html" aria-label="View Canvas Tote Bag">
+              <div class="product-image"><img src="../../assets/products/canvas-tote-bag-1.jpg" alt="Canvas Tote Bag" loading="lazy"><span class="product-label">Everyday</span></div>
+            </a>
+            <div class="product-info"><span class="product-category">Totes</span><h4>Canvas Tote Bag</h4><span class="product-price">KSh 999</span><a class="mock-add" href="../../shop/canvas-tote-bag.html">View details <span aria-hidden="true">↗</span></a></div>
+          </article>
+          <article class="product-card">
+            <a href="../../shop/charm-shoulder-pouch.html" aria-label="View Charm Shoulder Pouch">
+              <div class="product-image"><img src="../../assets/products/charm-shoulder-pouch-1.jpg" alt="Charm Shoulder Pouch" loading="lazy"><span class="product-label">Small form</span></div>
+            </a>
+            <div class="product-info"><span class="product-category">Shoulder and Crescent</span><h4>Charm Shoulder Pouch</h4><span class="product-price">KSh 1,399</span><a class="mock-add" href="../../shop/charm-shoulder-pouch.html">View details <span aria-hidden="true">↗</span></a></div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section applications" id="applications" aria-labelledby="applications-title">
+    <div class="page-width applications-inner">
+      <div>
+        <span class="eyebrow">06 / Brand in use</span>
+        <h2 class="section-heading" id="applications-title">One system.<br>Different scales.</h2>
+        <p class="section-intro">The same loop, colors and type should work on a phone screen, a delivery note and a simple paper wrap. Keep materials and finishes practical to source.</p>
+      </div>
+      <div>
+        <div class="application-grid">
+          <article class="application-card">
+            <span class="mini-label">Social / campaign tile</span>
+            <div class="social-study">
+              <h3>Carry your own rhythm.</h3>
+              <p>Use the clay accent once. Let the photograph carry the rest of the frame.</p>
+              <span class="brand-lockup">
+                <svg class="handle-mark" viewBox="0 0 80 80" aria-hidden="true" focusable="false">
+                  <path class="mark-loop-a" d="M18 64V28a14 14 0 0 1 28 0v36"/>
+                  <path class="mark-loop-b" d="M34 64V28a14 14 0 0 1 28 0v36"/>
+                  <path class="mark-stitch" d="M32 46h16"/>
+                </svg>
+                <span class="brand-wordmark"><span>Bagged</span><em>Up</em></span>
+              </span>
+            </div>
+          </article>
+          <article class="application-card application-card--forest">
+            <span class="mini-label">Packaging / paper wrap</span>
+            <div class="package-study">
+              <div class="paper-bag" aria-hidden="true">
+                <svg class="handle-mark" viewBox="0 0 80 80" focusable="false">
+                  <path class="mark-loop-a" d="M18 64V28a14 14 0 0 1 28 0v36"/>
+                  <path class="mark-loop-b" d="M34 64V28a14 14 0 0 1 28 0v36"/>
+                  <path class="mark-stitch" d="M32 46h16"/>
+                </svg>
+              </div>
+              <p>Uncoated paper, one-color stamp and a small brass-toned seal. No costly foil needed for the first run.</p>
+            </div>
+          </article>
+        </div>
+        <div class="voice-block" role="group" aria-label="Voice and tone examples">
+          <div class="voice-sample"><strong>Say what happens</strong><p>“Pay on delivery. Delivery countrywide.”</p></div>
+          <div class="voice-sample"><strong>Show the care</strong><p>“Every bag is inspected in person before it reaches the site.”</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section decision" aria-labelledby="decision-title">
+    <div class="page-width decision-inner">
+      <div>
+        <span class="eyebrow">Review checkpoint</span>
+        <h2 class="section-heading" id="decision-title">Before this becomes the brand.</h2>
+        <p class="section-intro">This is the first full concept pass. It does not change the live logo, theme, fonts or checkout. The next round should resolve the mark and accent balance before implementation.</p>
+      </div>
+      <ol class="decision-list">
+        <li>Does the linked-handle mark feel ownable, or should the wordmark stand alone?</li>
+        <li>Should clay stay this restrained, or move closer to a stronger rust accent?</li>
+        <li>Does the image direction feel recognizably local without relying on visual shortcuts?</li>
+        <li>Does the campaign energy feel distinctive while product names, prices and shopping actions stay easy to scan?</li>
+      </ol>
+    </div>
+  </section>
+</main>
+<footer class="page-width project-footer">
+  <span><strong>Bagged Up / City Collectors, Atelier Cut</strong> &nbsp; Working identity concept, not production artwork.</span>
+  <a href="./identity-routes.html">Return to route comparison</a>
+</footer>
+</body>
+</html>
