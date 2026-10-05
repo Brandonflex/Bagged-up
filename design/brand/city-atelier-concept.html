@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light">
-<meta name="description" content="A working Bagged Up identity concept combining the City Collectors route with Modern Atelier restraint.">
-<title>Bagged Up | City Collectors, Atelier Cut</title>
+<meta name="description" content="A refined Bagged Up identity study with a custom B/U signature, layered editorial art direction, and a more human brand voice.">
+<title>Bagged Up | A Quiet Signature</title>
 <style>
 @font-face {
   font-family: "Cormorant Garamond";
@@ -88,7 +88,6 @@ button { font: inherit; }
 .hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .85rem 1.4rem; margin-top: 1.7rem; }
 .button { display: inline-flex; min-height: 50px; align-items: center; justify-content: center; gap: .85rem; padding: .8rem 1rem .8rem 1.25rem; border: 1px solid var(--forest); color: var(--paper-light); background: var(--forest); font-size: .73rem; font-weight: 650; letter-spacing: .12em; text-transform: uppercase; transition: background .2s, color .2s, transform .2s; }
 .button:hover { transform: translateY(-2px); color: var(--forest); background: var(--paper); }
-.button-arrow { display: grid; width: 27px; height: 27px; place-items: center; border: 1px solid currentColor; border-radius: 50%; font-size: 1rem; line-height: 1; }
 .text-link { display: inline-flex; align-items: center; gap: .4rem; border-bottom: 1px solid currentColor; color: var(--forest); font-size: .76rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
 .hero-facts { display: flex; flex-wrap: wrap; gap: .7rem 1.4rem; margin: 2.1rem 0 0; padding: 1rem 0 0; border-top: 1px solid var(--line); color: var(--muted); font-size: .69rem; font-weight: 550; letter-spacing: .08em; text-transform: uppercase; }
 .hero-facts span { display: inline-flex; align-items: center; gap: .45rem; }
@@ -341,39 +340,208 @@ button { font: inherit; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
+
+/* Refinement 02: designed layers, a clearer B/U signature, and an unhurried action. */
+.svg-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+.signature-mark { display: block; width: 42px; height: 42px; flex: none; overflow: visible; color: var(--signature-ink, var(--forest)); --signature-accent: var(--clay); --signature-seam: var(--brass); }
+.loop-mark { display: block; width: 66px; height: 66px; color: var(--forest); --loop-accent: var(--clay); --loop-seam: var(--brass); }
+.brand-lockup { gap: .7rem; }
+.brand-wordmark { color: var(--logo-ink, var(--forest)); font-size: 1.86rem; letter-spacing: -.055em; }
+.brand-wordmark em { color: inherit; font-style: italic; font-weight: 450; }
+.brand-lockup .signature-mark { width: 44px; height: 44px; }
+.bag-link { padding-inline: 1rem; border-color: rgba(41, 58, 49, .28); color: var(--forest); background: transparent; letter-spacing: .08em; text-transform: uppercase; transition: background .2s, color .2s, transform .2s; }
+.bag-link:hover { transform: translateY(-2px); color: var(--paper-light); background: var(--forest); }
+.hero { perspective: 1500px; perspective-origin: 54% 48%; }
+.hero-visual { isolation: isolate; transform-style: preserve-3d; perspective: 1500px; }
+.hero-word-plane { position: absolute; top: 10%; left: -17%; z-index: 0; display: grid; color: rgba(41, 58, 49, .14); font-family: var(--serif); font-size: clamp(5.5rem, 13.8vw, 12rem); font-weight: 500; letter-spacing: -.105em; line-height: .66; pointer-events: none; text-transform: uppercase; transform: translateZ(-95px) rotateY(8deg); white-space: nowrap; }
+.hero-photo { z-index: 1; border: 1px solid rgba(250, 247, 241, .7); box-shadow: 0 32px 65px rgba(30, 44, 37, .22), 12px 14px 0 rgba(208, 164, 80, .19); transform: perspective(1250px) rotateY(-3deg) rotateX(1.2deg) translateZ(28px); transform-origin: 55% 50%; }
+.hero-photo img { position: relative; z-index: 0; transform: scale(1.025); }
+.hero-photo::before { position: absolute; inset: 1rem; z-index: 2; border: 1px solid rgba(250, 247, 241, .34); content: ""; pointer-events: none; }
+.hero-photo::after { z-index: 1; }
+.hero-photo figcaption { z-index: 3; }
+.hero-image-cta { position: absolute; bottom: 4.65rem; left: 1.4rem; z-index: 4; transform: translateZ(78px); }
+.hero-seal { top: .85rem; right: -1.4rem; z-index: 5; width: 98px; height: 98px; border: 1px solid rgba(250, 247, 241, .75); border-radius: 10px; background: rgba(242, 235, 223, .96); box-shadow: 0 14px 30px rgba(30, 44, 37, .2), 0 0 0 6px rgba(242, 235, 223, .22); transform: rotate(4deg) translateZ(100px); }
+.hero-seal .signature-mark { width: 48px; height: 48px; }
+.hero-seal span { margin-top: .15rem; color: var(--forest); font-size: .48rem; letter-spacing: .15em; }
+.button { position: relative; display: inline-flex; min-height: 56px; align-items: center; gap: .9rem; padding: .78rem 1.15rem; border: 1px solid rgba(250, 247, 241, .34); color: var(--paper-light); background: linear-gradient(135deg, var(--forest) 0%, var(--forest-deep) 100%); box-shadow: 0 12px 24px rgba(19, 31, 24, .28), 0 3px 0 var(--clay); font-size: .72rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; transform: translateZ(70px); transition: box-shadow .2s, transform .2s, color .2s, background .2s; }
+.button-index { display: grid; width: 30px; height: 30px; flex: none; place-items: center; border-right: 1px solid rgba(242, 235, 223, .32); color: #F1D89E; font-family: var(--serif); font-size: 1.08rem; font-weight: 500; line-height: 1; }
+.button-label { white-space: nowrap; }
+.button:hover { transform: translateZ(84px) translateY(-2px); color: var(--paper-light); background: linear-gradient(135deg, #334A3D 0%, var(--forest) 100%); box-shadow: 0 16px 28px rgba(19, 31, 24, .3), 0 4px 0 var(--brass); }
+.button:active { transform: translateZ(60px) translateY(1px); box-shadow: 0 6px 12px rgba(19, 31, 24, .25), 0 1px 0 var(--clay); }
+.text-link { position: relative; padding: 0 0 .35rem; border: 0; letter-spacing: .09em; }
+.text-link::after { position: absolute; right: 0; bottom: 0; left: 0; height: 1px; background: currentColor; content: ""; transform: scaleX(.45); transform-origin: left; transition: transform .25s ease; }
+.text-link:hover::after, .text-link:focus-visible::after { transform: scaleX(1); }
+.logo-studies { perspective: 1500px; }
+.logo-card { position: relative; min-height: 238px; transform-style: preserve-3d; box-shadow: 0 12px 28px rgba(30, 44, 37, .08); transition: box-shadow .25s, transform .25s; }
+.logo-card:hover { box-shadow: 0 20px 38px rgba(30, 44, 37, .15); transform: rotateX(1.2deg) rotateY(-1.2deg) translateY(-3px); }
+.logo-card--feature::before { position: absolute; top: 0; left: 1.4rem; width: 2.8rem; height: 2px; background: var(--brass); content: ""; }
+.logo-card--dark .signature-mark, .logo-card--clay .signature-mark { color: var(--paper-light); --signature-ink: var(--paper-light); --signature-accent: var(--brass); --signature-seam: var(--paper-light); }
+.logo-card--dark .brand-wordmark em, .logo-card--clay .brand-wordmark em { color: inherit; }
+.logo-card--scale { background: var(--paper); }
+.mark-size-test { display: flex; align-items: end; justify-content: space-between; gap: 1rem; }
+.mark-size-test > span { display: grid; min-width: 62px; justify-items: center; gap: .55rem; color: var(--forest); }
+.mark-size-test small { color: var(--muted); font-size: .59rem; letter-spacing: .12em; text-transform: uppercase; }
+.signature-mark.mark-24 { width: 24px; height: 24px; }
+.signature-mark.mark-40 { width: 40px; height: 40px; }
+.signature-mark.mark-72 { width: 72px; height: 72px; }
+.logo-card--symbol { align-items: stretch; justify-content: space-between; background: var(--stone); }
+.loop-study-copy { max-width: 36ch; }
+.loop-repeat { display: flex; align-items: center; justify-content: center; gap: 1.1rem; padding: .6rem 0; }
+.loop-repeat .loop-mark:nth-child(2) { transform: translateY(-.5rem); }
+.logo-card--dark .logo-card-label { color: rgba(242, 235, 223, .78); }
+.palette-role { font-size: .8rem; }
+.type-card { box-shadow: 0 10px 26px rgba(30, 44, 37, .07); }
+.type-sample-display { max-width: 10ch; }
+.type-sample-sans { font-weight: 480; letter-spacing: -.055em; }
+.type-scale { font-variant-numeric: tabular-nums; }
+.imagery-section { background: linear-gradient(180deg, var(--paper) 0%, #ECE3D6 100%); }
+.image-card { box-shadow: 0 18px 38px rgba(30, 44, 37, .11); transform: perspective(1100px) rotateY(-1deg) translateZ(0); transition: box-shadow .3s, transform .3s; }
+.image-card:hover { box-shadow: 0 26px 50px rgba(30, 44, 37, .18); transform: perspective(1100px) rotateY(0) translateY(-4px) translateZ(16px); }
+.store-section { perspective: 1500px; }
+.browser-frame { box-shadow: 0 28px 64px rgba(30, 44, 37, .17), 0 3px 0 rgba(208, 164, 80, .45); transform: rotateX(.6deg); transform-origin: top center; }
+.mock-hero { position: relative; min-height: 470px; grid-template-columns: minmax(0, .86fr) minmax(0, 1.14fr); overflow: hidden; perspective: 1200px; transform-style: preserve-3d; }
+.mock-type-plane { position: absolute; top: 13%; right: 3%; z-index: 1; display: grid; color: rgba(242, 235, 223, .18); font-family: var(--serif); font-size: clamp(4.5rem, 10vw, 8.5rem); font-weight: 500; letter-spacing: -.1em; line-height: .68; pointer-events: none; transform: translateZ(-50px) rotateY(-8deg); }
+.mock-type-plane span:last-child { padding-left: 1.7em; }
+.mock-hero-copy { position: relative; z-index: 3; grid-column: 1; grid-row: 1; min-height: 470px; padding: clamp(1.5rem, 4vw, 3.8rem); background: linear-gradient(90deg, var(--forest) 0%, var(--forest) 70%, rgba(41, 58, 49, .92) 100%); }
+.mock-hero-copy h3 { max-width: 9ch; font-size: clamp(3.15rem, 5.7vw, 5.6rem); }
+.mock-hero-copy p { max-width: 30ch; }
+.mock-hero-image { position: relative; z-index: 2; grid-column: 2; grid-row: 1; min-height: 470px; margin-left: -1.2rem; box-shadow: -20px 0 45px rgba(30, 44, 37, .22); transform: translateZ(34px); }
+.mock-hero-image img { width: 100%; height: 100%; object-fit: cover; object-position: 62% center; transform: scale(1.035); }
+.mock-hero-cta { position: absolute; bottom: 1.8rem; left: 43%; z-index: 5; transform: translateZ(88px); }
+.mock-hero-cta:hover { transform: translateZ(98px) translateY(-2px); }
+.mock-hero-caption { position: absolute; top: 1.15rem; right: 1.2rem; z-index: 4; color: var(--paper-light); font-size: .59rem; font-weight: 600; letter-spacing: .16em; text-shadow: 0 2px 10px rgba(0, 0, 0, .3); text-transform: uppercase; }
+.mock-add { border: 0; font-size: .59rem; letter-spacing: .12em; }
+.mock-add::after { display: block; width: 1.2rem; height: 1px; margin-left: .25rem; background: currentColor; content: ""; transition: width .2s; }
+.mock-add:hover::after { width: 2rem; }
+.applications { background: linear-gradient(120deg, #E8DFD2 0%, #F1E9DD 58%, #E4D9CA 100%); }
+.application-card { box-shadow: 0 16px 34px rgba(30, 44, 37, .11); transform: perspective(900px) rotateY(-1deg); transition: transform .25s, box-shadow .25s; }
+.application-card:hover { box-shadow: 0 22px 42px rgba(30, 44, 37, .16); transform: perspective(900px) rotateY(0) translateY(-3px); }
+.application-card--social { background: radial-gradient(circle at 82% 16%, rgba(208, 164, 80, .23), transparent 35%), var(--paper-light); }
+.application-card--social .signature-mark { width: 38px; height: 38px; }
+.application-card--forest .signature-mark { width: 58px; height: 58px; color: var(--paper-light); --signature-ink: var(--paper-light); --signature-accent: var(--brass); --signature-seam: var(--paper-light); }
+
+.voice-section { color: var(--paper); background: var(--forest-deep); }
+.voice-section .eyebrow { color: #F1D89E; }
+.voice-section .section-heading { max-width: 10ch; }
+.voice-section .section-intro { color: rgba(242, 235, 223, .78); }
+.voice-layout { display: grid; grid-template-columns: minmax(0, .75fr) minmax(0, 1.25fr); align-items: start; gap: clamp(2rem, 6vw, 6rem); }
+.voice-intro { position: sticky; top: 120px; }
+.voice-tone { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: 1.5rem; }
+.voice-tone span { padding: .45rem .62rem; border: 1px solid rgba(242, 235, 223, .25); color: rgba(242, 235, 223, .88); font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; }
+.voice-content { min-width: 0; }
+.copy-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem; }
+.copy-card { min-height: 200px; padding: 1.2rem; border: 1px solid rgba(242, 235, 223, .22); }
+.copy-card--before { color: var(--espresso); background: var(--paper); }
+.copy-card--after { color: var(--paper-light); background: #344A3D; box-shadow: 0 18px 35px rgba(0, 0, 0, .2); transform: translateY(-.5rem) translateZ(18px); }
+.copy-card .mini-label { color: var(--clay); }
+.copy-card--after .mini-label { color: #F1D89E; }
+.copy-card p { margin: 1.25rem 0; font-family: var(--serif); font-size: clamp(1.35rem, 2vw, 1.9rem); line-height: 1.05; }
+.copy-card small { display: block; opacity: .76; font-size: .67rem; line-height: 1.5; }
+.voice-rules { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .65rem 1.1rem; margin-top: 1.5rem; }
+.voice-rules article { display: grid; grid-template-columns: 28px 1fr; align-items: start; gap: .7rem; padding-block: .85rem; border-top: 1px solid rgba(242, 235, 223, .18); }
+.voice-rules article > span { color: #F1D89E; font-family: var(--serif); font-size: 1.25rem; }
+.voice-rules strong { color: var(--paper-light); font-size: .78rem; font-weight: 600; }
+.voice-rules p { margin: .35rem 0 0; color: rgba(242, 235, 223, .73); font-size: .73rem; line-height: 1.55; }
+.voice-service { margin-top: 1.1rem; padding: 1.1rem 1.2rem; border-left: 2px solid var(--brass); background: rgba(242, 235, 223, .08); }
+.voice-service .mini-label { color: #F1D89E; }
+.voice-service p { max-width: 46ch; margin: .7rem 0 0; color: var(--paper-light); font-family: var(--serif); font-size: clamp(1.35rem, 2vw, 1.9rem); line-height: 1.1; }
+.research-note { margin-top: 1.2rem; padding: 1.1rem 1.2rem; border: 1px solid rgba(242, 235, 223, .18); background: rgba(242, 235, 223, .045); }
+.research-note h3 { margin: 0; color: var(--paper-light); font-size: .71rem; font-weight: 650; letter-spacing: .12em; text-transform: uppercase; }
+.research-note p { margin: .7rem 0 0; color: rgba(242, 235, 223, .72); font-size: .72rem; line-height: 1.65; }
+.research-links { display: flex; flex-wrap: wrap; gap: .5rem 1rem; margin-top: .9rem; }
+.research-links a { color: #F1D89E; font-size: .65rem; font-weight: 550; text-decoration: underline; text-decoration-color: rgba(241, 216, 158, .52); text-underline-offset: .2rem; }
+.research-links a:hover { text-decoration-color: currentColor; }
+
+@media (max-width: 1050px) {
+  .hero-word-plane { left: -9%; font-size: clamp(5rem, 13vw, 9rem); }
+  .hero-seal { right: -.8rem; }
+  .mock-hero-cta { left: 41%; }
+}
+@media (max-width: 760px) {
+  .hero { perspective: 1100px; }
+  .hero-visual { padding-left: 1.2rem; }
+  .hero-word-plane { top: 7%; left: -3%; font-size: clamp(5.8rem, 20vw, 9rem); }
+  .hero-photo { transform: perspective(1100px) rotateY(-1deg) translateZ(15px); }
+  .hero-image-cta { bottom: 4.55rem; left: 1rem; }
+  .hero-seal { right: -.45rem; width: 84px; height: 84px; }
+  .hero-seal .signature-mark { width: 40px; height: 40px; }
+  .voice-layout { grid-template-columns: 1fr; gap: 1.6rem; }
+  .voice-intro { position: static; }
+  .mock-hero { min-height: 620px; grid-template-columns: 1fr; }
+  .mock-hero-copy { grid-column: 1; grid-row: 1; min-height: 620px; padding: 1.5rem; background: linear-gradient(100deg, rgba(30, 44, 37, .97) 0%, rgba(30, 44, 37, .82) 50%, rgba(30, 44, 37, .28) 100%); }
+  .mock-hero-image { position: absolute; inset: 0; z-index: 2; grid-column: 1; grid-row: 1; min-height: 620px; margin: 0; box-shadow: none; }
+  .mock-hero-image img { min-height: 620px; object-position: 65% center; }
+  .mock-type-plane { top: auto; right: 1rem; bottom: 8rem; font-size: clamp(5rem, 18vw, 8rem); }
+  .mock-hero-cta { bottom: 1.5rem; left: 1.5rem; z-index: 6; }
+  .mock-hero-caption { top: auto; right: 1rem; bottom: 1.85rem; z-index: 5; max-width: 12ch; text-align: right; }
+}
+@media (max-width: 520px) {
+  .brand-wordmark { font-size: 1.48rem; }
+  .brand-lockup .signature-mark { width: 37px; height: 37px; }
+  .hero h1 { font-size: clamp(3.75rem, 15.5vw, 5.1rem); }
+  .hero-word-plane { left: -5%; font-size: 19vw; }
+  .hero-photo { height: min(116vw, 580px); }
+  .hero-image-cta { bottom: 4.5rem; left: .8rem; min-height: 50px; padding-inline: .8rem; }
+  .hero-seal { right: -.35rem; width: 76px; height: 76px; }
+  .hero-seal .signature-mark { width: 35px; height: 35px; }
+  .button-index { width: 27px; }
+  .logo-card { min-height: 200px; }
+  .logo-card--symbol { min-height: 210px; }
+  .loop-repeat { gap: .35rem; }
+  .loop-repeat .loop-mark { width: 54px; height: 54px; }
+  .loop-repeat .loop-mark:nth-child(2) { transform: translateY(-.35rem); }
+  .copy-pair, .voice-rules { grid-template-columns: 1fr; }
+  .copy-card { min-height: auto; }
+  .copy-card--after { transform: none; }
+  .mock-hero-copy h3 { max-width: 8ch; font-size: clamp(3rem, 13vw, 4.4rem); }
+  .mock-hero-cta { left: 1rem; bottom: 1rem; }
+  .mock-hero-caption { right: .75rem; bottom: 1.3rem; font-size: .52rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .logo-card, .image-card, .application-card, .button, .bag-link, .text-link::after { transition: none !important; }
+  .hero-photo, .hero-word-plane, .hero-seal, .mock-type-plane, .mock-hero-image, .browser-frame { transform: none !important; }
+}
+
 </style>
 </head>
 <body>
+<svg class="svg-defs" aria-hidden="true" focusable="false">
+  <symbol id="mark-bu" viewBox="0 0 100 100">
+    <path d="M25 78V23h17c20 0 22 25 1 27H25m0 0h18c24 0 23 28 0 28H25" fill="none" stroke="currentColor" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M57 47V34a13 13 0 0 1 26 0v31c0 10-6 16-13 16s-13-6-13-16V54" fill="none" stroke="var(--signature-accent, #96543F)" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M52 43h10" fill="none" stroke="var(--signature-seam, #D0A450)" stroke-width="3" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="mark-loops" viewBox="0 0 80 80">
+    <path d="M18 64V28a14 14 0 0 1 28 0v36" fill="none" stroke="currentColor" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M34 64V28a14 14 0 0 1 28 0v36" fill="none" stroke="var(--loop-accent, #96543F)" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M32 46h16" fill="none" stroke="var(--loop-seam, #D0A450)" stroke-width="3.1" stroke-linecap="round"/>
+  </symbol>
+</svg>
 <a class="skip-link" href="#main">Skip to concept</a>
 <header class="site-header">
   <div class="page-width header-inner">
     <a class="brand-lockup" href="../../index.html" aria-label="Bagged Up, current storefront">
-      <svg class="handle-mark" viewBox="0 0 80 80" aria-hidden="true" focusable="false">
-        <path class="mark-loop-a" d="M18 64V28a14 14 0 0 1 28 0v36"/>
-        <path class="mark-loop-b" d="M34 64V28a14 14 0 0 1 28 0v36"/>
-        <path class="mark-stitch" d="M32 46h16"/>
-      </svg>
+      <svg class="signature-mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#mark-bu"></use></svg>
       <span class="brand-wordmark"><span>Bagged</span><em>Up</em></span>
     </a>
     <nav class="main-nav" aria-label="Concept sections">
-      <a href="#identity">Identity</a>
+      <a href="#identity">Signature</a>
       <a href="#palette">Palette</a>
-      <a href="#shop-study">Shop study</a>
-      <a href="#applications">Applications</a>
+      <a href="#shop-study">Store</a>
+      <a href="#voice-study">Voice</a>
     </nav>
-    <a class="bag-link" href="../../shop.html">View store <span class="bag-count" aria-hidden="true">↗</span></a>
+    <a class="bag-link" href="../../shop.html">View store</a>
   </div>
 </header>
-<div class="route-status"><strong>Direction approved for development</strong> &nbsp;|&nbsp; City Collectors, Atelier Cut &nbsp;|&nbsp; concept only, not live branding</div>
+<div class="route-status"><strong>Refinement pass / 02</strong> &nbsp;|&nbsp; City Collectors + Modern Atelier &nbsp;|&nbsp; concept only, not live branding</div>
 <main id="main">
   <section class="page-width hero" aria-labelledby="hero-title">
     <div class="hero-copy">
-      <span class="eyebrow hero-kicker">City Collectors / Atelier cut</span>
-      <h1 id="hero-title">The city,<br>carried <em>well.</em></h1>
-      <p>A considered edit of handbags, shaped by city life and finished with a little atelier precision. Expressive in the details, calm around the product.</p>
+      <span class="eyebrow hero-kicker">For the ones who notice</span>
+      <h1 id="hero-title">A quieter<br>kind of <em>statement.</em></h1>
+      <p>Sometimes you know by the shape. We look for the curve of a handle, the feel of a clasp and the way a bag sits. We inspect each bag before it leaves us.</p>
       <div class="hero-actions">
-        <a class="button" href="../../shop.html">Explore the edit <span class="button-arrow" aria-hidden="true">↗</span></a>
-        <a class="text-link" href="#identity">See the identity system</a>
+        <a class="text-link" href="#identity">See what makes the edit</a>
       </div>
       <div class="hero-facts" role="group" aria-label="Store facts">
         <span>Inspected in person</span>
@@ -382,82 +550,73 @@ button { font: inherit; }
       </div>
     </div>
     <div class="hero-visual">
+      <span class="hero-word-plane" aria-hidden="true"><span>BAGGED</span><span>UP</span></span>
       <figure class="hero-photo">
         <img src="../../assets/img/style-crossbody.jpg" alt="A model carrying a small crossbody bag on a city street" fetchpriority="high">
-        <figcaption><span class="hero-caption-label">The City Edit / 01</span><span class="hero-caption-note">Out in the world</span></figcaption>
+        <a class="button hero-image-cta" href="../../shop.html"><span class="button-index">01</span><span class="button-label">Discover the edit</span></a>
+        <figcaption><span class="hero-caption-label">The City Edit / 01</span><span class="hero-caption-note">A closer look</span></figcaption>
       </figure>
       <div class="hero-seal" aria-hidden="true">
-        <svg class="handle-mark" viewBox="0 0 80 80" aria-hidden="true" focusable="false">
-          <path class="mark-loop-a" d="M18 64V28a14 14 0 0 1 28 0v36"/>
-          <path class="mark-loop-b" d="M34 64V28a14 14 0 0 1 28 0v36"/>
-          <path class="mark-stitch" d="M32 46h16"/>
-        </svg>
-        <span>Considered<br>in the city</span>
+        <svg class="signature-mark" viewBox="0 0 100 100"><use href="#mark-bu"></use></svg>
+        <span>Bagged Up<br>signature</span>
       </div>
       <div class="image-index" aria-hidden="true"><strong>01</strong><span>Point of view</span></div>
     </div>
   </section>
 
   <div class="page-width direction-note" id="identity">
-    <h2>City roots.<br>Atelier finish.</h2>
-    <p><strong>The City Collectors route brings the point of view. Modern Atelier brings the edit and the finish.</strong> Mineral paper and forest ink set a grounded base. Clay adds a confident signal; brass stays on small details. Spacious layouts and precise product information keep the store easy to shop.</p>
+    <h2>Three planes.<br>One point of view.</h2>
+    <p><strong>Type sits behind the subject. The bag holds the middle plane. The action sits above both.</strong> That gives the screen a little depth without dressing it up for effect. The approved City Collectors palette and Modern Atelier restraint stay in place. Product details remain easy to find.</p>
   </div>
 
   <section class="section page-width system" aria-labelledby="logo-title">
     <div class="system-lede">
-      <span class="eyebrow">01 / Logo studies</span>
-      <h2 class="section-heading" id="logo-title">A mark with a reason to exist.</h2>
-      <p>A pair of linked handles is the starting sketch. It nods to the shape of a bag without drawing one literally. The wordmark stays readable first; the symbol earns its place only if it holds up at small sizes.</p>
+      <span class="eyebrow">01 / Signature studies</span>
+      <h2 class="section-heading" id="logo-title">A signature, not a symbol.</h2>
+      <p>The linked handles have warmth, but on their own they can read as a generic bag icon. Keep that gesture as a quiet stitch or pattern. The primary mark brings a custom B/U ligature into one folded line. The full wordmark names Bagged Up on first contact. The monogram carries the memory after that.</p>
     </div>
     <div class="logo-studies">
-      <article class="logo-card">
+      <article class="logo-card logo-card--feature">
         <div>
           <span class="logo-card-label">Primary / light</span>
-          <p class="logo-card-note">The two-tone serif wordmark keeps a human edge. The handle mark adds one ownable detail.</p>
+          <p class="logo-card-note">The B and U share one drawn gesture. The handle is part of the U, not a separate bag illustration.</p>
         </div>
-        <a class="brand-lockup" href="../../index.html" aria-label="Bagged Up primary concept lockup">
-          <svg class="handle-mark" viewBox="0 0 80 80" aria-hidden="true" focusable="false">
-            <path class="mark-loop-a" d="M18 64V28a14 14 0 0 1 28 0v36"/>
-            <path class="mark-loop-b" d="M34 64V28a14 14 0 0 1 28 0v36"/>
-            <path class="mark-stitch" d="M32 46h16"/>
-          </svg>
+        <div class="brand-lockup">
+          <svg class="signature-mark" viewBox="0 0 100 100" aria-hidden="true"><use href="#mark-bu"></use></svg>
           <span class="brand-wordmark"><span>Bagged</span><em>Up</em></span>
-        </a>
+        </div>
       </article>
       <article class="logo-card logo-card--dark">
         <div>
           <span class="logo-card-label">Reverse / forest</span>
-          <p class="logo-card-note">Use the reversed wordmark on dark campaign panels and packaging. Brass becomes a restrained stitch, not a fill.</p>
+          <p class="logo-card-note">One ink and one fine seam. It stays composed on a dark campaign frame or a simple delivery card.</p>
         </div>
-        <a class="brand-lockup" href="../../index.html" aria-label="Bagged Up reversed concept lockup">
-          <svg class="handle-mark" viewBox="0 0 80 80" aria-hidden="true" focusable="false">
-            <path class="mark-loop-a" d="M18 64V28a14 14 0 0 1 28 0v36"/>
-            <path class="mark-loop-b" d="M34 64V28a14 14 0 0 1 28 0v36"/>
-            <path class="mark-stitch" d="M32 46h16"/>
-          </svg>
+        <div class="brand-lockup">
+          <svg class="signature-mark" viewBox="0 0 100 100" aria-hidden="true"><use href="#mark-bu"></use></svg>
           <span class="brand-wordmark"><span>Bagged</span><em>Up</em></span>
-        </a>
+        </div>
       </article>
-      <article class="logo-card logo-card--clay">
+      <article class="logo-card logo-card--scale">
         <div>
-          <span class="logo-card-label">Stamp / clay</span>
-          <p class="logo-card-note">A one-color stamp for tissue, order cards and small social marks. Test the loop at 24px before locking it.</p>
+          <span class="logo-card-label">Small-size test</span>
+          <p class="logo-card-note">A distinctive mark has to survive a profile image, a woven label and a small favicon.</p>
         </div>
-        <a class="brand-lockup" href="../../index.html" aria-label="Bagged Up stamp concept lockup">
-          <svg class="handle-mark" viewBox="0 0 80 80" aria-hidden="true" focusable="false">
-            <path class="mark-loop-a" d="M18 64V28a14 14 0 0 1 28 0v36"/>
-            <path class="mark-loop-b" d="M34 64V28a14 14 0 0 1 28 0v36"/>
-            <path class="mark-stitch" d="M32 46h16"/>
-          </svg>
-          <span class="brand-wordmark"><span>Bagged</span><em>Up</em></span>
-        </a>
+        <div class="mark-size-test" role="group" aria-label="B/U monogram at three sizes">
+          <span><svg class="signature-mark mark-24" viewBox="0 0 100 100" role="img" aria-label="B/U signature at 24 pixels"><use href="#mark-bu"></use></svg><small>24 px</small></span>
+          <span><svg class="signature-mark mark-40" viewBox="0 0 100 100" aria-hidden="true"><use href="#mark-bu"></use></svg><small>40 px</small></span>
+          <span><svg class="signature-mark mark-72" viewBox="0 0 100 100" aria-hidden="true"><use href="#mark-bu"></use></svg><small>72 px</small></span>
+        </div>
       </article>
       <article class="logo-card logo-card--symbol">
-        <svg class="handle-mark" viewBox="0 0 80 80" role="img" aria-label="Concept mark of two interlocking bag handles">
-          <path class="mark-loop-a" d="M18 64V28a14 14 0 0 1 28 0v36"/>
-          <path class="mark-loop-b" d="M34 64V28a14 14 0 0 1 28 0v36"/>
-          <path class="mark-stitch" d="M32 46h16"/>
-        </svg>
+        <div class="loop-study-copy">
+          <span class="logo-card-label">Supporting stitch</span>
+          <p class="logo-card-note">The original linked-loop idea stays as a secondary repeat or embossed detail. It no longer has to explain the brand by itself.</p>
+        </div>
+        <div class="loop-repeat" aria-hidden="true">
+          <svg class="loop-mark" viewBox="0 0 80 80"><use href="#mark-loops"></use></svg>
+          <svg class="loop-mark" viewBox="0 0 80 80"><use href="#mark-loops"></use></svg>
+          <svg class="loop-mark" viewBox="0 0 80 80"><use href="#mark-loops"></use></svg>
+        </div>
       </article>
     </div>
   </section>
@@ -465,8 +624,8 @@ button { font: inherit; }
   <section class="section palette-section" id="palette" aria-labelledby="palette-title">
     <div class="page-width">
       <span class="eyebrow">02 / Color system</span>
-      <h2 class="section-heading" id="palette-title">Grounded first.<br>Distinctive by degrees.</h2>
-      <p class="section-intro">The warm base carries product photography. Forest ink does the work of structure and action. Clay is the readable accent; marigold is reserved for metallic-feeling details and small highlights.</p>
+      <h2 class="section-heading" id="palette-title">A calm base.<br>A sharper note.</h2>
+      <p class="section-intro">Warm paper lets the photography breathe. Forest carries the interface. Clay marks an important point. Brass appears like a discreet stitch, never as small body copy.</p>
       <div class="palette-grid" role="group" aria-label="Proposed color palette">
         <div class="swatch-card swatch-paper"><strong>Oat paper</strong><code>#F2EBDF</code></div>
         <div class="swatch-card swatch-stone"><strong>Mineral stone</strong><code>#D9D0C3</code></div>
@@ -492,19 +651,19 @@ button { font: inherit; }
     <div>
       <span class="eyebrow">03 / Typography</span>
       <h2 class="section-heading" id="type-title">Soft expression.<br>Clear decisions.</h2>
-      <p class="section-intro">The working pair uses the locally hosted Cormorant Garamond and Jost files already in the project. Their roles become more deliberate here. A second typeface round can compare alternatives before the identity is locked.</p>
+      <p class="section-intro">Cormorant Garamond carries the editorial voice. Jost handles the interface. Both are self-hosted project fonts, not browser defaults. The difference comes from contrast in scale, spacing and rhythm, with custom lettering reserved for the signature.</p>
     </div>
     <div>
       <div class="type-grid">
         <article class="type-card type-card--display">
           <div class="type-meta"><span>Display / Cormorant</span><span>Weight 500</span></div>
-          <div class="type-sample-display">Carry your<br><em>own rhythm.</em></div>
-          <p>Large editorial headlines, occasional italic phrases and the primary wordmark. Keep line lengths short and let the form breathe.</p>
+          <div class="type-sample-display">A quieter<br>kind of <em>statement.</em></div>
+          <p>Large, high-contrast headlines and one italic note at a time. Let the type feel drawn, not decorated.</p>
         </article>
         <article class="type-card">
           <div class="type-meta"><span>Interface / Jost</span><span>Weight 400 to 650</span></div>
-          <div class="type-sample-sans">Made for<br>the everyday.</div>
-          <p>Navigation, product details, prices, delivery notes and actions. Compact labels use tracking, while buying information stays plain and legible.</p>
+          <div class="type-sample-sans">Shape first.<br>Details always.</div>
+          <p>Navigation, product details, prices and delivery notes. Tabular figures and spaced labels add a quiet technical edge. Buying information stays plain.</p>
         </article>
       </div>
       <div class="type-scale" role="group" aria-label="Proposed typography roles">
@@ -518,8 +677,8 @@ button { font: inherit; }
   <section class="section imagery-section" aria-labelledby="imagery-title">
     <div class="page-width">
       <div class="imagery-head">
-        <div><span class="eyebrow">04 / Image direction</span><h2 class="section-heading" id="imagery-title">Let the bag lead.<br>Let the city show.</h2></div>
-        <p class="section-intro">Use lived-in light, architecture and texture to give the edit a sense of place. Keep the bag visible and true to the item for sale. Avoid costume-like local signifiers and generic luxury props.</p>
+        <div><span class="eyebrow">04 / Image direction</span><h2 class="section-heading" id="imagery-title">The bag in focus.<br>The city in the frame.</h2></div>
+        <p class="section-intro">Use city light, worn stone and quiet interiors as the setting, not the story. Let the bag keep its true colour and shape. Pair campaign frames with clear product views that show scale on a person.</p>
       </div>
       <div class="image-grid">
         <figure class="image-card">
@@ -536,9 +695,9 @@ button { font: inherit; }
         </figure>
       </div>
       <div class="image-principles">
-        <div class="image-principle"><strong>01 / Context</strong><span>Show believable settings and materials, not status props.</span></div>
-        <div class="image-principle"><strong>02 / Product truth</strong><span>Do not hide color, scale or construction behind heavy grading.</span></div>
-        <div class="image-principle"><strong>03 / Rhythm</strong><span>Alternate close product views with a few wider campaign frames.</span></div>
+        <div class="image-principle"><strong>01 / Place</strong><span>Use lived-in architecture and light, with no borrowed status props.</span></div>
+        <div class="image-principle"><strong>02 / Product truth</strong><span>Keep colour, scale and construction visible in the shopping images.</span></div>
+        <div class="image-principle"><strong>03 / Rhythm</strong><span>Move from a close detail to a human-scale view, then a wider frame.</span></div>
       </div>
     </div>
   </section>
@@ -546,7 +705,7 @@ button { font: inherit; }
   <section class="section page-width store-section" id="shop-study" aria-labelledby="shop-title">
     <div class="store-header">
       <div><span class="eyebrow">05 / Storefront application</span><h2 class="section-heading" id="shop-title">The identity has to sell bags.</h2></div>
-      <p class="store-header-note">A campaign moment can feel editorial. Navigation, categories, price, delivery and the add action remain immediate and familiar.</p>
+      <p class="store-header-note">Let the first frame make you pause. Keep the product name, price, delivery and next step exactly where you expect them.</p>
     </div>
     <div class="browser-frame">
       <div class="browser-bar">
@@ -557,24 +716,22 @@ button { font: inherit; }
       <div class="store-mock">
         <div class="mock-nav">
           <a class="brand-lockup" href="../../index.html" aria-label="Bagged Up concept home">
-            <svg class="handle-mark" viewBox="0 0 80 80" aria-hidden="true" focusable="false">
-              <path class="mark-loop-a" d="M18 64V28a14 14 0 0 1 28 0v36"/>
-              <path class="mark-loop-b" d="M34 64V28a14 14 0 0 1 28 0v36"/>
-              <path class="mark-stitch" d="M32 46h16"/>
-            </svg>
+            <svg class="signature-mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#mark-bu"></use></svg>
             <span class="brand-wordmark"><span>Bagged</span><em>Up</em></span>
           </a>
           <nav class="mock-links" aria-label="Store preview categories"><span>Shoulder</span><span>Totes</span><span>Mini</span><span>New in</span></nav>
           <a class="mock-cart" href="../../cart.html">Bag / 0</a>
         </div>
         <div class="mock-hero">
+          <span class="mock-type-plane" aria-hidden="true"><span>THE</span><span>EDIT</span></span>
           <div class="mock-hero-copy">
             <span class="eyebrow">The city edit / 01</span>
-            <h3>A bag for<br><em>your day.</em></h3>
-            <p>Inspected in person. Selected for the days that do not stand still.</p>
-            <a class="button" href="../../shop.html">Shop the edit <span class="button-arrow" aria-hidden="true">↗</span></a>
+            <h3>Choose well.<br><em>Carry often.</em></h3>
+            <p>Start with the shape. Stay for the small details. Find the one you will reach for tomorrow.</p>
           </div>
           <div class="mock-hero-image"><img src="../../assets/img/style-top-handle-structured.jpg" alt="A structured top-handle bag in a warm, everyday setting" loading="lazy"></div>
+          <a class="button mock-hero-cta" href="../../shop.html"><span class="button-index">01</span><span class="button-label">Shop the city edit</span></a>
+          <span class="mock-hero-caption" aria-hidden="true">Bagged Up / The considered edit</span>
         </div>
         <div class="assurance-row" role="group" aria-label="Shopping information">
           <span>Inspected in person</span><span>Pay on delivery</span><span>Countrywide delivery</span>
@@ -584,19 +741,19 @@ button { font: inherit; }
             <a href="../../shop/black-crescent-shoulder-bag.html" aria-label="View Black Crescent Shoulder Bag">
               <div class="product-image"><img src="../../assets/products/black-crescent-shoulder-bag-1.jpg" alt="Black Crescent Shoulder Bag" loading="lazy"><span class="product-label">City shape</span></div>
             </a>
-            <div class="product-info"><span class="product-category">Shoulder and Crescent</span><h4>Black Crescent Shoulder Bag</h4><span class="product-price">KSh 1,499</span><a class="mock-add" href="../../shop/black-crescent-shoulder-bag.html">View details <span aria-hidden="true">↗</span></a></div>
+            <div class="product-info"><span class="product-category">Shoulder and Crescent</span><h4>Black Crescent Shoulder Bag</h4><span class="product-price">KSh 1,499</span><a class="mock-add" href="../../shop/black-crescent-shoulder-bag.html">See the bag</a></div>
           </article>
           <article class="product-card">
             <a href="../../shop/canvas-tote-bag.html" aria-label="View Canvas Tote Bag">
               <div class="product-image"><img src="../../assets/products/canvas-tote-bag-1.jpg" alt="Canvas Tote Bag" loading="lazy"><span class="product-label">Everyday</span></div>
             </a>
-            <div class="product-info"><span class="product-category">Totes</span><h4>Canvas Tote Bag</h4><span class="product-price">KSh 999</span><a class="mock-add" href="../../shop/canvas-tote-bag.html">View details <span aria-hidden="true">↗</span></a></div>
+            <div class="product-info"><span class="product-category">Totes</span><h4>Canvas Tote Bag</h4><span class="product-price">KSh 999</span><a class="mock-add" href="../../shop/canvas-tote-bag.html">See the bag</a></div>
           </article>
           <article class="product-card">
             <a href="../../shop/charm-shoulder-pouch.html" aria-label="View Charm Shoulder Pouch">
               <div class="product-image"><img src="../../assets/products/charm-shoulder-pouch-1.jpg" alt="Charm Shoulder Pouch" loading="lazy"><span class="product-label">Small form</span></div>
             </a>
-            <div class="product-info"><span class="product-category">Shoulder and Crescent</span><h4>Charm Shoulder Pouch</h4><span class="product-price">KSh 1,399</span><a class="mock-add" href="../../shop/charm-shoulder-pouch.html">View details <span aria-hidden="true">↗</span></a></div>
+            <div class="product-info"><span class="product-category">Shoulder and Crescent</span><h4>Charm Shoulder Pouch</h4><span class="product-price">KSh 1,399</span><a class="mock-add" href="../../shop/charm-shoulder-pouch.html">See the bag</a></div>
           </article>
         </div>
       </div>
@@ -607,22 +764,18 @@ button { font: inherit; }
     <div class="page-width applications-inner">
       <div>
         <span class="eyebrow">06 / Brand in use</span>
-        <h2 class="section-heading" id="applications-title">One system.<br>Different scales.</h2>
-        <p class="section-intro">The same loop, colors and type should work on a phone screen, a delivery note and a simple paper wrap. Keep materials and finishes practical to source.</p>
+        <h2 class="section-heading" id="applications-title">Quiet in tone.<br>Clear in detail.</h2>
+        <p class="section-intro">The mark, palette and type should feel at home on a phone, a delivery card and a simple paper wrap. Choose one finish with care, then leave some space around it.</p>
       </div>
       <div>
         <div class="application-grid">
-          <article class="application-card">
+          <article class="application-card application-card--social">
             <span class="mini-label">Social / campaign tile</span>
             <div class="social-study">
-              <h3>Carry your own rhythm.</h3>
-              <p>Use the clay accent once. Let the photograph carry the rest of the frame.</p>
+              <h3>For the ones who notice.</h3>
+              <p>A small edit. A good shape. The detail you see when you look twice.</p>
               <span class="brand-lockup">
-                <svg class="handle-mark" viewBox="0 0 80 80" aria-hidden="true" focusable="false">
-                  <path class="mark-loop-a" d="M18 64V28a14 14 0 0 1 28 0v36"/>
-                  <path class="mark-loop-b" d="M34 64V28a14 14 0 0 1 28 0v36"/>
-                  <path class="mark-stitch" d="M32 46h16"/>
-                </svg>
+                <svg class="signature-mark" viewBox="0 0 100 100" aria-hidden="true"><use href="#mark-bu"></use></svg>
                 <span class="brand-wordmark"><span>Bagged</span><em>Up</em></span>
               </span>
             </div>
@@ -631,20 +784,58 @@ button { font: inherit; }
             <span class="mini-label">Packaging / paper wrap</span>
             <div class="package-study">
               <div class="paper-bag" aria-hidden="true">
-                <svg class="handle-mark" viewBox="0 0 80 80" focusable="false">
-                  <path class="mark-loop-a" d="M18 64V28a14 14 0 0 1 28 0v36"/>
-                  <path class="mark-loop-b" d="M34 64V28a14 14 0 0 1 28 0v36"/>
-                  <path class="mark-stitch" d="M32 46h16"/>
-                </svg>
+                <svg class="signature-mark" viewBox="0 0 100 100"><use href="#mark-bu"></use></svg>
               </div>
-              <p>Uncoated paper, one-color stamp and a small brass-toned seal. No costly foil needed for the first run.</p>
+              <p>Uncoated paper. One dark ink. The B/U mark on a small paper seal. The finish should feel good in the hand, not shout across the room.</p>
             </div>
           </article>
         </div>
-        <div class="voice-block" role="group" aria-label="Voice and tone examples">
-          <div class="voice-sample"><strong>Say what happens</strong><p>“Pay on delivery. Delivery countrywide.”</p></div>
-          <div class="voice-sample"><strong>Show the care</strong><p>“Every bag is inspected in person before it reaches the site.”</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section voice-section" id="voice-study" aria-labelledby="voice-title">
+    <div class="page-width voice-layout">
+      <div class="voice-intro">
+        <span class="eyebrow">07 / Voice and writing</span>
+        <h2 class="section-heading" id="voice-title">A person,<br>not a pitch.</h2>
+        <p class="section-intro">Premium does not need a pile of grand adjectives. It comes through in what we notice, what we can prove and what we leave out.</p>
+        <div class="voice-tone"><span>Measured</span><span>Observant</span><span>Warm</span><span>Direct</span></div>
+      </div>
+      <div class="voice-content">
+        <div class="copy-pair" role="group" aria-label="Before and after copy example">
+          <article class="copy-card copy-card--before">
+            <span class="mini-label">The line we skip</span>
+            <p>“Discover our exquisite collection of timeless luxury handbags.”</p>
+            <small>Big promise. No detail. Could belong to anyone.</small>
+          </article>
+          <article class="copy-card copy-card--after">
+            <span class="mini-label">The Bagged Up voice</span>
+            <p>“A considered edit, chosen for shape and finish. We inspect every bag before dispatch.”</p>
+            <small>Specific, honest and easy to picture.</small>
+          </article>
         </div>
+        <div class="voice-rules">
+          <article><span>01</span><div><strong>Start with what you can see.</strong><p>Name the shape, clasp, colour or strap. Do not invent a material or a story.</p></div></article>
+          <article><span>02</span><div><strong>Pair feeling with a useful fact.</strong><p>One sensory detail, then the size, fit, price or delivery information people need.</p></div></article>
+          <article><span>03</span><div><strong>Talk to one person.</strong><p>Use “you” and “we” naturally. Keep the sentence the way you would say it in a good shop.</p></div></article>
+          <article><span>04</span><div><strong>Make the next step obvious.</strong><p>“Shop the city edit.” “See the bag.” “Ask us about this style.” No mystery arrows.</p></div></article>
+        </div>
+        <div class="voice-service">
+          <span class="mini-label">A practical promise, in our voice</span>
+          <p>“We check each bag before dispatch. You can pay when it arrives.”</p>
+        </div>
+        <aside class="research-note" aria-labelledby="research-title">
+          <h3 id="research-title">The research behind the wording</h3>
+          <p>Nielsen Norman Group recommends choosing a deliberate tone, then checking how real people read it. Its web-writing research favours concise, scannable and objective copy over hype. Baymard's product-page research adds a useful test: descriptions should answer real questions and work with the photos, especially around size and scale. The Office for National Statistics guidance reinforces plain words, active voice and consistent terms.</p>
+          <div class="research-links">
+            <a href="https://www.nngroup.com/articles/tone-voice-words/" target="_blank" rel="noopener">NN/g / Tone of voice</a>
+            <a href="https://www.nngroup.com/articles/applying-writing-guidelines-web-pages/" target="_blank" rel="noopener">NN/g / Writing for the web</a>
+            <a href="https://baymard.com/blog/product-descriptions" target="_blank" rel="noopener">Baymard / Product descriptions</a>
+            <a href="https://baymard.com/blog/in-scale-product-images" target="_blank" rel="noopener">Baymard / Images in scale</a>
+            <a href="https://service-manual.ons.gov.uk/content/writing-for-users/plain-language" target="_blank" rel="noopener">ONS / Plain language</a>
+          </div>
+        </aside>
       </div>
     </div>
   </section>
@@ -652,21 +843,21 @@ button { font: inherit; }
   <section class="section decision" aria-labelledby="decision-title">
     <div class="page-width decision-inner">
       <div>
-        <span class="eyebrow">Review checkpoint</span>
+        <span class="eyebrow">Review checkpoint / 02</span>
         <h2 class="section-heading" id="decision-title">Before this becomes the brand.</h2>
-        <p class="section-intro">This is the first full concept pass. It does not change the live logo, theme, fonts or checkout. The next round should resolve the mark and accent balance before implementation.</p>
+        <p class="section-intro">The direction is approved. This pass explores the new signature, the three-plane art direction and a more human voice. The live logo, theme and checkout remain unchanged while you review these refinements.</p>
       </div>
       <ol class="decision-list">
-        <li>Does the linked-handle mark feel ownable, or should the wordmark stand alone?</li>
-        <li>Should clay stay this restrained, or move closer to a stronger rust accent?</li>
-        <li>Does the image direction feel recognizably local without relying on visual shortcuts?</li>
-        <li>Does the campaign energy feel distinctive while product names, prices and shopping actions stay easy to scan?</li>
+        <li>Does the B/U signature read as a subtle Bagged Up cue at small sizes?</li>
+        <li>Does the layered hero feel artful, or has it gone a step too far?</li>
+        <li>Does the type pairing feel distinctive while staying clear on a phone?</li>
+        <li>Does the writing feel considered and human, without sounding distant or overfamiliar?</li>
       </ol>
     </div>
   </section>
 </main>
 <footer class="page-width project-footer">
-  <span><strong>Bagged Up / City Collectors, Atelier Cut</strong> &nbsp; Working identity concept, not production artwork.</span>
+  <span><strong>Bagged Up / A Quiet Signature</strong> &nbsp; Refinement concept, not production artwork.</span>
   <a href="./identity-routes.html">Return to route comparison</a>
 </footer>
 </body>

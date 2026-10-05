@@ -53,7 +53,10 @@ original releases with the fonts if the fonts are ever moved out of this repo.
 
 [`identity-routes.html`](identity-routes.html) compares the three initial visual
 territories. [`city-atelier-concept.html`](city-atelier-concept.html) develops
-the selected City Collectors direction with Modern Atelier restraint. It is a
-working concept board, not approved production artwork, and is excluded from the
-static build. The live logo, palette, type and theme remain unchanged until the
-finished identity is approved.
+the selected City Collectors direction with Modern Atelier restraint, then
+refines it with a custom B/U monogram, layered art direction and a human voice
+system. The original linked-loop mark remains a supporting stitch motif.
+
+This is a review concept, not production artwork, and stays outside the static
+build. The live logo, palette, type and theme remain unchanged until the final
+identity is approved for implementation.
