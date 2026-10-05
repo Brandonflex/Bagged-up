@@ -11,7 +11,7 @@ WhatsApp checkout, and a host that can serve files for free.
 index.html  shop.html  cart.html  about.html  reviews.html  contact.html
 faq.html  delivery.html  returns.html  privacy.html  terms.html   ← 11 root pages
 shop/                    50 product pages, one per catalogue slug
-assets/css/style.css    1,713 lines: tokens, components, PDP and editorial layer
+assets/css/style.css    1,749 lines: tokens, components, PDP and editorial layer
 assets/js/data.js         543 lines: window.BAGGED_UP_PRODUCTS (the catalogue)
 assets/js/app.js        1,096 lines: one IIFE, all behaviour, no runtime dependencies
 assets/js/reviews.js      reviews in one file; name, date, rating, text, product slug
@@ -120,7 +120,9 @@ Order: font faces, tokens (`:root`, then the two dark blocks), base elements,
 layout, components, PDP, responsive overrides, reduced-motion. One class per
 component, hyphenated, mostly flat (`.card`, `.card-media`, `.pdp-gallery`,
 `.delivery-opt`, `.cta`). Tokens are the only place colours are defined; the
-values live in `design/tokens.json` and the check keeps the two in step.
+theme-level values live in `design/tokens.json` and the check keeps the two in
+step. Fixed photo treatments use a small explicit raw-colour allow-list, checked
+in both directions so unused exceptions are caught.
 
 ## Build and deploy
 

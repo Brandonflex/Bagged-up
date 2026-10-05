@@ -261,6 +261,51 @@ const cardButtonOffsets = (page) => page.evaluate(() => [...document.querySelect
   await page.close();
 }
 
+/* 6. the campaign primary action must read as a real, high-contrast button */
+{
+  const page = await open('/', DESKTOP);
+  const button = await page.evaluate(() => {
+    const cta = document.querySelector('.home-hero .hero-ctas .btn-light');
+    const marker = cta?.querySelector('.hero-cta-arrow');
+    if (!cta || !marker) return null;
+    const style = getComputedStyle(cta);
+    const markerStyle = getComputedStyle(marker);
+    const rect = cta.getBoundingClientRect();
+    const markerRect = marker.getBoundingClientRect();
+    return {
+      label: cta.textContent.replace(/↗/g, '').trim(),
+      background: style.backgroundColor,
+      color: style.color,
+      height: rect.height,
+      markerBackground: markerStyle.backgroundColor,
+      markerColor: markerStyle.color,
+      markerWidth: markerRect.width,
+      markerHeight: markerRect.height,
+    };
+  });
+  check('hero primary CTA is a filled, high-contrast, touch-sized button', () => {
+    assert(button, 'the hero button or its arrow marker is missing');
+    assert(button.label === 'Explore the edit', `accessible label text is "${button.label}"`);
+    assert(button.background === 'rgb(245, 241, 233)', `button fill is ${button.background}`);
+    assert(button.color === 'rgb(32, 26, 21)', `button label is ${button.color}`);
+    assert(button.height >= 44, `button is only ${Math.round(button.height)}px tall`);
+    assert(button.markerBackground === 'rgb(32, 26, 21)', `arrow marker fill is ${button.markerBackground}`);
+    assert(button.markerColor === 'rgb(245, 241, 233)', `arrow marker is ${button.markerColor}`);
+    assert(button.markerWidth >= 28 && Math.abs(button.markerWidth - button.markerHeight) < 1,
+      `arrow marker is ${Math.round(button.markerWidth)}×${Math.round(button.markerHeight)}px`);
+  });
+  await page.evaluate(() => document.documentElement.setAttribute('data-theme', 'dark'));
+  const darkButton = await page.evaluate(() => {
+    const cta = document.querySelector('.home-hero .hero-ctas .btn-light');
+    return { background: getComputedStyle(cta).backgroundColor, color: getComputedStyle(cta).color };
+  });
+  check('hero primary CTA remains clear when dark theme is selected', () => {
+    assert(darkButton.background === 'rgb(245, 241, 233)', `dark-theme fill is ${darkButton.background}`);
+    assert(darkButton.color === 'rgb(32, 26, 21)', `dark-theme label is ${darkButton.color}`);
+  });
+  await page.close();
+}
+
 await browser.close();
 server.close();
 
