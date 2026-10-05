@@ -1,0 +1,10 @@
+{
+  "extends": ["html-validate:recommended"],
+  "elements": ["html5"],
+  "rules": {
+    "doctype-style": "off",
+    "attr-quotes": "off",
+    "no-trailing-whitespace": "off",
+    "no-inline-style": "off"
+  }
+}
