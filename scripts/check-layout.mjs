@@ -352,7 +352,7 @@ for (const [device, viewport] of [['phone', PHONE], ['desktop', DESKTOP]]) {
   await page.close();
 }
 
-/* 6. the layered campaign action is clear, accessible and deliberately arrow-free */
+/* 8. the layered campaign action is clear, accessible and deliberately arrow-free */
 {
   const page = await open('/', DESKTOP);
   const button = await page.evaluate(() => {
@@ -406,6 +406,90 @@ for (const [device, viewport] of [['phone', PHONE], ['desktop', DESKTOP]]) {
     assert(darkButton.color === 'rgb(30, 44, 37)', `dark-theme label is ${darkButton.color}`);
   });
   await page.close();
+}
+
+/* 9. custom pointer states, fine-pointer fallback and branded page transitions */
+{
+  const page = await open('/', DESKTOP);
+  const capability = await page.evaluate(() => ({
+    fine: matchMedia('(hover: hover) and (pointer: fine)').matches,
+    reduced: matchMedia('(prefers-reduced-motion: reduce)').matches,
+    forced: matchMedia('(forced-colors: active)').matches,
+  }));
+  let cursorStates = null;
+  if (capability.fine && !capability.reduced && !capability.forced) {
+    const box = await page.$eval('.site-header .wordmark', (el) => {
+      const r = el.getBoundingClientRect();
+      return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+    });
+    await page.mouse.move(box.x, box.y);
+    const hover = await page.evaluate(() => document.querySelector('.atelier-cursor')?.dataset.state || 'missing');
+    await page.mouse.down();
+    const pressed = await page.evaluate(() => document.querySelector('.atelier-cursor')?.dataset.state || 'missing');
+    await page.mouse.up();
+    const released = await page.evaluate(() => document.querySelector('.atelier-cursor')?.dataset.state || 'missing');
+    await page.evaluate(() => {
+      const selection = window.getSelection();
+      const range = document.createRange();
+      range.selectNodeContents(document.querySelector('.home-hero h1'));
+      selection.removeAllRanges();
+      selection.addRange(range);
+      document.dispatchEvent(new Event('selectionchange'));
+    });
+    const selected = await page.evaluate(() => document.querySelector('.atelier-cursor')?.dataset.state || 'missing');
+    cursorStates = { hover, pressed, released, selected };
+  }
+  const cursorFallback = capability.fine && !capability.reduced && !capability.forced
+    ? null
+    : await page.evaluate(() => !document.querySelector('.atelier-cursor')
+      && !document.documentElement.classList.contains('has-custom-cursor'));
+  check('custom pointer adapts to hover, press and text selection while preserving native fallbacks', () => {
+    if (capability.fine && !capability.reduced && !capability.forced) {
+      assert(cursorStates, 'no custom pointer state was recorded');
+      assert(cursorStates.hover === 'hover', `hover state is ${cursorStates.hover}`);
+      assert(cursorStates.pressed === 'pressed', `press state is ${cursorStates.pressed}`);
+      assert(cursorStates.released === 'hover', `release state is ${cursorStates.released}`);
+      assert(cursorStates.selected === 'selection', `selection state is ${cursorStates.selected}`);
+    } else {
+      assert(cursorFallback, 'native cursor was not preserved for this device or preference');
+    }
+  });
+  await page.close();
+
+  const transitionPage = await open('/about', DESKTOP);
+  const reduced = await transitionPage.evaluate(() => matchMedia('(prefers-reduced-motion: reduce)').matches);
+  if (reduced) {
+    const leaving = await transitionPage.evaluate(() => document.documentElement.classList.contains('page-leaving'));
+    check('branded page transition respects reduced-motion preference', () => {
+      assert(!leaving, 'unexpected active page-leaving class');
+    });
+  } else {
+    const curtainState = await transitionPage.evaluate(() => {
+      const link = document.createElement('a');
+      link.href = '/delivery.html';
+      link.textContent = 'Test destination';
+      document.body.appendChild(link);
+      const click = new MouseEvent('click', { bubbles: true, cancelable: true, button: 0 });
+      link.dispatchEvent(click);
+      const curtain = document.querySelector('.brand-transition');
+      return {
+        prevented: click.defaultPrevented,
+        leaving: document.documentElement.classList.contains('page-leaving'),
+        visible: curtain ? getComputedStyle(curtain).visibility : 'missing',
+        signatureMask: curtain ? getComputedStyle(curtain.querySelector('.brand-transition__signature')).maskImage : '',
+        loopMask: curtain ? getComputedStyle(curtain.querySelector('.brand-transition__loops')).maskImage : '',
+      };
+    });
+    check('internal page navigation shows the animated signature loading curtain', () => {
+      assert(curtainState.prevented, 'the navigation was not intercepted for its short transition');
+      assert(curtainState.leaving, 'page-leaving state was not applied');
+      assert(curtainState.visible === 'visible', `curtain visibility is ${curtainState.visible}`);
+      assert(String(curtainState.signatureMask).includes('signature-mark.svg'), 'the curtain omits the signature mark');
+      assert(String(curtainState.loopMask).includes('linked-loop-mark.svg'), 'the curtain omits the supporting linked-loop');
+    });
+    await transitionPage.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 5000 });
+  }
+  await transitionPage.close();
 }
 
 await browser.close();

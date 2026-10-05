@@ -2,7 +2,12 @@
    the site can use a strict script-src 'self' Content Security Policy. */
 (function () {
   'use strict';
-  document.documentElement.classList.add('js');
+  var root = document.documentElement;
+  root.classList.add('js');
+  if (!window.matchMedia || !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    root.classList.add('page-entering');
+    window.setTimeout(function () { root.classList.remove('page-entering'); }, 900);
+  }
 
   try {
     var theme = window.localStorage.getItem('bagged-up-theme');

@@ -11,9 +11,10 @@ WhatsApp checkout, and a host that can serve files for free.
 index.html  shop.html  cart.html  about.html  reviews.html  contact.html
 faq.html  delivery.html  returns.html  privacy.html  terms.html   ← 11 root pages
 shop/                    50 product pages, one per catalogue slug
-assets/css/style.css    1,925 lines: tokens, components, PDP and editorial layer
+assets/css/style.css    2,134 lines: tokens, components, PDP, editorial and motion layers
 assets/js/data.js         543 lines: window.BAGGED_UP_PRODUCTS (the catalogue)
-assets/js/app.js        1,096 lines: one IIFE, all behaviour, no runtime dependencies
+assets/js/app.js        1,096 lines: one IIFE, all storefront behaviour, no runtime dependencies
+assets/js/brand-motion.js 238 lines: signature transitions and adaptive pointer
 assets/js/reviews.js      reviews in one file; name, date, rating, text, product slug
 assets/js/theme-init.js     15 lines: pre-paint theme, external for strict CSP
 assets/js/globals.d.ts   browser globals used by the JS typecheck
@@ -27,8 +28,8 @@ design/                   tokens.json + brand marks (source, not shipped)
 docs/                     architecture and design notes
 ```
 
-61 pages, ~18,900 lines of HTML, 191 KB of CSS (including about 118 KB of
-inline font data) and about 63 KB of JavaScript.
+61 pages, ~18,900 lines of HTML, 198 KB of CSS (including about 118 KB of
+inline font data) and about 73 KB of JavaScript.
 
 ## Page types
 
@@ -41,8 +42,9 @@ inline font data) and about 63 KB of JavaScript.
 | Trust and policy | 8 | about, reviews, contact, faq, delivery, returns, privacy, terms |
 
 Every page carries the same skeleton: skip link, sticky header with theme toggle
-and cart badge, slide-in nav panel, footer, floating WhatsApp button, and four
-external scripts (theme setup, reviews, catalogue, app). The footer markup is
+and cart badge, slide-in nav panel, footer, floating WhatsApp button, and five
+external scripts (theme setup, reviews, catalogue, storefront app, brand motion).
+The footer markup is
 byte-identical on all 61 pages apart from its relative path prefix.
 
 ## Data flow
@@ -135,7 +137,7 @@ in both directions so unused exceptions are caught.
 ## Build and deploy
 
 `npm run build` copies the publishable set into `dist/` and proves it is
-self-contained: 61 pages, 226 files, 14.3 MB, every reference resolving inside the
+self-contained: 61 pages, 227 files, 14.3 MB, every reference resolving inside the
 export, the Cloudflare `_headers` file present, no symbolic links, and no tooling
 or docs leaked in. Both hosts serve that folder:
 
@@ -148,7 +150,7 @@ or docs leaked in. Both hosts serve that folder:
 
 `npm run verify` runs `npm audit`, lint (html-validate over every page, eslint
 over the JS), types (`tsc --checkJs` with JSDoc annotations), design checks (7
-groups), 38 storefront integrity checks, 24 behaviour/security tests, and the
+groups), 38 storefront integrity checks, 25 behaviour/security tests, and the
 export check. The suite covers response-header parity, strict-CSP compatibility,
 SHA-pinned workflow actions, Dependabot, and malicious local-storage/review inputs.
 CI runs the audit and verification steps plus browser layout checks on every push

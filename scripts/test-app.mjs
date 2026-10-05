@@ -23,6 +23,7 @@ const read = (p) => fs.readFileSync(path.join(ROOT, p), 'utf8');
 const dataJs = read('assets/js/data.js');
 const reviewsJs = read('assets/js/reviews.js');
 const appJs = read('assets/js/app.js');
+const brandMotionJs = read('assets/js/brand-motion.js');
 
 let passed = 0;
 const failures = [];
@@ -72,6 +73,7 @@ function page(file, seed = {}, customizeWindow, query = '') {
   window.eval(reviewsJs);
   if (typeof customizeWindow === 'function') customizeWindow(window);
   window.eval(appJs);
+  window.eval(brandMotionJs);
   return window;
 }
 
@@ -379,6 +381,52 @@ check('a review for this product would show on this product only', () => {
   assert(reviews.every((p) => p === null || typeof p === 'string'), 'review records are malformed');
   const host = w.document.querySelector('[data-reviews="canvas-tote-bag"]');
   assert(host.querySelector('.review-summary') === null, 'a summary shows with no reviews for this product');
+});
+
+check('custom pointer changes state and respects touch, inputs and reduced motion', () => {
+  const touch = page('index.html');
+  assert(!touch.document.querySelector('.atelier-cursor'), 'the custom pointer appeared without a fine hover pointer');
+  assert(!touch.document.documentElement.classList.contains('has-custom-cursor'), 'native cursor was hidden on a touch-style device');
+
+  const fine = page('index.html', {}, function (w) {
+    w.matchMedia = function (query) {
+      return { matches: query.includes('(hover: hover) and (pointer: fine)') };
+    };
+  });
+  const cursor = fine.document.querySelector('.atelier-cursor');
+  assert(cursor && cursor.getAttribute('aria-hidden') === 'true', 'the decorative custom pointer is missing or exposed to assistive technology');
+  assert(fine.document.documentElement.classList.contains('has-custom-cursor'), 'the fine-pointer mode did not activate');
+
+  const link = fine.document.querySelector('.site-header .wordmark');
+  const move = (target) => target.dispatchEvent(new fine.MouseEvent('pointermove', {
+    bubbles: true, clientX: 90, clientY: 35,
+  }));
+  move(link);
+  assert(cursor.dataset.state === 'hover', `link hover state is ${cursor.dataset.state}`);
+  link.dispatchEvent(new fine.MouseEvent('pointerdown', { bubbles: true, button: 0 }));
+  assert(cursor.dataset.state === 'pressed', `pressed state is ${cursor.dataset.state}`);
+  fine.dispatchEvent(new fine.MouseEvent('pointerup', { bubbles: true }));
+  assert(cursor.dataset.state === 'hover', `release did not restore hover state: ${cursor.dataset.state}`);
+
+  const selection = fine.getSelection();
+  selection.selectAllChildren(fine.document.querySelector('.home-hero h1'));
+  fine.document.dispatchEvent(new fine.Event('selectionchange'));
+  assert(cursor.dataset.state === 'selection', `selection state is ${cursor.dataset.state}`);
+  selection.removeAllRanges();
+  fine.document.dispatchEvent(new fine.Event('selectionchange'));
+
+  const input = fine.document.createElement('input');
+  fine.document.body.appendChild(input);
+  move(input);
+  assert(cursor.dataset.state === 'native' && cursor.classList.contains('is-native'), 'form fields did not restore the native cursor');
+  assert(!cursor.classList.contains('is-visible'), 'the custom pointer remained visible over a form field');
+
+  const reduced = page('index.html', {}, function (w) {
+    w.matchMedia = function (query) {
+      return { matches: query.includes('(prefers-reduced-motion: reduce)') };
+    };
+  });
+  assert(!reduced.document.querySelector('.atelier-cursor'), 'the custom pointer ignored reduced-motion preference');
 });
 
 console.log(`\n  ${passed}/${passed + failures.length} behaviour tests passed\n`);

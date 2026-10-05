@@ -541,9 +541,10 @@ check('product pages load the catalogue and app script', () => {
     const depth = page.includes('/') ? '../' : '';
     if (!html.includes(`src="${depth}assets/js/data.js"`)) bad.push(`${page}: data.js`);
     if (!html.includes(`src="${depth}assets/js/app.js"`)) bad.push(`${page}: app.js`);
+    if (!html.includes(`src="${depth}assets/js/brand-motion.js"`)) bad.push(`${page}: brand-motion.js`);
   }
   if (bad.length) throw new Error(bad.join('; '));
-  return 'catalogue + behaviour loaded everywhere';
+  return 'catalogue, behaviour and brand motion loaded everywhere';
 });
 
 check('the WhatsApp checkout number is consistent', () => {
