@@ -213,6 +213,28 @@ check('no asset is orphaned', () => {
   return orphans.length ? `${orphans.length} orphaned file(s) - see notes` : 'all assets referenced';
 });
 
+check('WhatsApp marks share one scalable decorative vector on every page', () => {
+  const css = read('assets/css/style.css');
+  const svg = read('assets/img/whatsapp-mark.svg');
+  if (!css.includes('url("../img/whatsapp-mark.svg")') || !css.includes('background-color: currentColor')) {
+    throw new Error('the reusable vector mask or its contextual color is missing');
+  }
+  if (!/<svg[^>]*viewBox="0 0 24 24"/.test(svg) || !/<path\b[^>]*d="[^"]+"/.test(svg)) {
+    throw new Error('the WhatsApp vector has no scalable viewBox or path');
+  }
+  let total = 0;
+  const broken = [];
+  for (const page of PAGES) {
+    const html = read(page);
+    const marks = [...html.matchAll(/<span\s+class="wa-mark" aria-hidden="true"><\/span>/g)].length;
+    total += marks;
+    if (marks < 3) broken.push(`${page}: ${marks} mark(s)`);
+    if (html.includes('class="ic-fill"') || html.includes('M12.04 2a9.9')) broken.push(`${page}: legacy WhatsApp path remains`);
+  }
+  if (broken.length) throw new Error(broken.slice(0, 8).join('; '));
+  return `${total} consistent vector placements across ${PAGES.length} pages`;
+});
+
 /* ---------- per-page head + structure ---------- */
 const EXPECT = {
   canonical: true,

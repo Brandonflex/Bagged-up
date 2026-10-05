@@ -219,7 +219,6 @@ startCount = failures.length;
     'rgba(250,247,241,0.7)': '.text-link.light, only used on always-dark surfaces',
     'rgba(250,247,241,0.78)': 'hero subline, on --bg-dark in both themes',
     'rgba(250,247,241,0.8)': 'hero strip, on --bg-dark in both themes',
-    'rgba(250,247,241,0.6)': '.review-by on the homepage, which sits in an always-dark section',
     'rgba(245,241,233,0.62)': 'footer, always dark',
     'rgba(245,241,233,0.78)': 'footer links and contact lines, always dark',
     'rgba(245,241,233,0.5)': 'footer fine print, always dark',

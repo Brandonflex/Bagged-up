@@ -244,7 +244,98 @@ const cardButtonOffsets = (page) => page.evaluate(() => [...document.querySelect
   await desk.close();
 }
 
-/* 5. the review card reads as one block */
+/* 5. the homepage testimonial is one centered figure, on desktop and phone */
+for (const [device, viewport] of [['phone', PHONE], ['desktop', DESKTOP]]) {
+  const page = await open('/', viewport);
+  await page.evaluate(() => document.querySelector('.quote-band').scrollIntoView({ block: 'center' }));
+  await new Promise((r) => setTimeout(r, 250));
+  const layout = await page.evaluate(() => {
+    const band = document.querySelector('.quote-band');
+    const panel = band?.querySelector('.home-testimonial');
+    const title = panel?.querySelector('#home-testimonial-title');
+    const figure = panel?.querySelector('figure.home-review');
+    const quote = figure?.querySelector('blockquote .review-quote');
+    const attribution = figure?.querySelector('figcaption.review-attribution');
+    if (!band || !panel || !title || !figure || !quote || !attribution) return null;
+    const box = (el) => {
+      const rect = el.getBoundingClientRect();
+      return { left: rect.left, right: rect.right, width: rect.width, center: rect.left + rect.width / 2 };
+    };
+    const panelBox = box(panel);
+    return {
+      labelled: band.getAttribute('aria-labelledby') === title.id,
+      figureSemantics: figure.tagName === 'FIGURE' && quote.closest('blockquote') && attribution.tagName === 'FIGCAPTION',
+      quoteText: quote.textContent.trim(),
+      attributionText: attribution.textContent.trim(),
+      panel: panelBox,
+      parts: [box(title), box(quote), box(attribution)],
+      viewportWidth: window.innerWidth,
+    };
+  });
+  check(`${device} testimonial label, quote and attribution form one aligned component`, () => {
+    assert(layout, 'the labelled testimonial figure is incomplete');
+    assert(layout.labelled, 'the section is not labelled by the testimonial title');
+    assert(layout.figureSemantics, 'the quote and attribution are not grouped in a figure');
+    assert(layout.quoteText === 'Good customer service, thank you!', `unexpected quote: ${layout.quoteText}`);
+    assert(layout.attributionText.includes('Millicent') && layout.attributionText.includes('Verified buyer'),
+      `reviewer attribution is incomplete: ${layout.attributionText}`);
+    const misalignment = Math.max(...layout.parts.map((part) => Math.abs(part.center - layout.panel.center)));
+    assert(misalignment <= 1.5, `testimonial elements are off center by ${misalignment.toFixed(1)}px`);
+    assert(layout.panel.left >= -1 && layout.panel.right <= layout.viewportWidth + 1,
+      `testimonial panel overflows the ${layout.viewportWidth}px viewport`);
+  });
+  await page.close();
+}
+
+/* 6. every homepage WhatsApp placement renders the shared vector mask */
+{
+  const page = await open('/', PHONE);
+  const icons = await page.evaluate(async () => {
+    const nodes = [...document.querySelectorAll('.wa-mark')];
+    const entries = nodes.map((node) => {
+      const style = getComputedStyle(node);
+      const rect = node.getBoundingClientRect();
+      return {
+        mask: style.maskImage || style.webkitMaskImage,
+        color: style.backgroundColor,
+        width: rect.width,
+        height: rect.height,
+        hidden: node.getAttribute('aria-hidden'),
+        placement: node.closest('.wa-fab') ? 'floating button'
+          : node.closest('.wa-band') ? 'CTA band'
+            : node.closest('.footer-contact') ? 'footer'
+              : node.closest('.wa-line') ? 'navigation' : 'other',
+      };
+    });
+    const assetStatus = await fetch('/assets/img/whatsapp-mark.svg').then((response) => response.status).catch(() => 0);
+    return { entries, assetStatus };
+  });
+  check('nav, CTA, footer and floating WhatsApp marks use one crisp, color-adaptive vector', () => {
+    assert(icons.entries.length === 4, `homepage has ${icons.entries.length} WhatsApp mark(s), expected 4`);
+    assert(icons.assetStatus === 200, `shared vector returned HTTP ${icons.assetStatus}`);
+    const bad = icons.entries.filter((icon) => !String(icon.mask).includes('whatsapp-mark.svg')
+      || icon.width < 18 || icon.height < 18 || icon.hidden !== 'true' || icon.color === 'rgba(0, 0, 0, 0)');
+    assert(bad.length === 0, `${bad.length} mark(s) are missing the mask, visible size, color or decorative label: ${JSON.stringify(bad)}`);
+  });
+  await page.close();
+
+  const contact = await open('/contact', DESKTOP);
+  const cardMark = await contact.evaluate(() => {
+    const mark = document.querySelector('.contact-card .wa-mark');
+    if (!mark) return null;
+    const rect = mark.getBoundingClientRect();
+    const style = getComputedStyle(mark);
+    return { width: rect.width, height: rect.height, mask: style.maskImage || style.webkitMaskImage };
+  });
+  check('the contact card uses the same WhatsApp mark at its larger icon size', () => {
+    assert(cardMark, 'contact card WhatsApp mark is missing');
+    assert(cardMark.width === 22 && cardMark.height === 22, `contact-card mark is ${cardMark.width}×${cardMark.height}px`);
+    assert(String(cardMark.mask).includes('whatsapp-mark.svg'), 'contact-card mark does not use the shared vector');
+  });
+  await contact.close();
+}
+
+/* 7. the review card reads as one block */
 {
   const page = await open('/reviews');
   const box = await page.evaluate(() => {
