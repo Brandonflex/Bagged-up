@@ -6,7 +6,10 @@
  * things that actually break in production are reference and consistency
  * bugs: a link that 404s, a catalogue that disagrees with the pages, a
  * canonical URL that fights the host's clean-URL config. This suite checks
- * those invariants across every shipped file. No dependencies, no network.
+ * those invariants across every shipped file, plus the CI workflow files
+themselves: a workflow that fails to parse never runs at all, and no other
+check will ever notice. One dev dependency (js-yaml) exists for that last
+check; everything else stays dependency-free, no network.
  *
  *   node scripts/test-site.mjs        (or: npm test)
  */
@@ -14,6 +17,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execSync } from 'node:child_process';
+import { load as yamlLoad } from 'js-yaml';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SITE = 'https://bagged-up.vercel.app';
@@ -423,6 +427,20 @@ check('the WhatsApp checkout number is consistent', () => {
 });
 
 /* ---------- report ---------- */
+check('CI workflow files parse as YAML with jobs', () => {
+  const dir = path.join(ROOT, '.github', 'workflows');
+  const files = fs.readdirSync(dir).filter((f) => f.endsWith('.yml') || f.endsWith('.yaml'));
+  if (!files.length) throw new Error('no workflow files found in .github/workflows');
+  const summary = files.map((f) => {
+    const doc = yamlLoad(fs.readFileSync(path.join(dir, f), 'utf8'));
+    if (!doc || typeof doc.jobs !== 'object' || !Object.keys(doc.jobs).length) {
+      throw new Error(`${f} parsed but has no jobs`);
+    }
+    return `${f} (${Object.keys(doc.jobs).length} job)`;
+  });
+  return summary.join(', ');
+});
+
 const pad = (s, n) => (s + ' '.repeat(n)).slice(0, n);
 console.log('\nBagged Up - storefront integrity suite\n');
 for (const c of checks) console.log(`  ${c.ok ? 'PASS' : 'FAIL'}  ${pad(c.name, 52)} ${c.detail}`);

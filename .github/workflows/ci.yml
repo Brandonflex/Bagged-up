@@ -41,7 +41,7 @@ jobs:
       - name: build (static export check)
         run: npm run build
 
-      - name: layout (real browser: alignment, sticky bar, review card)
+      - name: layout (real browser, alignment, sticky bar, review card)
         run: |
           npm i --no-save puppeteer-core
           npm run layout
