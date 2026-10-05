@@ -48,3 +48,9 @@ every file, and no `<text>` anywhere.
 Cormorant Garamond and Jost are both SIL Open Font License 1.1, which permits
 commercial use, self-hosting and embedding. Keep the licence files from the
 original releases with the fonts if the fonts are ever moved out of this repo.
+
+## Identity exploration
+
+[`identity-routes.html`](identity-routes.html) is a visual comparison of three
+unapproved concepts. It is not copied by the static build; none of its marks or
+palette replaces the live brand assets until a direction is selected.
