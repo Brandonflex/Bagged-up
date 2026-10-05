@@ -11,13 +11,13 @@ WhatsApp checkout, and a host that can serve files for free.
 index.html  shop.html  cart.html  about.html  reviews.html  contact.html
 faq.html  delivery.html  returns.html  privacy.html  terms.html   ← 11 root pages
 shop/                    50 product pages, one per catalogue slug
-assets/css/style.css    1,773 lines: tokens, components, PDP and editorial layer
+assets/css/style.css    1,925 lines: tokens, components, PDP and editorial layer
 assets/js/data.js         543 lines: window.BAGGED_UP_PRODUCTS (the catalogue)
 assets/js/app.js        1,096 lines: one IIFE, all behaviour, no runtime dependencies
 assets/js/reviews.js      reviews in one file; name, date, rating, text, product slug
 assets/js/theme-init.js     15 lines: pre-paint theme, external for strict CSP
 assets/js/globals.d.ts   browser globals used by the JS typecheck
-assets/img/               9 shared assets (hero, about, favicon, 5 styling frames, WhatsApp mark)
+assets/img/               11 shared assets (hero, about, favicon, B/U signature mask, linked-loop mask, 5 styling frames, WhatsApp mark)
 assets/products/          141 product photos, named <slug>-<n>.jpg
 assets/fonts/             3 .woff2 files, currently unreferenced (see below)
 scripts/                  tests, checks, build, and optional browser tooling
@@ -27,7 +27,7 @@ design/                   tokens.json + brand marks (source, not shipped)
 docs/                     architecture and design notes
 ```
 
-61 pages, ~18,900 lines of HTML, 182 KB of CSS (including about 118 KB of
+61 pages, ~18,900 lines of HTML, 191 KB of CSS (including about 118 KB of
 inline font data) and about 63 KB of JavaScript.
 
 ## Page types
@@ -38,7 +38,7 @@ inline font data) and about 63 KB of JavaScript.
 | Collection | 1 | oversized editorial introduction, deep-linked category chips, sort, 50 cards |
 | Product (PDP) | 50 | gallery + lightbox, buy box, assurance accordions, styling band, review block, related pieces |
 | Cart | 1 | line items, delivery choice, totals, WhatsApp checkout, message preview |
-| Trust and policy | 7 | about, reviews, contact, faq, delivery, returns, privacy, terms |
+| Trust and policy | 8 | about, reviews, contact, faq, delivery, returns, privacy, terms |
 
 Every page carries the same skeleton: skip link, sticky header with theme toggle
 and cart badge, slide-in nav panel, footer, floating WhatsApp button, and four
@@ -77,8 +77,11 @@ all use the clean form, which is why the suite pins them together.
 
 The WhatsApp mark lives once in `assets/img/whatsapp-mark.svg`; `.wa-mark` applies
 it as a CSS mask so each nav, CTA, footer and floating-button placement keeps the
-same sharp silhouette while inheriting its local color. The icon's Font Awesome
-Free Brands attribution is retained in the SVG header.
+same sharp silhouette while inheriting its local color. The approved B/U signature
+and linked-loop stitch motif are also SVG masks in `assets/img/`; `.wordmark`
+adds the signature before the live Cormorant wordmark, and the loop appears as a
+small secondary detail in the homepage campaign. Both inherit theme-aware colors.
+The WhatsApp icon's Font Awesome Free Brands attribution is retained in the SVG header.
 
 ## Behaviour (`assets/js/app.js`)
 
@@ -132,20 +135,20 @@ in both directions so unused exceptions are caught.
 ## Build and deploy
 
 `npm run build` copies the publishable set into `dist/` and proves it is
-self-contained: 61 pages, 224 files, 14.3 MB, every reference resolving inside the
+self-contained: 61 pages, 226 files, 14.3 MB, every reference resolving inside the
 export, the Cloudflare `_headers` file present, no symbolic links, and no tooling
 or docs leaked in. Both hosts serve that folder:
 
 | Host | Config | Branch behaviour |
 | --- | --- | --- |
-| Cloudflare Workers Builds | `wrangler.jsonc` | `main` deploys; other branches run `wrangler versions upload`, which publishes a per-commit preview URL |
+| Cloudflare Workers Builds | `wrangler.jsonc` | production deploys only; branch builds are not used for PR validation |
 | Vercel | `vercel.json` | production on `main`, preview URL per commit |
 
 ## The gate
 
 `npm run verify` runs `npm audit`, lint (html-validate over every page, eslint
 over the JS), types (`tsc --checkJs` with JSDoc annotations), design checks (7
-groups), 35 storefront integrity checks, 24 behaviour/security tests, and the
+groups), 38 storefront integrity checks, 24 behaviour/security tests, and the
 export check. The suite covers response-header parity, strict-CSP compatibility,
 SHA-pinned workflow actions, Dependabot, and malicious local-storage/review inputs.
 CI runs the audit and verification steps plus browser layout checks on every push

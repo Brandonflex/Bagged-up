@@ -141,6 +141,45 @@ check('every product page has a catalogue entry', () => {
   return 'no orphan pages';
 });
 
+check('product copy and metadata stay specific, consistent and supportable', () => {
+  const bad = [];
+  for (const page of PDP_PAGES) {
+    const html = read(page);
+    const description = html.match(/<meta name="description" content="([^"]*)">/)?.[1] || '';
+    const ogDescription = html.match(/<meta property="og:description" content="([^"]*)">/)?.[1] || '';
+    const productCopy = html.match(/<p class="pdp-desc">([\s\S]*?)<\/p>/)?.[1]?.trim() || '';
+    const reviewLede = html.match(/<p class="fr-lede">([\s\S]*?)<\/p>/)?.[1]?.trim() || '';
+    if (!description || description.length > 155 || /…|\.\.\./.test(description)) {
+      bad.push(`${page}: missing, truncated or overlong search description`);
+    }
+    if (description !== ogDescription) bad.push(`${page}: search and Open Graph descriptions differ`);
+    if (!productCopy || !reviewLede || !productCopy.startsWith(reviewLede)) {
+      bad.push(`${page}: product copy and full-review lede are missing or out of sync`);
+    }
+    if (!html.includes('<h3>What fits</h3>') || !html.includes('Message us about this bag')) {
+      bad.push(`${page}: missing the product-specific fit-check prompt`);
+    }
+    if (!html.includes('Inspected before dispatch') || /Inspected &amp; cleaned before dispatch|Premium look and feel/.test(html)) {
+      bad.push(`${page}: unsupported or generic assurance/spec copy`);
+    }
+  }
+  if (bad.length) throw new Error(bad.slice(0, 8).join('; '));
+  return `${PDP_PAGES.length} pages keep meta, Open Graph, PDP and review copy aligned`;
+});
+
+check('product lightboxes retain visible labelled navigation controls', () => {
+  const bad = [];
+  for (const page of PDP_PAGES) {
+    const html = read(page);
+    for (const [id, label] of [['lb-prev', 'Previous photo'], ['lb-next', 'Next photo']]) {
+      const control = new RegExp(`<button type="button" class="lb-nav [^"]+" id="${id}" aria-label="${label}"><svg\\b`);
+      if (!control.test(html)) bad.push(`${page}: ${label}`);
+    }
+  }
+  if (bad.length) throw new Error(bad.slice(0, 8).join('; '));
+  return `${PDP_PAGES.length} pages have labelled SVG prev/next controls`;
+});
+
 check('sitemap matches the catalogue', () => {
   const xml = read('sitemap.xml');
   const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);

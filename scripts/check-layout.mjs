@@ -352,47 +352,58 @@ for (const [device, viewport] of [['phone', PHONE], ['desktop', DESKTOP]]) {
   await page.close();
 }
 
-/* 6. the campaign primary action must read as a real, high-contrast button */
+/* 6. the layered campaign action is clear, accessible and deliberately arrow-free */
 {
   const page = await open('/', DESKTOP);
   const button = await page.evaluate(() => {
-    const cta = document.querySelector('.home-hero .hero-ctas .btn-light');
-    const marker = cta?.querySelector('.hero-cta-arrow');
-    if (!cta || !marker) return null;
+    const cta = document.querySelector('.home-hero .hero-media .hero-image-cta');
+    const index = cta?.querySelector('.hero-cta-index');
+    const media = document.querySelector('.home-hero .hero-media');
+    const plane = document.querySelector('.home-hero .hero-type-plane');
+    if (!cta || !index || !media || !plane) return null;
     const style = getComputedStyle(cta);
-    const markerStyle = getComputedStyle(marker);
+    const indexStyle = getComputedStyle(index);
     const rect = cta.getBoundingClientRect();
-    const markerRect = marker.getBoundingClientRect();
+    const indexRect = index.getBoundingClientRect();
     return {
-      label: cta.textContent.replace(/↗/g, '').trim(),
+      label: cta.getAttribute('aria-label'),
       background: style.backgroundColor,
       color: style.color,
       height: rect.height,
-      markerBackground: markerStyle.backgroundColor,
-      markerColor: markerStyle.color,
-      markerWidth: markerRect.width,
-      markerHeight: markerRect.height,
+      indexText: index.textContent.trim(),
+      indexBorder: indexStyle.borderTopStyle,
+      indexWidth: indexRect.width,
+      indexHeight: indexRect.height,
+      planeZ: Number(getComputedStyle(plane).zIndex),
+      mediaZ: Number(getComputedStyle(media).zIndex),
+      ctaZ: Number(style.zIndex),
+      insideMedia: cta.parentElement === media,
+      hasArrow: /[↗↖↘↙→←↑↓]/.test(cta.textContent),
     };
   });
-  check('hero primary CTA is a filled, high-contrast, touch-sized button', () => {
-    assert(button, 'the hero button or its arrow marker is missing');
-    assert(button.label === 'Explore the edit', `accessible label text is "${button.label}"`);
-    assert(button.background === 'rgb(245, 241, 233)', `button fill is ${button.background}`);
-    assert(button.color === 'rgb(32, 26, 21)', `button label is ${button.color}`);
+  check('hero primary CTA is a filled, high-contrast, touch-sized button with no arrow', () => {
+    assert(button, 'the hero action, index or art-direction layers are missing');
+    assert(button.label === 'Shop the edit', `accessible label is "${button.label}"`);
+    assert(button.background === 'rgb(250, 247, 241)', `button fill is ${button.background}`);
+    assert(button.color === 'rgb(30, 44, 37)', `button label is ${button.color}`);
     assert(button.height >= 44, `button is only ${Math.round(button.height)}px tall`);
-    assert(button.markerBackground === 'rgb(32, 26, 21)', `arrow marker fill is ${button.markerBackground}`);
-    assert(button.markerColor === 'rgb(245, 241, 233)', `arrow marker is ${button.markerColor}`);
-    assert(button.markerWidth >= 28 && Math.abs(button.markerWidth - button.markerHeight) < 1,
-      `arrow marker is ${Math.round(button.markerWidth)}×${Math.round(button.markerHeight)}px`);
+    assert(button.indexText === '01', `button index is "${button.indexText}"`);
+    assert(button.indexBorder === 'solid', `button index border is ${button.indexBorder}`);
+    assert(button.indexWidth >= 30 && Math.abs(button.indexWidth - button.indexHeight) < 1,
+      `button index is ${Math.round(button.indexWidth)}×${Math.round(button.indexHeight)}px`);
+    assert(!button.hasArrow, 'the action contains a decorative arrow');
+    assert(button.insideMedia, 'the foreground action is detached from the campaign image');
+    assert(button.planeZ < button.mediaZ && button.mediaZ < button.ctaZ,
+      `hero layers are out of order: type ${button.planeZ}, image ${button.mediaZ}, action ${button.ctaZ}`);
   });
   await page.evaluate(() => document.documentElement.setAttribute('data-theme', 'dark'));
   const darkButton = await page.evaluate(() => {
-    const cta = document.querySelector('.home-hero .hero-ctas .btn-light');
+    const cta = document.querySelector('.home-hero .hero-media .hero-image-cta');
     return { background: getComputedStyle(cta).backgroundColor, color: getComputedStyle(cta).color };
   });
   check('hero primary CTA remains clear when dark theme is selected', () => {
-    assert(darkButton.background === 'rgb(245, 241, 233)', `dark-theme fill is ${darkButton.background}`);
-    assert(darkButton.color === 'rgb(32, 26, 21)', `dark-theme label is ${darkButton.color}`);
+    assert(darkButton.background === 'rgb(250, 247, 241)', `dark-theme fill is ${darkButton.background}`);
+    assert(darkButton.color === 'rgb(30, 44, 37)', `dark-theme label is ${darkButton.color}`);
   });
   await page.close();
 }
