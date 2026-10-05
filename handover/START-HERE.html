@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bagged Up — Getting the website online</title>
+<style>
+  body{
+    margin:0; padding:48px 22px 80px; background:#fff; color:#1a1a1a;
+    font:19px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  .wrap{max-width:620px; margin:0 auto}
+  h1{font-size:34px; line-height:1.2; margin:0 0 6px}
+  .sub{font-size:20px; color:#666; margin:0 0 40px}
+  h2{font-size:15px; letter-spacing:.1em; text-transform:uppercase; color:#888; margin:44px 0 18px}
+
+  ol{list-style:none; padding:0; margin:0; counter-reset:s}
+  li{counter-increment:s; position:relative; padding:0 0 30px 56px}
+  li:before{
+    content:counter(s); position:absolute; left:0; top:-2px;
+    width:38px; height:38px; border-radius:50%; background:#1a1a1a; color:#fff;
+    font-size:17px; font-weight:700; display:flex; align-items:center; justify-content:center;
+  }
+  li:after{content:""; position:absolute; left:18px; top:44px; bottom:6px; width:2px; background:#eee}
+  li:last-child:after{display:none}
+  li:last-child{padding-bottom:0}
+  .t{font-size:21px; font-weight:650; display:block; margin-bottom:4px}
+  .d{color:#555; font-size:17px}
+  b{color:#1a1a1a}
+  code{font:17px ui-monospace,Menlo,Consolas,monospace; background:#f2f2f2;
+       padding:3px 8px; border-radius:5px; word-break:break-all}
+
+  .done{background:#eef8f1; border-left:4px solid #2a7a4b; border-radius:0 8px 8px 0;
+        padding:18px 20px; margin:36px 0 0}
+  .done p{margin:0; color:#1d5c38; font-size:19px}
+
+  .box{border-left:4px solid #ddd; background:#fafafa; border-radius:0 8px 8px 0; padding:18px 20px; margin:16px 0}
+  .warn{border-left-color:#c9821f; background:#fdf7ec}
+  .warn .h{color:#8a5a00}
+  .box .h{font-weight:700; display:block; margin-bottom:5px}
+  .box p{margin:0; color:#444; font-size:17px}
+  .box p + p{margin-top:9px}
+
+  .file{background:#f2f2f2; border-radius:8px; padding:14px 16px; margin:14px 0;
+        font:17px ui-monospace,Menlo,Consolas,monospace}
+  .file span{display:block; font:15px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; color:#666; margin-top:3px}
+  footer{margin-top:56px; padding-top:20px; border-top:1px solid #eee; color:#999; font-size:15px}
+  @media print{body{padding:0; font-size:12pt}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Bagged Up — getting the website online</h1>
+  <p class="sub">Three steps. About five minutes. Nothing to install.</p>
+
+  <h2>What you need</h2>
+  <p style="margin:0 0 8px">A computer, internet, and an email address. That's it.</p>
+
+  <h2>Do this</h2>
+  <ol>
+    <li>
+      <span class="t">Save the website file</span>
+      <span class="d">Download <code>Bagged-Up-website.zip</code> and keep it somewhere you'll find again. This file <b>is</b> the website.</span>
+    </li>
+    <li>
+      <span class="t">Unzip it</span>
+      <span class="d">Right-click the file and choose <b>Extract All</b> (on a Mac, just double-click it). You'll get a folder holding the website.</span>
+    </li>
+    <li>
+      <span class="t">Drag that folder onto Netlify Drop</span>
+      <span class="d">Open <code>app.netlify.com/drop</code>, drag the folder onto the page, let go, and wait about a minute. Then sign up free with your email so it's saved to you.</span>
+    </li>
+  </ol>
+
+  <div class="done">
+    <p><b>Done — your shop is live.</b> You'll get an address like <code>bagged-up-12345.netlify.app</code>. Share that. Want your own name instead, like <code>baggedup.co.ke</code>? That's one extra step — ask whoever set this up for you.</p>
+  </div>
+
+  <h2>The file</h2>
+  <div class="file">
+    Bagged-Up-website.zip
+    <span>The website. This is the only thing you upload.</span>
+  </div>
+
+  <div class="box warn">
+    <span class="h">Two things to remember</span>
+    <p><b>Orders arrive on WhatsApp</b>, not through the website. Customers browse and then message you. Check it every day.</p>
+    <p><b>Renew your domain every year.</b> If it lapses the site disappears from the internet. This is the #1 way a site "breaks".</p>
+  </div>
+
+  <div class="box">
+    <span class="h">Need something changed?</span>
+    <p>New prices, adding a bag, new photos, changing wording — just message whoever set this up for you. Those are quick changes.</p>
+    <p>They'll send you a new zip. Drag it onto <code>app.netlify.com/projects</code> to replace the old one. If it ever looks wrong, Netlify keeps every old version and you can go back with one click.</p>
+  </div>
+
+  <footer>
+    Bagged Up · handover pack · 5 October 2026<br>
+    Keep this file. The zip in this folder is a complete copy of the website — as long as you have it, the site can always be put back online.
+  </footer>
+
+</div>
+</body>
+</html>
