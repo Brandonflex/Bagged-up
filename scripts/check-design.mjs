@@ -276,6 +276,67 @@ startCount = failures.length;
   group('raw colours outside tokens are deliberate', `${found.size} raw colours, all accounted for`);
 }
 
+/* ---------- 7. the product page follows the documented scale ---------- */
+startCount = failures.length;
+{
+  // The product page carries the most components, so it is the surface where
+  // a one-off size or gap is most likely to creep in and the rhythm to fall
+  // apart. Everything here is read from the docs: a step added to
+  // tokens.json is allowed everywhere, without touching this check.
+  const PDP = /^(\.pdp|\.fr-|\.full-review|\.carry-|\.spec-|\.mini-assure|\.assure|\.rail|\.sticky-atc|\.eta\b|\.free-bar|\.saved-|\.wa-band|\.review-|\.stock|\.scarcity|\.card-name)/;
+
+  const fixedSizes = new Set(
+    Object.values(tokens.type.scale)
+      .filter((v) => /^\d/.test(v))
+      .map((v) => v.match(/^(\d+\.?\d*)rem/)[1] + 'rem')
+  );
+  const steps = new Set(
+    tokens.space.steps.split('rem;')[0].split('/').map((v) => v.trim() + 'rem')
+  );
+
+  const clean = css.replace(/\/\*[\s\S]*?\*\//g, '');
+  const rules = [];
+  const walk = (text) => {
+    let i = 0;
+    while (i < text.length) {
+      const brace = text.indexOf('{', i);
+      if (brace < 0) break;
+      const sel = text.slice(i, brace).trim();
+      let depth = 1;
+      let j = brace + 1;
+      while (j < text.length && depth) {
+        if (text[j] === '{') depth++;
+        else if (text[j] === '}') depth--;
+        j++;
+      }
+      const body = text.slice(brace + 1, j - 1);
+      if (sel.startsWith('@')) walk(body);
+      else rules.push([sel, body]);
+      i = j;
+    }
+  };
+  walk(clean);
+
+  const off = [];
+  for (const [sel, body] of rules) {
+    if (!PDP.test(sel.split(',')[0].trim())) continue;
+    for (const m of body.matchAll(/font-size:\s*([^;]+);/g)) {
+      const v = m[1].trim();
+      if (v.startsWith('clamp(') || fixedSizes.has(v)) continue;
+      off.push(`${sel.split(',')[0].trim()}: font-size ${v} is not on the type scale`);
+    }
+    for (const m of body.matchAll(/(?:margin[a-z-]*|padding[a-z-]*|gap)\s*:\s*([^;]+);/g)) {
+      for (const v of m[1].matchAll(/(-?\d+\.?\d*)rem/g)) {
+        if (!steps.has(v[1] + 'rem')) {
+          off.push(`${sel.split(',')[0].trim()}: spacing ${v[1]}rem is not on the space scale`);
+        }
+      }
+    }
+  }
+  if (off.length) fail(`${off.length} value(s) off the documented scale: ${off.slice(0, 6).join('; ')}${off.length > 6 ? ` and ${off.length - 6} more` : ''}`);
+  group('product page follows the documented scale', `${fixedSizes.size} type steps, ${steps.size} space steps, all product-page values on them`);
+}
+
 /* ---------- report ---------- */
 console.log('\nBagged Up - design system check\n');
 for (const c of checks) console.log(`  ${c.ok ? 'PASS' : 'FAIL'}  ${c.name.padEnd(42)} ${c.detail}`);

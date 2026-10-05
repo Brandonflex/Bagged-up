@@ -421,7 +421,7 @@ body.nav-open .nav-panel { box-shadow: 0 40px 80px -30px rgba(33,27,21,0.4); }
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
 }
-.hero-strip span { display: inline-flex; align-items: center; gap: 0.55rem; font-size: 0.78rem; letter-spacing: 0.08em; color: rgba(250,247,241,0.8); }
+.hero-strip span { display: inline-flex; align-items: center; gap: 0.55rem; font-size: 0.8rem; letter-spacing: 0.08em; color: rgba(250,247,241,0.8); }
 .hero-strip svg { width: 15px; height: 15px; stroke: #C9B99A; flex: none; }
 
 /* ---------- USP strip ---------- */
@@ -513,7 +513,7 @@ body.nav-open .nav-panel { box-shadow: 0 40px 80px -30px rgba(33,27,21,0.4); }
 .card-cat { font-size: 0.66rem; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-faint); }
 .card-name {
   font-family: var(--serif);
-  font-size: 1.16rem;
+  font-size: 1.12rem;
   font-weight: 500;
   line-height: 1.25;
   display: -webkit-box;
@@ -542,7 +542,7 @@ body.nav-open .nav-panel { box-shadow: 0 40px 80px -30px rgba(33,27,21,0.4); }
 
 /* ---------- Reviews ---------- */
 .review-quote { font-family: var(--serif); font-size: clamp(1.5rem, 3.4vw, 2.2rem); font-style: italic; font-weight: 500; line-height: 1.3; max-width: 30ch; }
-.review-stars { display: inline-flex; gap: 0.25rem; margin-bottom: 1.3rem; }
+.review-stars { display: inline-flex; gap: 0.25rem; margin-bottom: 1.2rem; }
 .review-stars svg { width: 17px; height: 17px; fill: var(--gold); }
 .review-by { margin-top: 1.6rem; font-size: 0.8rem; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(250,247,241,0.6); }
 
@@ -667,7 +667,7 @@ body.nav-open .nav-panel { box-shadow: 0 40px 80px -30px rgba(33,27,21,0.4); }
 .crumbs .sep { opacity: 0.5; }
 
 /* ---------- Product detail (PDP) ---------- */
-.pdp { display: grid; gap: clamp(2rem, 4.5vw, 4rem); padding-block: clamp(1.8rem, 4vw, 3.4rem); }
+.pdp { display: grid; gap: clamp(2rem, 4.5vw, 4rem); padding-block: clamp(1.6rem, 4vw, 3.2rem); }
 @media (min-width: 940px) { .pdp { grid-template-columns: 1.15fr 1fr; align-items: start; } }
 .pdp-gallery .main {
   position: relative;
@@ -700,22 +700,22 @@ body.nav-open .nav-panel { box-shadow: 0 40px 80px -30px rgba(33,27,21,0.4); }
 .pdp-info h1 { font-size: clamp(2.1rem, 4.6vw, 3.1rem); max-width: 14ch; }
 .pdp-price { display: flex; align-items: baseline; gap: 0.8rem; margin-top: 1.1rem; }
 .pdp-price .amount { font-family: var(--serif); font-size: 1.85rem; font-weight: 600; }
-.pdp-price .stock { font-size: 0.76rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--green-deep); display: inline-flex; align-items: center; gap: 0.4rem; }
+.pdp-price .stock { font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--green-deep); display: inline-flex; align-items: center; gap: 0.4rem; }
 .pdp-price .stock::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
 .pdp-price .stock.out { color: var(--gold); }
 .pdp-price .stock.out::before { background: var(--gold); }
 .pdp-desc { margin-top: 1.6rem; color: var(--ink-soft); white-space: pre-line; }
 .pdp-ctas { display: grid; gap: 0.8rem; margin-top: 2rem; max-width: 430px; }
 
-.assure { margin-top: 2.1rem; border-top: 1px solid var(--line); }
+.assure { margin-top: 2rem; border-top: 1px solid var(--line); }
 .assure details { border-bottom: 1px solid var(--line); }
 .assure summary {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 1.05rem 0.2rem;
-  font-size: 0.83rem;
+  padding: 1rem 0.2rem;
+  font-size: 0.8rem;
   font-weight: 500;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -725,13 +725,13 @@ body.nav-open .nav-panel { box-shadow: 0 40px 80px -30px rgba(33,27,21,0.4); }
 .assure summary::-webkit-details-marker { display: none; }
 .assure summary::after { content: ''; width: 8px; height: 8px; border-right: 1.5px solid var(--ink-soft); border-bottom: 1.5px solid var(--ink-soft); transform: rotate(45deg); transition: transform 0.25s; flex: none; }
 .assure details[open] summary::after { transform: rotate(225deg); }
-.assure .acc-body { padding: 0 0.2rem 1.3rem; color: var(--ink-soft); font-size: 0.94rem; display: grid; gap: 0.7rem; }
-.assure .acc-body ul { display: grid; gap: 0.45rem; }
+.assure .acc-body { padding: 0 0.2rem 1.2rem; color: var(--ink-soft); font-size: 0.9rem; display: grid; gap: 0.7rem; }
+.assure .acc-body ul { display: grid; gap: 0.5rem; }
 .assure .acc-body li { padding-left: 1.1rem; position: relative; }
 .assure .acc-body li::before { content: ''; position: absolute; left: 0; top: 0.62em; width: 5px; height: 5px; border-radius: 50%; background: var(--gold); }
 
 /* ---------- Reviews (PDP + page) ---------- */
-.review-block { border-top: 1px solid var(--line); margin-top: 2.6rem; padding-top: 2rem; }
+.review-block { border-top: 1px solid var(--line); margin-top: 2.2rem; padding-top: 2rem; }
 /* A review is one person speaking, so the name, the date, the rating and the
    words sit in one card with one border, not as three loose fragments. */
 .review-block { display: grid; }
@@ -743,7 +743,7 @@ body.nav-open .nav-panel { box-shadow: 0 40px 80px -30px rgba(33,27,21,0.4); }
   margin-top: 0.9rem;
   padding-bottom: 0.9rem;
   border-bottom: 1px solid var(--line);
-  font-size: 0.88rem;
+  font-size: 0.9rem;
   color: var(--ink-soft);
 }
 .review-summary b { color: var(--ink); font-weight: 500; }
@@ -775,7 +775,7 @@ body.nav-open .nav-panel { box-shadow: 0 40px 80px -30px rgba(33,27,21,0.4); }
 }
 .review-who { display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; min-width: 0; }
 .review-who b { font-weight: 500; color: var(--ink); }
-.review-who time { font-size: 0.78rem; color: var(--ink-faint); }
+.review-who time { font-size: 0.8rem; color: var(--ink-faint); }
 .review-verified {
   font-size: 0.62rem;
   letter-spacing: 0.14em;
@@ -785,25 +785,25 @@ body.nav-open .nav-panel { box-shadow: 0 40px 80px -30px rgba(33,27,21,0.4); }
   border-radius: 99px;
   padding: 0.15rem 0.5rem;
 }
-.review-score { display: inline-flex; align-items: center; gap: 0.12rem; margin-left: auto; }
+.review-score { display: inline-flex; align-items: center; gap: 0.1rem; margin-left: auto; }
 .review-score svg { width: 14px; height: 14px; }
 .review-score svg.on { fill: var(--gold); }
 .review-score svg.off { fill: none; stroke: var(--line-strong); stroke-width: 1.4; }
 /* named to stay clear of .review-quote, which is the big pull quote on the
    homepage and carries its own max-width */
 .review-words {
-  margin: 0.85rem 0 0;
+  margin: 0.9rem 0 0;
   padding: 0;
   border: 0;
   font-family: var(--serif);
-  font-size: 1.15rem;
+  font-size: 1.12rem;
   line-height: 1.45;
   color: var(--ink);
   max-width: none;
 }
 .review-words::before { content: '\201C'; }
 .review-words::after { content: '\201D'; }
-.review-about { margin-top: 0.6rem; font-size: 0.82rem; color: var(--ink-soft); }
+.review-about { margin-top: 0.6rem; font-size: 0.8rem; color: var(--ink-soft); }
 .review-about a { border-bottom: 1px solid var(--link-line); }
 .review-empty {
   color: var(--ink-soft);
@@ -948,7 +948,7 @@ body.nav-open .nav-panel { box-shadow: 0 40px 80px -30px rgba(33,27,21,0.4); }
 .contact-card a { color: var(--green-deep); border-bottom: 1px solid var(--link-line); }
 
 /* ---------- Trust bar under PDP CTAs ---------- */
-.mini-assure { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.7rem 1rem; margin-top: 1.8rem; }
+.mini-assure { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.7rem 1rem; margin-top: 2rem; }
 .mini-assure span { display: flex; gap: 0.5rem; align-items: center; font-size: 0.8rem; color: var(--ink-soft); }
 .mini-assure svg { width: 15px; height: 15px; stroke: var(--green); flex: none; }
 
@@ -1093,7 +1093,7 @@ body { animation: pagefade 0.5s ease both; }
 
 .pdp-ctas { display: grid; gap: 1rem; }
 .scarcity {
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-style: italic;
   font-family: var(--serif);
   color: var(--ink-faint);
@@ -1157,7 +1157,7 @@ body { animation: pagefade 0.5s ease both; }
   border-radius: var(--radius);
   background: var(--bg-raised);
 }
-.pdp-video p { font-size: 0.82rem; color: var(--ink-faint); font-style: italic; font-family: var(--serif); }
+.pdp-video p { font-size: 0.8rem; color: var(--ink-faint); font-style: italic; font-family: var(--serif); }
 
 /* ============================================================
    V4 - Theme toggle · Lightbox · Cinematic montage · Full review
@@ -1282,27 +1282,27 @@ body { animation: pagefade 0.5s ease both; }
 }
 
 /* ---------- full review section ---------- */
-.full-review { display: grid; gap: clamp(2rem, 5vw, 3.6rem); padding-block: clamp(3rem, 7vw, 5.5rem); }
+.full-review { display: grid; gap: clamp(2rem, 5vw, 3.2rem); padding-block: clamp(3rem, 7vw, 5.5rem); }
 @media (min-width: 940px) { .full-review { grid-template-columns: 1.05fr 1fr; align-items: start; } }
 .fr-montage-wrap { position: sticky; top: calc(var(--header-h) + 1rem); }
 .fr-copy .overline { display: block; margin-bottom: 0.8rem; }
 .fr-copy h2 em.ax { color: var(--gold); }
-.fr-lede { margin-top: 1.1rem; font-family: var(--serif); font-size: 1.28rem; font-style: italic; line-height: 1.5; color: var(--ink); }
-.fr-block { margin-top: 1.9rem; padding-top: 1.5rem; border-top: 1px solid var(--line); }
-.fr-block h3 { font-size: 1.15rem; margin-bottom: 0.7rem; }
+.fr-lede { margin-top: 1.1rem; font-family: var(--serif); font-size: 1.12rem; font-style: italic; line-height: 1.5; color: var(--ink); }
+.fr-block { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--line); }
+.fr-block h3 { font-size: 1.45rem; margin-bottom: 0.7rem; }
 .fr-block p { color: var(--ink-soft); }
 .carry-pills { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.4rem; }
 .carry-pills span {
-  display: inline-flex; align-items: center; gap: 0.45rem;
-  padding: 0.5rem 0.95rem;
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.5rem 1rem;
   border: 1px solid var(--line);
   border-radius: 99px;
   font-size: 0.8rem;
   color: var(--ink-soft);
 }
 .carry-pills span svg { width: 14px; height: 14px; stroke: var(--green-deep); }
-.spec-list { display: grid; gap: 0.55rem; }
-.spec-list li { display: flex; gap: 0.7rem; align-items: baseline; color: var(--ink-soft); font-size: 0.95rem; }
+.spec-list { display: grid; gap: 0.6rem; }
+.spec-list li { display: flex; gap: 0.7rem; align-items: baseline; color: var(--ink-soft); font-size: 0.9rem; }
 .spec-list li::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--gold); flex: none; transform: translateY(-2px); }
 .spec-list b { color: var(--ink); font-weight: 500; }
 @media (prefers-reduced-motion: reduce) {
@@ -1316,11 +1316,11 @@ body { animation: pagefade 0.5s ease both; }
    research), save for later (Etsy, Vinted), a free delivery progress bar
    (Shopify, Convert Cart) and a recently viewed trail (Amazon). */
 
-.eta { color: var(--ink-soft); font-size: 0.85rem; margin-top: 0.7rem; }
+.eta { color: var(--ink-soft); font-size: 0.8rem; margin-top: 0.7rem; }
 .eta b { color: var(--ink); font-weight: 500; }
 
 .free-bar { margin-top: 0.9rem; }
-.free-bar .fb-txt { font-size: 0.85rem; color: var(--ink-soft); }
+.free-bar .fb-txt { font-size: 0.8rem; color: var(--ink-soft); }
 .free-bar .fb-txt b { color: var(--ink); font-weight: 500; }
 .free-bar .fb-track {
   margin-top: 0.5rem;
@@ -1398,7 +1398,7 @@ body { animation: pagefade 0.5s ease both; }
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.sticky-atc .sa-price { font-size: 0.78rem; color: var(--ink-soft); }
+.sticky-atc .sa-price { font-size: 0.8rem; color: var(--ink-soft); }
 .sticky-atc .btn { flex: none; padding: 0.7rem 1.1rem; }
 body.has-sticky .wa-fab { bottom: 5.2rem; }
 
@@ -1411,7 +1411,7 @@ body.has-sticky .wa-fab { bottom: 5.2rem; }
   border-radius: var(--radius);
   background: var(--bg-raised);
 }
-.rail-name { display: block; margin-top: 0.5rem; font-size: 0.85rem; color: var(--ink); }
+.rail-name { display: block; margin-top: 0.5rem; font-size: 0.9rem; color: var(--ink); }
 .rail-price { display: block; font-size: 0.8rem; color: var(--ink-soft); }
 
 @media (max-width: 720px) {
