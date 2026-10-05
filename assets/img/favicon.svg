@@ -1,4 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-<rect width="64" height="64" rx="10" fill="#201A15"/>
-<text x="32" y="44" font-family="Georgia, 'Times New Roman', serif" font-size="36" font-style="italic" fill="#FAF7F1" text-anchor="middle">B</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Bagged Up">
+  <title>Bagged Up favicon</title>
+  <desc>A compact B/U signature in paper, clay and brass on a forest tile.</desc>
+  <rect width="64" height="64" rx="11" fill="#1E2C25"/>
+  <g transform="translate(-10 -9) scale(0.84)" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <path d="M25 78V23h17c20 0 22 25 1 27H25m0 0h18c24 0 23 28 0 28H25" stroke="#FAF7F1" stroke-width="5.4"/>
+    <path d="M57 47V34a13 13 0 0 1 26 0v31c0 10-6 16-13 16s-13-6-13-16V54" stroke="#D88C72" stroke-width="5.4"/>
+    <path d="M52 43h10" stroke="#D0A450" stroke-width="4.4"/>
+  </g>
 </svg>

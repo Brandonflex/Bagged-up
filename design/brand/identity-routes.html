@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Bagged Up | Identity Routes</title>
+<style>
+@font-face {
+  font-family: "Cormorant Garamond";
+  src: url("/assets/fonts/CormorantGaramond-var.woff2") format("woff2");
+  font-weight: 300 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: Jost;
+  src: url("/assets/fonts/Jost-var.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+}
+:root {
+  font-family: Jost, Arial, sans-serif;
+  color: #231D18;
+  background: #EAE4D9;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; }
+a { color: inherit; text-decoration: none; }
+button, a { -webkit-tap-highlight-color: transparent; }
+:focus-visible { outline: 3px solid #385848; outline-offset: 3px; }
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem clamp(1.2rem, 4vw, 3.4rem);
+  border-bottom: 1px solid rgba(35,29,24,.16);
+  background: #F7F3EB;
+}
+.topbar-brand { font-family: "Cormorant Garamond", Georgia, serif; font-size: 1.55rem; line-height: 1; }
+.topbar-label { color: #6C6258; font-size: .66rem; font-weight: 600; letter-spacing: .17em; text-align: right; text-transform: uppercase; }
+.intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(16rem, .8fr);
+  align-items: end;
+  gap: 2rem;
+  width: min(1500px, calc(100% - clamp(2.4rem, 8vw, 7rem)));
+  margin: 0 auto;
+  padding: clamp(2.6rem, 6vw, 5.2rem) 0 2.4rem;
+}
+.eyebrow { display: block; margin-bottom: .8rem; color: #786B5B; font-size: .68rem; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; }
+.intro h1 { max-width: 12ch; margin: 0; font-family: "Cormorant Garamond", Georgia, serif; font-size: clamp(3rem, 6.2vw, 6.2rem); font-weight: 500; letter-spacing: -.045em; line-height: .88; }
+.intro h1 em { color: #7B2838; font-weight: 400; }
+.intro-note { max-width: 43ch; margin: 0 0 .15rem; color: #5F574E; font-size: .96rem; line-height: 1.7; }
+.intro-note strong { color: #231D18; font-weight: 600; }
+.routes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(.8rem, 1.6vw, 1.5rem);
+  width: min(1500px, calc(100% - clamp(2.4rem, 8vw, 7rem)));
+  margin: 0 auto;
+  align-items: stretch;
+}
+.route {
+  --paper: #F2EBDD;
+  --ink: #271A18;
+  --accent: #70263A;
+  --accent-soft: #B9956B;
+  --line: rgba(39,26,24,.18);
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--paper);
+  border: 1px solid rgba(35,29,24,.15);
+  box-shadow: 0 18px 45px -34px rgba(35,29,24,.45);
+}
+.route--atelier { --paper: #F1E9DC; --ink: #2B1A1B; --accent: #762B3E; --accent-soft: #B39369; --line: rgba(43,26,27,.2); }
+.route--graphic { --paper: #F4F0E7; --ink: #191817; --accent: #E84D35; --accent-soft: #191817; --line: rgba(25,24,23,.2); }
+.route--city { --paper: #E9E1D2; --ink: #1E2B25; --accent: #B86443; --accent-soft: #D1A84F; --line: rgba(30,43,37,.2); }
+.route-heading { display: flex; justify-content: space-between; gap: .7rem; padding: 1.1rem 1.15rem .9rem; border-bottom: 1px solid var(--line); }
+.route-index { color: var(--accent); font-size: .66rem; font-weight: 700; letter-spacing: .14em; }
+.route-heading h2 { margin: .2rem 0 0; color: var(--ink); font-family: "Cormorant Garamond", Georgia, serif; font-size: 1.75rem; font-weight: 500; line-height: .98; }
+.route--graphic .route-heading h2 { font-family: Jost, Arial, sans-serif; font-size: 1.35rem; font-weight: 800; letter-spacing: -.055em; text-transform: uppercase; }
+.route-mood { align-self: center; color: #655E55; font-size: .63rem; letter-spacing: .09em; text-align: right; text-transform: uppercase; }
+.mockup { margin: .9rem .9rem 0; overflow: hidden; background: var(--paper); border: 1px solid var(--line); }
+.mock-nav {
+  display: flex;
+  height: 2.8rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: .4rem;
+  padding: 0 .75rem;
+  color: var(--ink);
+  background: var(--paper);
+}
+.mock-nav-links { color: var(--ink); font-size: .47rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
+.mock-bag { color: var(--ink); font-size: .52rem; font-weight: 600; letter-spacing: .08em; }
+.mock-logo { display: flex; align-items: center; gap: .35rem; color: var(--ink); }
+.mock-logo-word { font-family: "Cormorant Garamond", Georgia, serif; font-size: 1.02rem; font-weight: 600; line-height: .77; }
+.mock-logo-word em { color: var(--accent); font-weight: 400; }
+.logo-seal {
+  display: grid;
+  width: 1.55rem;
+  height: 1.55rem;
+  place-items: center;
+  border: 1px solid var(--accent);
+  border-radius: 50%;
+  color: var(--accent);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 1.15rem;
+  font-style: italic;
+  line-height: 1;
+}
+.route--graphic .mock-nav { border-bottom: 2px solid var(--ink); }
+.route--graphic .mock-logo-word { font-family: Jost, Arial, sans-serif; font-size: .72rem; font-weight: 900; letter-spacing: -.06em; line-height: .9; text-transform: uppercase; }
+.logo-split { display: grid; width: 1.45rem; height: 1.45rem; place-items: center; background: var(--accent); color: white; font-size: .62rem; font-weight: 900; letter-spacing: -.1em; }
+.route--city .mock-logo-word { font-family: Jost, Arial, sans-serif; font-size: .76rem; font-weight: 700; letter-spacing: -.045em; line-height: .92; }
+.loop-mark { display: block; width: 1.55rem; height: 1.5rem; }
+.mock-hero { position: relative; display: flex; min-height: 17rem; flex-direction: column; justify-content: flex-end; overflow: hidden; padding: 1.1rem; color: white; background: var(--ink); }
+.mock-hero img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.mock-hero::after { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(16,12,9,.72), rgba(16,12,9,.08) 85%), linear-gradient(0deg, rgba(16,12,9,.5), transparent 70%); content: ""; }
+.mock-content { position: relative; z-index: 1; width: min(100%, 18rem); }
+.mock-kicker { display: block; margin-bottom: .55rem; color: rgba(255,255,255,.85); font-size: .49rem; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; }
+.mock-content h3 { margin: 0; font-family: "Cormorant Garamond", Georgia, serif; font-size: clamp(2.05rem, 3vw, 3.1rem); font-weight: 500; letter-spacing: -.045em; line-height: .88; }
+.mock-content h3 em { color: #E8D4B8; font-weight: 400; }
+.mock-description { max-width: 26ch; margin: .62rem 0 .85rem; color: rgba(255,255,255,.85); font-size: .65rem; line-height: 1.5; }
+.mock-cta { display: inline-flex; min-height: 2.25rem; align-items: center; justify-content: space-between; gap: .65rem; padding: .44rem .5rem .44rem .72rem; background: var(--accent); color: white; font-size: .55rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.mock-cta-mark { display: grid; width: 1.35rem; height: 1.35rem; place-items: center; border: 1px solid rgba(255,255,255,.65); border-radius: 50%; font-size: .83rem; line-height: 1; }
+.route--graphic .mock-hero { min-height: 17rem; padding: 0; color: var(--ink); background: var(--paper); }
+.route--graphic .mock-hero img { left: 47%; width: 53%; filter: saturate(.78) contrast(1.08); }
+.route--graphic .mock-hero::after { right: 48%; background: linear-gradient(90deg, var(--paper) 0%, var(--paper) 72%, rgba(244,240,231,0) 100%); }
+.route--graphic .mock-content { width: 60%; padding: .25rem .55rem .5rem .2rem; background: var(--paper); box-shadow: .55rem 0 0 var(--paper); }
+.route--graphic .mock-kicker { color: var(--accent); }
+.route--graphic .mock-content h3 { color: var(--ink); font-family: Jost, Arial, sans-serif; font-size: clamp(1.55rem, 2.6vw, 2.4rem); font-weight: 900; letter-spacing: -.09em; line-height: .82; text-transform: uppercase; }
+.route--graphic .mock-content h3 em { color: var(--accent); font-family: "Cormorant Garamond", Georgia, serif; font-size: 1.18em; font-weight: 500; letter-spacing: -.05em; text-transform: none; }
+.route--graphic .mock-description { max-width: 19ch; color: #4B4842; font-size: .57rem; }
+.route--graphic .mock-cta { min-height: 2.1rem; background: var(--ink); }
+.route--graphic .mock-cta-mark { border: 0; border-radius: 0; background: var(--accent); }
+.route--city .mock-hero::after { background: linear-gradient(90deg, rgba(15,24,20,.76), rgba(15,24,20,.08) 92%), linear-gradient(0deg, rgba(15,24,20,.52), transparent 72%); }
+.route--city .mock-content h3 { font-size: clamp(1.9rem, 2.8vw, 2.7rem); }
+.route--city .mock-content h3 em { color: #F1C982; }
+.route--city .mock-cta { background: var(--accent-soft); color: #1E2B25; }
+.route--city .mock-cta-mark { border-color: rgba(30,43,37,.58); }
+.mock-note { display: flex; align-items: center; justify-content: space-between; gap: .5rem; padding: .56rem .72rem; color: #5F574E; font-size: .55rem; letter-spacing: .08em; text-transform: uppercase; }
+.swatches { display: flex; flex-wrap: wrap; gap: .4rem; padding: .9rem 1rem .2rem; }
+.swatch { display: flex; min-width: 3.2rem; align-items: center; gap: .35rem; color: #544C43; font-size: .5rem; letter-spacing: .02em; }
+.swatch i { display: block; width: 1rem; height: 1rem; flex: none; border: 1px solid rgba(35,29,24,.12); border-radius: 50%; background: var(--swatch); }
+.route-description { margin: .72rem 1rem 0; color: #5F574E; font-size: .77rem; line-height: 1.58; }
+.route-facts { display: grid; grid-template-columns: 4.2rem 1fr; gap: .48rem .55rem; margin: .9rem 1rem 1rem; padding-top: .85rem; border-top: 1px solid var(--line); font-size: .66rem; line-height: 1.42; }
+.route-facts dt { color: var(--accent); font-size: .57rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.route-facts dd { margin: 0; color: var(--ink); }
+.route-tag { align-self: flex-start; margin: auto 1rem 1rem; padding: .36rem .55rem; border: 1px solid var(--line); color: var(--ink); font-size: .55rem; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; }
+.decision {
+  display: grid;
+  grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr);
+  gap: 2rem;
+  width: min(1500px, calc(100% - clamp(2.4rem, 8vw, 7rem)));
+  margin: 2.1rem auto 0;
+  padding: 1.5rem 0 3rem;
+  border-top: 1px solid rgba(35,29,24,.18);
+}
+.decision h2 { margin: 0; font-family: "Cormorant Garamond", Georgia, serif; font-size: 2rem; font-weight: 500; letter-spacing: -.03em; }
+.decision p, .decision li { color: #5F574E; font-size: .81rem; line-height: 1.65; }
+.decision p { margin: .4rem 0 0; }
+.decision ul { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .45rem 1.2rem; margin: 0; padding: 0; list-style: none; }
+.decision li { position: relative; padding-left: 1rem; }
+.decision li::before { position: absolute; left: 0; color: #7B2838; content: "↗"; }
+@media (max-width: 1050px) {
+  .routes { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .route:last-child { grid-column: 1 / -1; }
+  .route:last-child .mock-hero { min-height: 19rem; }
+}
+@media (max-width: 680px) {
+  .topbar { align-items: flex-start; }
+  .topbar-label { max-width: 15ch; font-size: .58rem; }
+  .intro { grid-template-columns: 1fr; gap: 1rem; padding-block: 2.6rem 1.7rem; }
+  .intro h1 { max-width: 11ch; font-size: clamp(3.25rem, 14vw, 4.8rem); }
+  .intro-note { font-size: .88rem; }
+  .routes { grid-template-columns: 1fr; gap: 1rem; }
+  .route:last-child { grid-column: auto; }
+  .mock-hero, .route--graphic .mock-hero { min-height: 19rem; }
+  .route--graphic .mock-content h3 { font-size: clamp(2rem, 10vw, 3rem); }
+  .route--graphic .mock-content { width: 67%; }
+  .decision { grid-template-columns: 1fr; gap: .65rem; margin-top: 1.5rem; }
+  .decision ul { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="topbar-brand" href="/index.html">Bagged Up</a>
+  <span class="topbar-label">Identity workshop · exploratory routes · not yet approved</span>
+</header>
+<main>
+  <section class="intro" aria-labelledby="workshop-title">
+    <div>
+      <span class="eyebrow">A brand with a point of view</span>
+      <h1 id="workshop-title">Three ways to make Bagged Up <em>unmistakable.</em></h1>
+    </div>
+    <p class="intro-note"><strong>The current wordmark, type, palette and themes are a first pass, not a locked identity.</strong> These are three visual territories for us to compare before changing the live storefront. The sample marks and colors are studies; none is the final logo or a claim about the products.</p>
+  </section>
+
+  <section class="routes" aria-label="Three exploratory brand identity routes">
+    <article class="route route--atelier" id="atelier">
+      <header class="route-heading">
+        <div><span class="route-index">ROUTE 01 / WARM LUXE</span><h2>The Modern Atelier</h2></div>
+        <span class="route-mood">Sculptural<br>and intimate</span>
+      </header>
+      <div class="mockup">
+        <div class="mock-nav">
+          <div class="mock-logo"><span class="logo-seal" aria-hidden="true">B</span><span class="mock-logo-word">Bagged<br><em>Up</em></span></div>
+          <span class="mock-nav-links">Shop &nbsp; Stories &nbsp; About</span>
+          <span class="mock-bag">BAG 0</span>
+        </div>
+        <div class="mock-hero">
+          <img src="/assets/img/style-mini-occasion.jpg" alt="A satin evening bag photographed in warm candlelight">
+          <div class="mock-content">
+            <span class="mock-kicker">The after-hours edit</span>
+            <h3>Carry a<br><em>little drama.</em></h3>
+            <p class="mock-description">One considered piece can change the whole evening.</p>
+            <a class="mock-cta" href="#decision-title">Shop the edit <span class="mock-cta-mark" aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+        <div class="mock-note"><span>Form, kept close</span><span>01 / 03</span></div>
+      </div>
+      <div class="swatches" role="group" aria-label="Exploratory palette">
+        <span class="swatch"><i style="--swatch:#F1E9DC"></i>Bone</span>
+        <span class="swatch"><i style="--swatch:#2B1A1B"></i>Espresso</span>
+        <span class="swatch"><i style="--swatch:#762B3E"></i>Oxblood</span>
+        <span class="swatch"><i style="--swatch:#B39369"></i>Brass</span>
+      </div>
+      <p class="route-description">Keep the tactile warmth, but give it a signature: deeper wine, sharper contrast and quieter, more deliberate details. Less generic “premium”; more intimate fashion house.</p>
+      <dl class="route-facts">
+        <dt>Mark</dt><dd>Wordmark plus a refined B / strap-loop seal.</dd>
+        <dt>Type</dt><dd>High-contrast editorial serif with a crisp, narrow sans.</dd>
+        <dt>Images</dt><dd>Closer crops, deep shadow, sculptural light, one hero object at a time.</dd>
+        <dt>Trade-off</dt><dd>Can feel formal if the warmth and everyday shopping cues disappear.</dd>
+      </dl>
+      <span class="route-tag">Quiet confidence, turned up</span>
+    </article>
+
+    <article class="route route--graphic" id="graphic">
+      <header class="route-heading">
+        <div><span class="route-index">ROUTE 02 / HIGH IMPACT</span><h2>The Fashion Desk</h2></div>
+        <span class="route-mood">Graphic<br>and alive</span>
+      </header>
+      <div class="mockup">
+        <div class="mock-nav">
+          <div class="mock-logo"><span class="logo-split" aria-hidden="true">B/U</span><span class="mock-logo-word">BAGGED<br>UP</span></div>
+          <span class="mock-nav-links">New / Bags / Notes</span>
+          <span class="mock-bag">BAG (0)</span>
+        </div>
+        <div class="mock-hero">
+          <img src="/assets/img/style-crossbody.jpg" alt="A model carrying a small crossbody bag on a sunlit city street">
+          <div class="mock-content">
+            <span class="mock-kicker">No. 01 &nbsp; / &nbsp; The city edit</span>
+            <h3>Bag your<br><em>moment.</em></h3>
+            <p class="mock-description">A little shape. A lot of point of view.</p>
+            <a class="mock-cta" href="#decision-title">See what’s new <span class="mock-cta-mark" aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+        <div class="mock-note"><span>Wear it your way</span><span>EST. / EDIT 01</span></div>
+      </div>
+      <div class="swatches" role="group" aria-label="Exploratory palette">
+        <span class="swatch"><i style="--swatch:#F4F0E7"></i>Paper</span>
+        <span class="swatch"><i style="--swatch:#191817"></i>Ink</span>
+        <span class="swatch"><i style="--swatch:#E84D35"></i>Signal</span>
+        <span class="swatch"><i style="--swatch:#D9D1C3"></i>Stone</span>
+      </div>
+      <p class="route-description">Make the brand feel like a fashion magazine you can shop: confident typography, a single signal-red accent, big issue numbers and more playful compositions.</p>
+      <dl class="route-facts">
+        <dt>Mark</dt><dd>Compact BAGGED / UP wordmark with a bold B/U device.</dd>
+        <dt>Type</dt><dd>Heavy contemporary sans, with a contrasting italic serif accent.</dd>
+        <dt>Images</dt><dd>Poster-like crops, deliberate overlap, flash and movement.</dd>
+        <dt>Trade-off</dt><dd>More energy, but it needs a steady editorial hand to stay premium.</dd>
+      </dl>
+      <span class="route-tag">Less expected, more expressive</span>
+    </article>
+
+    <article class="route route--city" id="city">
+      <header class="route-heading">
+        <div><span class="route-index">ROUTE 03 / CONTEMPORARY</span><h2>The City Collectors</h2></div>
+        <span class="route-mood">Grounded<br>and distinctive</span>
+      </header>
+      <div class="mockup">
+        <div class="mock-nav">
+          <div class="mock-logo">
+            <svg class="loop-mark" viewBox="0 0 40 38" fill="none" aria-hidden="true"><path d="M14 4H9a5 5 0 0 0-5 5v20a5 5 0 0 0 5 5h5a5 5 0 0 0 5-5V9a5 5 0 0 0-5-5Z" stroke="var(--accent)" stroke-width="2.5"/><path d="M26 4h5a5 5 0 0 1 5 5v20a5 5 0 0 1-5 5h-5a5 5 0 0 1-5-5V9a5 5 0 0 1 5-5Z" stroke="var(--ink)" stroke-width="2.5"/><path d="M17 13h6v12h-6z" fill="var(--accent-soft)"/></svg>
+            <span class="mock-logo-word">BAGGED<br>UP</span>
+          </div>
+          <span class="mock-nav-links">The edit &nbsp; Journal &nbsp; About</span>
+          <span class="mock-bag">BAG 0</span>
+        </div>
+        <div class="mock-hero">
+          <img src="/assets/img/style-top-handle-structured.jpg" alt="A structured tan bag styled beside a coffee cup and patterned scarf">
+          <div class="mock-content">
+            <span class="mock-kicker">Pieces in motion</span>
+            <h3>For the way<br><em>you move.</em></h3>
+            <p class="mock-description">A point of color for wherever the day goes.</p>
+            <a class="mock-cta" href="#decision-title">Find your next bag <span class="mock-cta-mark" aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+        <div class="mock-note"><span>Selected for real life</span><span>EDIT / 01</span></div>
+      </div>
+      <div class="swatches" role="group" aria-label="Exploratory palette">
+        <span class="swatch"><i style="--swatch:#E9E1D2"></i>Stone</span>
+        <span class="swatch"><i style="--swatch:#1E2B25"></i>Forest ink</span>
+        <span class="swatch"><i style="--swatch:#B86443"></i>Clay</span>
+        <span class="swatch"><i style="--swatch:#D1A84F"></i>Marigold</span>
+      </div>
+      <p class="route-description">A contemporary city point of view: tactile stone and clay, dark green ink and a loop motif drawn from bag construction. Locally aware without leaning on decorative clichés.</p>
+      <dl class="route-facts">
+        <dt>Mark</dt><dd>A simple linked-loop device, paired with a clean wordmark.</dd>
+        <dt>Type</dt><dd>Humanist sans for clarity, expressive serif for warmth and contrast.</dd>
+        <dt>Images</dt><dd>Street light, architecture, texture and bags in lived-in settings.</dd>
+        <dt>Trade-off</dt><dd>Strongest sense of place, if that feels true to the brand you want.</dd>
+      </dl>
+      <span class="route-tag">A point of view with roots</span>
+    </article>
+  </section>
+
+  <section class="decision" aria-labelledby="decision-title">
+    <div>
+      <span class="eyebrow">The next step</span>
+      <h2 id="decision-title">Choose a direction, not a single colour.</h2>
+      <p>We can also mix elements. Tell me which route feels closest, what feels wrong, or which parts to combine.</p>
+    </div>
+    <ul>
+      <li>Then redraw the chosen wordmark, monogram and favicon as a proper asset set.</li>
+      <li>Settle and contrast-check the full light/dark palette and button language.</li>
+      <li>Choose self-hosted typefaces and define a repeatable campaign photo direction.</li>
+      <li>Apply it to home, shop, product, cart and social previews; keep shopping clear.</li>
+    </ul>
+  </section>
+</main>
+</body>
+</html>

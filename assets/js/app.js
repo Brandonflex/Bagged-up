@@ -8,19 +8,46 @@
 
   var DEPTH = (Number(document.documentElement.dataset.depth) || 0);
   var ROOT = DEPTH === 0 ? '' : new Array(DEPTH + 1).join('../');
-  var PRODUCTS = window.BAGGED_UP_PRODUCTS || [];
-  var REVIEWS = window.BAGGED_UP_REVIEWS || [];
+  var PRODUCT_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+  var PRODUCT_IMAGE = /^assets\/products\/[a-z0-9]+(?:-[a-z0-9]+)*-\d+\.jpg$/;
+  var PRODUCTS = Array.isArray(window.BAGGED_UP_PRODUCTS)
+    ? window.BAGGED_UP_PRODUCTS.filter(function (p) {
+      return p && typeof p.slug === 'string' && PRODUCT_SLUG.test(p.slug) &&
+        typeof p.name === 'string' && p.name.length > 0 && p.name.length <= 160 &&
+        Number.isSafeInteger(p.price) && p.price > 0 && p.price <= 1000000000 &&
+        typeof p.category === 'string' && p.category.length <= 80 &&
+        Array.isArray(p.images) && p.images.length > 0 && p.images.length <= 12 &&
+        p.images.every(function (src) { return typeof src === 'string' && PRODUCT_IMAGE.test(src); });
+    }).map(function (p) {
+      return { slug: p.slug, name: p.name, price: p.price, category: p.category, images: p.images.slice() };
+    })
+    : [];
+  var REVIEW_DATE = /^\d{4}-(?:0[1-9]|1[0-2])$/;
+  var REVIEWS = Array.isArray(window.BAGGED_UP_REVIEWS)
+    ? window.BAGGED_UP_REVIEWS.filter(function (r) {
+      return r && typeof r.name === 'string' && r.name.trim().length > 0 && r.name.length <= 80 &&
+        typeof r.body === 'string' && r.body.trim().length > 0 && r.body.length <= 1200 &&
+        typeof r.date === 'string' && REVIEW_DATE.test(r.date) &&
+        Number.isInteger(r.rating) && r.rating >= 1 && r.rating <= 5 &&
+        (r.product === null || (typeof r.product === 'string' && productBySlug(r.product)));
+    }).map(function (r) {
+      return {
+        name: r.name.trim(), date: r.date, rating: r.rating,
+        product: r.product, body: r.body.trim(), verified: r.verified === true
+      };
+    })
+    : [];
   var WA_NUMBER = '254113599345';
   var CART_KEY = 'bagged-up-cart-v1';
   var DELIVERY_KEY = 'bagged-up-delivery-v1';
   var SAVED_KEY = 'bagged-up-saved-v1';
   var RECENT_KEY = 'bagged-up-recent-v1';
 
-  /* Storage can throw in sandboxed/opaque-origin frames - never let it break
-     the storefront; degrade gracefully to in-memory */
-  var mem = {};
+  /* Storage is client-controlled: parse it defensively and never treat saved
+     values as trusted HTML, URLs, product metadata, or quantities. */
+  var mem = Object.create(null);
   function storeGet(k) {
-    try { return window.localStorage.getItem(k); } catch { return (k in mem) ? mem[k] : null; }
+    try { return window.localStorage.getItem(k); } catch { return Object.prototype.hasOwnProperty.call(mem, k) ? mem[k] : null; }
   }
   function storeSet(k, v) {
     try { window.localStorage.setItem(k, v); } catch { mem[k] = v; }
@@ -31,6 +58,8 @@
     { id: 'countrywide', label: 'Countrywide', note: '1–3 days · courier to your town', fee: 400 }
   ];
   var FREE_DELIVERY_OVER = 5000;
+  var MAX_QUANTITY = 99;
+  var MAX_RECENT = 8;
 
   /* ---------- helpers ---------- */
   function $(sel, ctx) { return (ctx || document).querySelector(sel); }
@@ -45,19 +74,47 @@
     var m = String(href || '').match(/([a-z0-9-]+)\.html(?:[?#]|$)/);
     return m ? m[1] : '';
   }
-  function readList(key) {
+  function readStoredArray(key) {
     try {
-      var v = JSON.parse(storeGet(key) || '[]');
-      return Object.prototype.toString.call(v) === '[object Array]' ? v : [];
+      var serialized = storeGet(key) || '[]';
+      if (serialized.length > 50000) return [];
+      var value = JSON.parse(serialized);
+      return Array.isArray(value) ? value.slice(0, 100) : [];
     } catch { return []; }
   }
-  function writeList(key, list) { storeSet(key, JSON.stringify(list)); }
-  function isSaved(slug) { return readList(SAVED_KEY).indexOf(slug) !== -1; }
+  function readProductSlugs(key, limit) {
+    var seen = Object.create(null);
+    var result = [];
+    readStoredArray(key).forEach(function (entry) {
+      /* Accept the old recent-item object shape for a safe one-time migration. */
+      var slug = typeof entry === 'string' ? entry :
+        (entry && typeof entry === 'object' && typeof entry.slug === 'string' ? entry.slug : '');
+      if (PRODUCT_SLUG.test(slug) && productBySlug(slug) && !seen[slug] && result.length < limit) {
+        seen[slug] = true;
+        result.push(slug);
+      }
+    });
+    return result;
+  }
+  function writeProductSlugs(key, slugs, limit) {
+    var seen = Object.create(null);
+    var result = [];
+    (Array.isArray(slugs) ? slugs : []).forEach(function (slug) {
+      if (typeof slug === 'string' && PRODUCT_SLUG.test(slug) && productBySlug(slug) &&
+          !seen[slug] && result.length < limit) {
+        seen[slug] = true;
+        result.push(slug);
+      }
+    });
+    storeSet(key, JSON.stringify(result));
+  }
+  function isSaved(slug) { return readProductSlugs(SAVED_KEY, PRODUCTS.length).indexOf(slug) !== -1; }
   function toggleSaved(slug) {
-    var list = readList(SAVED_KEY);
+    if (!productBySlug(slug)) return false;
+    var list = readProductSlugs(SAVED_KEY, PRODUCTS.length);
     var i = list.indexOf(slug);
     if (i === -1) list.unshift(slug); else list.splice(i, 1);
-    writeList(SAVED_KEY, list);
+    writeProductSlugs(SAVED_KEY, list, PRODUCTS.length);
     return i === -1;
   }
   /* ---------- delivery dates (Amazon and Jumia pattern) ---------- */
@@ -105,14 +162,21 @@
   /* ---------- cart store ---------- */
   function readCart() {
     try {
-      var raw = JSON.parse(storeGet(CART_KEY) || '{}');
-      var out = {};
-      Object.keys(raw).forEach(function (k) {
-        var q = parseInt(raw[k], 10);
-        if (q > 0 && productBySlug(k)) out[k] = Math.min(q, 99);
+      var serialized = storeGet(CART_KEY) || '{}';
+      if (serialized.length > 50000) return Object.create(null);
+      var raw = JSON.parse(serialized);
+      if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return Object.create(null);
+      var out = Object.create(null);
+      Object.keys(raw).forEach(function (slug) {
+        var value = raw[slug];
+        var quantity = typeof value === 'number' ? value :
+          (typeof value === 'string' && /^\d+$/.test(value) ? Number(value) : NaN);
+        if (PRODUCT_SLUG.test(slug) && productBySlug(slug) && Number.isSafeInteger(quantity) && quantity > 0) {
+          out[slug] = Math.min(quantity, MAX_QUANTITY);
+        }
       });
       return out;
-    } catch { return {}; }
+    } catch { return Object.create(null); }
   }
   function writeCart(cart) {
     storeSet(CART_KEY, JSON.stringify(cart));
@@ -121,21 +185,23 @@
   }
   function cartCount(cart) {
     cart = cart || readCart();
-    return Object.keys(cart).reduce(function (n, k) { return n + cart[k]; }, 0);
+    return Object.keys(cart).reduce(function (n, slug) { return n + cart[slug]; }, 0);
   }
   function cartSubtotal(cart) {
     cart = cart || readCart();
-    return Object.keys(cart).reduce(function (n, k) {
-      var p = productBySlug(k);
-      return p ? n + p.price * cart[k] : n;
+    return Object.keys(cart).reduce(function (n, slug) {
+      var p = productBySlug(slug);
+      return p ? n + p.price * cart[slug] : n;
     }, 0);
   }
   function addToCart(slug, qty) {
-    var cart = readCart();
-    cart[slug] = (cart[slug] || 0) + (qty || 1);
-    writeCart(cart);
     var p = productBySlug(slug);
-    if (p) toast('Added to bag: ' + p.name);
+    if (!p || !PRODUCT_SLUG.test(slug)) return;
+    var addition = Number.isSafeInteger(qty) && qty > 0 ? qty : 1;
+    var cart = readCart();
+    cart[slug] = Math.min((cart[slug] || 0) + addition, MAX_QUANTITY);
+    writeCart(cart);
+    toast('Added to bag: ' + p.name);
     var badge = $('.cart-count');
     if (badge) {
       badge.classList.remove('pulse');
@@ -236,7 +302,7 @@
       chips = $all('.chip[data-cat]');
       var countEl = savedChip.querySelector('.chip-count');
       var paintCount = function () {
-        var n = readList(SAVED_KEY).length;
+        var n = readProductSlugs(SAVED_KEY, PRODUCTS.length).length;
         countEl.textContent = n ? String(n) : '';
       };
       paintCount();
@@ -246,7 +312,7 @@
     function applyShop() {
       var cat = (chips.filter(function (c) { return c.classList.contains('active'); })[0] || {}).getAttribute('data-cat') || 'all';
       var cards = $all('.card', shopGrid);
-      var saved = readList(SAVED_KEY);
+      var saved = readProductSlugs(SAVED_KEY, PRODUCTS.length);
       var visible = 0;
       cards.forEach(function (card) {
         var show;
@@ -288,7 +354,60 @@
       });
     });
     sortSel && sortSel.addEventListener('change', applyShop);
+    var requestedCategory = new URLSearchParams(window.location.search).get('cat');
+    if (requestedCategory) {
+      var requestedChip = chips.filter(function (chip) { return chip.getAttribute('data-cat') === requestedCategory; })[0];
+      if (requestedChip) {
+        chips.forEach(function (chip) { chip.classList.remove('active'); });
+        requestedChip.classList.add('active');
+      }
+    }
     applyShop();
+  }
+
+  /* ---------- home: guided edit finder ---------- */
+  var bagFinder = $('#bag-finder');
+  if (bagFinder) {
+    var finderOptions = $all('.finder-option[data-finder-product]', bagFinder);
+    var finderImage = $('#finder-image');
+    var finderProductLink = $('#finder-product-link');
+    var finderMood = $('#finder-mood');
+    var finderIndex = $('#finder-index');
+    var finderName = $('#finder-name');
+    var finderPrice = $('#finder-price');
+    var finderCategoryLink = $('#finder-category-link');
+
+    function paintFinder(option) {
+      var slug = option.getAttribute('data-finder-product');
+      var category = option.getAttribute('data-finder-category');
+      var label = option.getAttribute('data-finder-label');
+      var index = option.getAttribute('data-finder-index');
+      var product = productBySlug(slug);
+      if (!product || !product.images || !product.images.length || !category || !label) return;
+
+      finderOptions.forEach(function (item) { item.removeAttribute('aria-current'); });
+      option.setAttribute('aria-current', 'true');
+      finderImage.setAttribute('src', ROOT + product.images[0]);
+      finderImage.setAttribute('alt', product.name);
+      finderProductLink.setAttribute('href', ROOT + 'shop/' + product.slug + '.html');
+      finderProductLink.setAttribute('aria-label', 'View ' + product.name);
+      finderMood.textContent = label;
+      finderIndex.textContent = index + ' / THE ' + label.toUpperCase() + ' EDIT';
+      finderName.textContent = product.name;
+      finderPrice.textContent = money(product.price);
+      finderCategoryLink.setAttribute('href', ROOT + 'shop.html?cat=' + encodeURIComponent(category));
+      finderCategoryLink.setAttribute('aria-label', 'Explore ' + label);
+    }
+
+    finderOptions.forEach(function (option) {
+      option.addEventListener('click', function (event) {
+        if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        event.preventDefault();
+        paintFinder(option);
+      });
+    });
+    var initialFinder = finderOptions.filter(function (option) { return option.getAttribute('aria-current') === 'true'; })[0];
+    if (initialFinder) paintFinder(initialFinder);
   }
 
   /* ---------- PDP gallery ---------- */
@@ -377,11 +496,12 @@
       cartLines.innerHTML = slugs.map(function (slug) {
         var p = productBySlug(slug);
         var q = cart[slug];
+        var productUrl = ROOT + 'shop/' + slug + '.html';
         return (
-          '<div class="cart-line" data-slug="' + slug + '">' +
-            '<a class="ph" href="' + ROOT + 'shop/' + slug + '.html"><img src="' + ROOT + p.images[0] + '" alt="' + esc(p.name) + '"></a>' +
+          '<div class="cart-line" data-slug="' + escHtml(slug) + '">' +
+            '<a class="ph" href="' + escHtml(productUrl) + '"><img src="' + escHtml(ROOT + p.images[0]) + '" alt="' + escHtml(p.name) + '"></a>' +
             '<div>' +
-              '<div class="name"><a href="' + ROOT + 'shop/' + slug + '.html">' + esc(p.name) + '</a></div>' +
+              '<div class="name"><a href="' + escHtml(productUrl) + '">' + escHtml(p.name) + '</a></div>' +
               '<div class="unit">' + money(p.price) + ' each</div>' +
               '<div class="controls">' +
                 '<div class="qty" aria-label="Quantity">' +
@@ -423,7 +543,7 @@
         '<h2>Order Summary</h2>' +
         '<div class="row"><span class="muted">Subtotal</span><span>' + money(subtotal) + '</span></div>' +
         '<div class="delivery-pick" role="radiogroup" aria-label="Delivery option">' + optsHtml + '</div>' +
-        '<p class="eta">' + esc(deliveryEtaLine()) + '</p>' +
+        '<p class="eta">' + escHtml(deliveryEtaLine()) + '</p>' +
         '<div class="row"><span class="muted">Delivery' + (fee === 0 ? ' (on us)' : '') + '</span>' +
           '<span>' + (fee === 0
             ? '<span class="free-tag">Free</span>&nbsp;<span class="strike">' + money(opt.fee) + '</span>'
@@ -444,15 +564,13 @@
         '</p>';
 
       var waBtn = $('#wa-checkout');
-      waBtn.href = buildWaMessage(cart, opt, fee, total);
+      var msg = buildWaText(cart, opt, fee, total);
+      waBtn.href = waLink(msg);
       waBtn.setAttribute('target', '_blank');
-      waBtn.setAttribute('rel', 'noopener');
+      waBtn.setAttribute('rel', 'noopener noreferrer');
 
-      var msg = buildWaMessage(cart, opt, fee, total);
       var preview = $('#wa-msg-preview');
-      if (preview) preview.textContent = window.decodeURIComponent
-        ? decodeURIComponent(msg.split('text=')[1] || '')
-        : '';
+      if (preview) preview.textContent = msg;
       $all('input[name="delivery"]', summaryBox).forEach(function (radio) {
         radio.addEventListener('change', function () {
           storeSet(DELIVERY_KEY, radio.value);
@@ -461,7 +579,7 @@
       });
     }
 
-    function buildWaMessage(cart, opt, fee, total) {
+    function buildWaText(cart, opt, fee, total) {
       var lines = Object.keys(cart).map(function (slug, i) {
         var p = productBySlug(slug);
         return (i + 1) + '. ' + p.name + ' × ' + cart[slug] + ': ' + money(p.price * cart[slug]);
@@ -474,22 +592,17 @@
         'Total: ' + money(total) + '\n\n' +
         'Payment: M-Pesa or cash on delivery\n\n' +
         'My name:\nDelivery location:\nPreferred delivery time:';
-      return waLink(msg);
-    }
-
-    function esc(s) {
-      return String(s).replace(/[&<>"']/g, function (c) {
-        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
-      });
+      return msg;
     }
 
     cartLines.addEventListener('click', function (e) {
       var line = /** @type {Element} */ (e.target).closest('.cart-line');
       if (!line) return;
       var slug = line.getAttribute('data-slug');
+      if (!PRODUCT_SLUG.test(slug) || !productBySlug(slug)) return;
       if (e.target.closest('[data-inc]')) {
         var cart = readCart();
-        cart[slug] = Math.min((cart[slug] || 1) + 1, 99);
+        cart[slug] = Math.min((cart[slug] || 1) + 1, MAX_QUANTITY);
         writeCart(cart);
       } else if (e.target.closest('[data-dec]')) {
         var cart2 = readCart();
@@ -607,10 +720,12 @@
     document.addEventListener('pointerover', function (e) {
       var media = /** @type {Element} */ (e.target).closest('.card-media[data-alt-src]');
       if (!media || media.getAttribute('data-loaded')) return;
+      var altSrc = media.getAttribute('data-alt-src') || '';
+      if (!/^(?:\.\.\/)?assets\/products\/[a-z0-9-]+\.jpg$/.test(altSrc)) return;
       media.setAttribute('data-loaded', '1');
       var img = document.createElement('img');
       img.className = 'b';
-      img.src = media.getAttribute('data-alt-src');
+      img.src = altSrc;
       img.alt = '';
       img.loading = 'lazy';
       media.appendChild(img);
@@ -748,25 +863,38 @@
   if (pdpInfo) {
     var pdpAdd = pdpInfo.querySelector('[data-add]');
     var pdpSlug = pdpAdd && pdpAdd.getAttribute('data-add');
-    var pdpNameEl = pdpInfo.querySelector('h1');
-    var pdpName = pdpNameEl ? pdpNameEl.textContent.trim() : '';
-    var pdpPriceEl = pdpInfo.querySelector('.pdp-price .amount');
-    var pdpPrice = pdpPriceEl ? pdpPriceEl.textContent.trim() : '';
-    var pdpImgEl = $('#pdp-main-img');
-    var pdpImg = pdpImgEl ? pdpImgEl.getAttribute('src') : '';
+    var pdpProduct = pdpSlug ? productBySlug(pdpSlug) : null;
 
-    if (pdpAdd && pdpSlug) {
+    if (pdpAdd && pdpProduct) {
       var bar = document.createElement('div');
       bar.className = 'sticky-atc';
       bar.id = 'sticky-atc';
       bar.hidden = true;
-      bar.innerHTML =
-        '<img src="' + pdpImg + '" alt="" width="48" height="48" loading="lazy">' +
-        '<div class="sa-txt">' +
-          '<span class="sa-name">' + escHtml(pdpName) + '</span>' +
-          '<span class="sa-price">' + escHtml(pdpPrice) + ' · ' + escHtml(deliveryEta().country) + '</span>' +
-        '</div>' +
-        '<button class="btn btn-solid" type="button" data-add="' + pdpSlug + '">Add to bag</button>';
+
+      var barImg = document.createElement('img');
+      barImg.src = ROOT + pdpProduct.images[0];
+      barImg.alt = '';
+      barImg.width = 48;
+      barImg.height = 48;
+      barImg.loading = 'lazy';
+      var barText = document.createElement('div');
+      barText.className = 'sa-txt';
+      var barName = document.createElement('span');
+      barName.className = 'sa-name';
+      barName.textContent = pdpProduct.name;
+      var barPrice = document.createElement('span');
+      barPrice.className = 'sa-price';
+      barPrice.textContent = money(pdpProduct.price) + ' · ' + deliveryEta().country;
+      barText.appendChild(barName);
+      barText.appendChild(barPrice);
+      var barButton = document.createElement('button');
+      barButton.className = 'btn btn-solid';
+      barButton.type = 'button';
+      barButton.setAttribute('data-add', pdpProduct.slug);
+      barButton.textContent = 'Add to bag';
+      bar.appendChild(barImg);
+      bar.appendChild(barText);
+      bar.appendChild(barButton);
       document.body.appendChild(bar);
 
       var showBar = function (on) {
@@ -784,44 +912,76 @@
           showBar(pdpAdd.getBoundingClientRect().bottom < 0);
         }, { passive: true });
       }
-    }
 
-    /* product page delivery date, right under the button */
-    var etaLine = document.createElement('p');
-    etaLine.className = 'eta eta-pdp';
-    etaLine.textContent = deliveryEtaLine();
-    pdpAdd.parentNode.insertBefore(etaLine, pdpAdd.nextSibling);
+      /* product page delivery date, right under the button */
+      var etaLine = document.createElement('p');
+      etaLine.className = 'eta eta-pdp';
+      etaLine.textContent = deliveryEtaLine();
+      pdpAdd.parentNode.insertBefore(etaLine, pdpAdd.nextSibling);
 
-    /* save this bag, next to the button (Etsy and Vinted pattern) */
-    var saveBtn = document.createElement('button');
-    saveBtn.type = 'button';
-    saveBtn.className = 'btn btn-ghost saved-inline';
-    saveBtn.setAttribute('data-save', pdpSlug);
-    pdpAdd.parentNode.insertBefore(saveBtn, pdpAdd.nextSibling.nextSibling);
+      /* save this bag, next to the button */
+      var saveBtn = document.createElement('button');
+      saveBtn.type = 'button';
+      saveBtn.className = 'btn btn-ghost saved-inline';
+      saveBtn.setAttribute('data-save', pdpProduct.slug);
+      pdpAdd.parentNode.insertBefore(saveBtn, etaLine.nextSibling);
 
-    /* remember what was viewed, and show the trail (Amazon pattern) */
-    var watched = readList(RECENT_KEY).filter(function (r) { return r && r.slug && r.slug !== pdpSlug; });
-    writeList(RECENT_KEY, [{ slug: pdpSlug, name: pdpName, price: pdpPrice, img: pdpImg }]
-      .concat(watched).slice(0, 8));
+      /* Store only catalogue slugs. Names, prices and image URLs always come
+         from the trusted product catalogue, never from localStorage. */
+      var watchedSlugs = readProductSlugs(RECENT_KEY, MAX_RECENT).filter(function (slug) {
+        return slug !== pdpProduct.slug;
+      });
+      writeProductSlugs(RECENT_KEY, [pdpProduct.slug].concat(watchedSlugs), MAX_RECENT);
+      var watched = watchedSlugs.map(productBySlug);
 
-    if (watched.length) {
-      var anchor = document.querySelector('section[aria-label="You may also like"]') || document.querySelector('.pdp-info');
-      var rail = document.createElement('section');
-      rail.className = 'section';
-      rail.setAttribute('aria-label', 'Recently viewed');
-      rail.innerHTML =
-        '<div class="container">' +
-          '<div class="section-head"><div><span class="overline">Pick up where you left off</span>' +
-          '<h2>Recently viewed</h2></div></div>' +
-          '<div class="rail">' + watched.slice(0, 4).map(function (r) {
-            return '<a class="rail-card" href="' + ROOT + 'shop/' + r.slug + '.html">' +
-              '<img src="' + ROOT + (r.img || '').replace(/^\.\.\//, '') + '" alt="' + escHtml(r.name) + '" loading="lazy" width="160" height="160">' +
-              '<span class="rail-name">' + escHtml(r.name) + '</span>' +
-              '<span class="rail-price">' + escHtml(r.price) + '</span>' +
-            '</a>';
-          }).join('') + '</div>' +
-        '</div>';
-      if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(rail, anchor.nextSibling);
+      if (watched.length) {
+        var anchor = document.querySelector('section[aria-label="You may also like"]') || pdpInfo;
+        var rail = document.createElement('section');
+        rail.className = 'section';
+        rail.setAttribute('aria-label', 'Recently viewed');
+        var container = document.createElement('div');
+        container.className = 'container';
+        var sectionHead = document.createElement('div');
+        sectionHead.className = 'section-head';
+        var sectionTitle = document.createElement('div');
+        var overline = document.createElement('span');
+        overline.className = 'overline';
+        overline.textContent = 'Pick up where you left off';
+        var heading = document.createElement('h2');
+        heading.textContent = 'Recently viewed';
+        sectionTitle.appendChild(overline);
+        sectionTitle.appendChild(heading);
+        sectionHead.appendChild(sectionTitle);
+        var railCards = document.createElement('div');
+        railCards.className = 'rail';
+
+        watched.slice(0, 4).forEach(function (product) {
+          if (!product) return;
+          var card = document.createElement('a');
+          card.className = 'rail-card';
+          card.href = ROOT + 'shop/' + product.slug + '.html';
+          var image = document.createElement('img');
+          image.src = ROOT + product.images[0];
+          image.alt = product.name;
+          image.loading = 'lazy';
+          image.width = 160;
+          image.height = 160;
+          var name = document.createElement('span');
+          name.className = 'rail-name';
+          name.textContent = product.name;
+          var price = document.createElement('span');
+          price.className = 'rail-price';
+          price.textContent = money(product.price);
+          card.appendChild(image);
+          card.appendChild(name);
+          card.appendChild(price);
+          railCards.appendChild(card);
+        });
+        container.appendChild(sectionHead);
+        container.appendChild(railCards);
+        rail.appendChild(container);
+        if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(rail, anchor.nextSibling);
+      }
     }
   }
 
@@ -859,9 +1019,10 @@
     e.stopPropagation();
     var slug = btn.getAttribute('data-save');
     var product = productBySlug(slug);
+    if (!product || !PRODUCT_SLUG.test(slug)) return;
     var nowSaved = toggleSaved(slug);
     $all('[data-save="' + slug + '"]').forEach(function (b) { paintSaveButton(b, nowSaved); });
-    if (product) toast(nowSaved ? 'Saved ' + product.name : 'Removed ' + product.name);
+    toast(nowSaved ? 'Saved ' + product.name : 'Removed ' + product.name);
     document.dispatchEvent(new CustomEvent('bagged:saved'));
   });
 

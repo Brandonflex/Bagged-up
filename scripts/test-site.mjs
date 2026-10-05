@@ -141,6 +141,45 @@ check('every product page has a catalogue entry', () => {
   return 'no orphan pages';
 });
 
+check('product copy and metadata stay specific, consistent and supportable', () => {
+  const bad = [];
+  for (const page of PDP_PAGES) {
+    const html = read(page);
+    const description = html.match(/<meta name="description" content="([^"]*)">/)?.[1] || '';
+    const ogDescription = html.match(/<meta property="og:description" content="([^"]*)">/)?.[1] || '';
+    const productCopy = html.match(/<p class="pdp-desc">([\s\S]*?)<\/p>/)?.[1]?.trim() || '';
+    const reviewLede = html.match(/<p class="fr-lede">([\s\S]*?)<\/p>/)?.[1]?.trim() || '';
+    if (!description || description.length > 155 || /…|\.\.\./.test(description)) {
+      bad.push(`${page}: missing, truncated or overlong search description`);
+    }
+    if (description !== ogDescription) bad.push(`${page}: search and Open Graph descriptions differ`);
+    if (!productCopy || !reviewLede || !productCopy.startsWith(reviewLede)) {
+      bad.push(`${page}: product copy and full-review lede are missing or out of sync`);
+    }
+    if (!html.includes('<h3>What fits</h3>') || !html.includes('Message us about this bag')) {
+      bad.push(`${page}: missing the product-specific fit-check prompt`);
+    }
+    if (!html.includes('Inspected before dispatch') || /Inspected &amp; cleaned before dispatch|Premium look and feel/.test(html)) {
+      bad.push(`${page}: unsupported or generic assurance/spec copy`);
+    }
+  }
+  if (bad.length) throw new Error(bad.slice(0, 8).join('; '));
+  return `${PDP_PAGES.length} pages keep meta, Open Graph, PDP and review copy aligned`;
+});
+
+check('product lightboxes retain visible labelled navigation controls', () => {
+  const bad = [];
+  for (const page of PDP_PAGES) {
+    const html = read(page);
+    for (const [id, label] of [['lb-prev', 'Previous photo'], ['lb-next', 'Next photo']]) {
+      const control = new RegExp(`<button type="button" class="lb-nav [^"]+" id="${id}" aria-label="${label}"><svg\\b`);
+      if (!control.test(html)) bad.push(`${page}: ${label}`);
+    }
+  }
+  if (bad.length) throw new Error(bad.slice(0, 8).join('; '));
+  return `${PDP_PAGES.length} pages have labelled SVG prev/next controls`;
+});
+
 check('sitemap matches the catalogue', () => {
   const xml = read('sitemap.xml');
   const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
@@ -211,6 +250,28 @@ check('no asset is orphaned', () => {
   }
   info.push(`${orphans.length} asset file(s) not referenced by any page${orphans.length ? ': ' + orphans.join(', ') : ''}`);
   return orphans.length ? `${orphans.length} orphaned file(s) - see notes` : 'all assets referenced';
+});
+
+check('WhatsApp marks share one scalable decorative vector on every page', () => {
+  const css = read('assets/css/style.css');
+  const svg = read('assets/img/whatsapp-mark.svg');
+  if (!css.includes('url("../img/whatsapp-mark.svg")') || !css.includes('background-color: currentColor')) {
+    throw new Error('the reusable vector mask or its contextual color is missing');
+  }
+  if (!/<svg[^>]*viewBox="0 0 24 24"/.test(svg) || !/<path\b[^>]*d="[^"]+"/.test(svg)) {
+    throw new Error('the WhatsApp vector has no scalable viewBox or path');
+  }
+  let total = 0;
+  const broken = [];
+  for (const page of PAGES) {
+    const html = read(page);
+    const marks = [...html.matchAll(/<span\s+class="wa-mark" aria-hidden="true"><\/span>/g)].length;
+    total += marks;
+    if (marks < 3) broken.push(`${page}: ${marks} mark(s)`);
+    if (html.includes('class="ic-fill"') || html.includes('M12.04 2a9.9')) broken.push(`${page}: legacy WhatsApp path remains`);
+  }
+  if (broken.length) throw new Error(broken.slice(0, 8).join('; '));
+  return `${total} consistent vector placements across ${PAGES.length} pages`;
 });
 
 /* ---------- per-page head + structure ---------- */
@@ -327,6 +388,76 @@ check('Vercel config builds and serves the same export', () => {
   return 'builds dist/ and serves it with clean URLs';
 });
 
+check('Vercel and Cloudflare apply the same security headers', () => {
+  const vercel = JSON.parse(read('vercel.json'));
+  if (!read('scripts/build-site.mjs').includes("'_headers'")) throw new Error('Cloudflare _headers file is not included in the static export');
+  const rule = (vercel.headers || []).find((entry) => entry.source === '/(.*)');
+  if (!rule) throw new Error('Vercel has no catch-all security-header rule');
+  const vercelHeaders = new Map((rule.headers || []).map((header) => [header.key.toLowerCase(), header.value]));
+  const cloudflareHeaders = new Map();
+  for (const line of read('_headers').split(/\r?\n/)) {
+    const match = line.match(/^\s{2}([^:\s]+):\s*(.+)$/);
+    if (match) cloudflareHeaders.set(match[1].toLowerCase(), match[2]);
+  }
+  const required = [
+    'content-security-policy', 'referrer-policy', 'x-content-type-options',
+    'x-frame-options', 'permissions-policy', 'strict-transport-security',
+    'cross-origin-opener-policy',
+  ];
+  for (const name of required) {
+    const a = vercelHeaders.get(name);
+    const b = cloudflareHeaders.get(name);
+    if (!a || !b || a !== b) throw new Error(`${name} differs or is missing (Vercel: ${a || 'missing'}, Cloudflare: ${b || 'missing'})`);
+  }
+  const csp = vercelHeaders.get('content-security-policy');
+  const directives = new Map(csp.split(';').map((part) => {
+    const [name, ...values] = part.trim().split(/\s+/);
+    return [name, values.join(' ')];
+  }));
+  const requiredDirectives = {
+    'default-src': "'self'", 'base-uri': "'self'", 'object-src': "'none'",
+    'script-src': "'self'", 'script-src-attr': "'none'",
+    'frame-ancestors': "'none'", 'form-action': "'self'",
+  };
+  for (const [name, value] of Object.entries(requiredDirectives)) {
+    if (directives.get(name) !== value) throw new Error(`CSP ${name} must be ${value}`);
+  }
+  if (!directives.has('upgrade-insecure-requests')) throw new Error('CSP must upgrade insecure requests');
+  return `${required.length} matching response headers; CSP blocks inline scripts, objects and framing`;
+});
+
+check('every page uses only external scripts under the strict CSP', () => {
+  const bad = [];
+  for (const page of PAGES) {
+    const html = read(page);
+    const depth = page.includes('/') ? '../' : '';
+    if (!html.includes(`<script src="${depth}assets/js/theme-init.js"></script>`)) bad.push(`${page}: theme initializer`);
+    for (const match of html.matchAll(/<script\b([^>]*)>/gi)) {
+      if (!/\bsrc\s*=/.test(match[1])) bad.push(`${page}: inline script`);
+    }
+    if (/\son[a-z][a-z0-9_-]*\s*=/i.test(html)) bad.push(`${page}: inline event handler`);
+    if (/(?:href|src)\s*=\s*["']?\s*javascript\s*:/i.test(html)) bad.push(`${page}: javascript URL`);
+  }
+  if (bad.length) throw new Error(bad.slice(0, 8).join('; '));
+  return `${PAGES.length} pages have no inline JavaScript, event handlers or javascript: URLs`;
+});
+
+check('new-tab links prevent access to the opener', () => {
+  const bad = [];
+  let checked = 0;
+  for (const page of PAGES) {
+    for (const match of read(page).matchAll(/<a\b[^>]*>/gi)) {
+      const tag = match[0];
+      if (!/\btarget="_blank"/i.test(tag)) continue;
+      checked++;
+      const rel = (tag.match(/\brel="([^"]*)"/i) || [])[1] || '';
+      if (!/(?:^|\s)noopener(?:\s|$)/i.test(rel)) bad.push(`${page}: ${tag.slice(0, 100)}`);
+    }
+  }
+  if (bad.length) throw new Error(bad.slice(0, 5).join('; '));
+  return `${checked} new-tab links use rel=noopener`;
+});
+
 check('Cloudflare Worker config matches the build output', () => {
   const cfg = JSON.parse(read('wrangler.jsonc').replace(/^\s*\/\/.*$/gm, ''));
   if (cfg.name !== 'bagged-up') throw new Error(`worker name is "${cfg.name}", expected "bagged-up"`);
@@ -410,9 +541,10 @@ check('product pages load the catalogue and app script', () => {
     const depth = page.includes('/') ? '../' : '';
     if (!html.includes(`src="${depth}assets/js/data.js"`)) bad.push(`${page}: data.js`);
     if (!html.includes(`src="${depth}assets/js/app.js"`)) bad.push(`${page}: app.js`);
+    if (!html.includes(`src="${depth}assets/js/brand-motion.js"`)) bad.push(`${page}: brand-motion.js`);
   }
   if (bad.length) throw new Error(bad.join('; '));
-  return 'catalogue + behaviour loaded everywhere';
+  return 'catalogue, behaviour and brand motion loaded everywhere';
 });
 
 check('the WhatsApp checkout number is consistent', () => {
@@ -439,6 +571,40 @@ check('CI workflow files parse as YAML with jobs', () => {
     return `${f} (${Object.keys(doc.jobs).length} job)`;
   });
   return summary.join(', ');
+});
+
+check('GitHub Actions are pinned to immutable commit SHAs', () => {
+  const refs = [...read('.github/workflows/ci.yml').matchAll(/^\s*- uses:\s*([^\s#]+)/gm)].map((match) => match[1]);
+  const mutable = refs.filter((ref) => !/^[^@]+@[0-9a-f]{40}$/i.test(ref));
+  if (!refs.length || mutable.length) throw new Error(`unpinned refs: ${mutable.join(', ') || 'no action refs found'}`);
+  return `${refs.length} actions pinned to full SHAs`;
+});
+
+check('CI runs with read-only permissions and skips install scripts', () => {
+  const cfg = yamlLoad(read('.github/workflows/ci.yml'));
+  if (!cfg.permissions || cfg.permissions.contents !== 'read' || Object.keys(cfg.permissions).length !== 1) {
+    throw new Error('workflow permissions are not restricted to contents: read');
+  }
+  const steps = cfg.jobs.gate.steps;
+  const checkout = steps.find((step) => String(step.uses || '').startsWith('actions/checkout@'));
+  if (!checkout || !checkout.with || checkout.with['persist-credentials'] !== false) {
+    throw new Error('checkout credentials are persisted');
+  }
+  if (!steps.some((step) => step.run === 'npm ci --ignore-scripts')) throw new Error('npm install lifecycle scripts are not disabled');
+  if (!steps.some((step) => /npm audit --audit-level=low/.test(step.run || ''))) throw new Error('dependency audit is missing');
+  return 'contents:read only, no persisted checkout token, locked install scripts disabled';
+});
+
+check('Dependabot checks npm and GitHub Actions updates weekly', () => {
+  const cfg = yamlLoad(read('.github/dependabot.yml'));
+  if (!cfg || cfg.version !== 2 || !Array.isArray(cfg.updates)) throw new Error('invalid Dependabot v2 config');
+  for (const ecosystem of ['npm', 'github-actions']) {
+    const update = cfg.updates.find((entry) => entry['package-ecosystem'] === ecosystem && entry.directory === '/');
+    if (!update || !update.schedule || update.schedule.interval !== 'weekly') {
+      throw new Error(`${ecosystem} updates are not scheduled weekly`);
+    }
+  }
+  return 'npm dependencies and action SHA pins have weekly update PRs';
 });
 
 const pad = (s, n) => (s + ' '.repeat(n)).slice(0, n);

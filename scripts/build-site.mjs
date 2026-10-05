@@ -20,7 +20,7 @@ const DIST = path.join(ROOT, 'dist');
 const PUBLISH = [
   'index.html', 'shop.html', 'cart.html', 'about.html', 'reviews.html', 'contact.html',
   'faq.html', 'delivery.html', 'returns.html', 'privacy.html', 'terms.html',
-  'robots.txt', 'sitemap.xml', 'vercel.json',
+  'robots.txt', 'sitemap.xml', 'vercel.json', '_headers',
 ];
 const DEV_ONLY = [
   'package.json', 'package-lock.json', 'README.md', 'scripts', 'node_modules',
@@ -42,14 +42,17 @@ const files = [];
 function copy(from, to) {
   const src = path.join(ROOT, from);
   const dst = path.join(DIST, to);
-  const stat = fs.statSync(src);
+  const stat = fs.lstatSync(src);
+  if (stat.isSymbolicLink()) fail(`refusing to publish symbolic link: ${from}`);
   if (stat.isDirectory()) {
     fs.mkdirSync(dst, { recursive: true });
     for (const entry of fs.readdirSync(src)) copy(path.join(from, entry), path.join(to, entry));
-  } else {
+  } else if (stat.isFile()) {
     fs.mkdirSync(path.dirname(dst), { recursive: true });
     fs.copyFileSync(src, dst);
     files.push({ rel: to, bytes: stat.size });
+  } else {
+    fail(`refusing to publish non-file entry: ${from}`);
   }
 }
 

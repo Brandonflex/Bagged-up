@@ -11,6 +11,8 @@
  *      from the values actually in the stylesheet, not from the docs.
  *   4. The brand marks exist, carry a viewBox, use no <text>, and only use
  *      palette colours.
+ *   5. The CSS-masked production signature, linked-loop motif and favicon stay
+ *      byte-for-byte aligned with their design-source SVGs.
  *
  *   node scripts/check-design.mjs      (part of: npm run verify)
  */
@@ -151,7 +153,7 @@ startCount = failures.length;
 startCount = failures.length;
 {
   const dir = path.join(ROOT, 'design/brand');
-  const marks = ['wordmark.svg', 'wordmark-reverse.svg', 'monogram.svg', 'favicon.svg'];
+  const marks = ['wordmark.svg', 'wordmark-reverse.svg', 'signature.svg', 'monogram.svg', 'linked-loops.svg', 'favicon.svg'];
   const missing = marks.filter((f) => !fs.existsSync(path.join(dir, f)));
   if (missing.length) fail(`missing brand mark(s): ${missing.join(', ')}`);
 
@@ -172,7 +174,23 @@ startCount = failures.length;
       fail(`${f} draws its lettering as <text>, which only renders correctly where that font is installed; outline it to a path`);
     }
   }
-  group('brand marks exist, scale, and stay on palette', `${marks.length} marks, ${approved.size} approved colours`);
+  const copies = [
+    ['signature.svg', 'assets/img/signature-mark.svg'],
+    ['linked-loops.svg', 'assets/img/linked-loop-mark.svg'],
+    ['favicon.svg', 'assets/img/favicon.svg'],
+  ];
+  for (const [source, shipped] of copies) {
+    const sourcePath = path.join(dir, source);
+    const shippedPath = path.join(ROOT, shipped);
+    if (!fs.existsSync(sourcePath) || !fs.existsSync(shippedPath)) {
+      fail(`brand artwork copy is missing: ${source} -> ${shipped}`);
+      continue;
+    }
+    if (fs.readFileSync(sourcePath, 'utf8') !== fs.readFileSync(shippedPath, 'utf8')) {
+      fail(`shipped brand artwork is out of sync: ${source} -> ${shipped}`);
+    }
+  }
+  group('brand marks exist, scale, and stay on palette', `${marks.length} marks, ${copies.length} shipped copies synced`);
 }
 
 /* ---------- 5. every var() reference resolves ---------- */
@@ -206,39 +224,30 @@ startCount = failures.length;
   // either a bug (it will drift in the other theme) or a token that was
   // never declared.
   const allow = {
-    '#F5F1E9': 'ivory text on the always-dark surfaces: hero, footer, .on-dark, flags, lightbox',
-    '#C9B99A': 'tan icons on the always-dark surfaces (hero strip, footer, lightbox)',
-    '#FAF7F1': 'hero headline, which sits on --bg-dark in both themes',
-    '#E9DDC8': 'hero accent word, on --bg-dark in both themes',
-    '#F7F3EB': 'hero caption, on --bg-dark in both themes',
-    '#EFE9DE': 'footer text, footer is --bg-dark in both themes',
-    '#fff': 'footer link hover, footer is always dark',
-    '#F4F6F0': 'text on the green pill; the green token carries a dark override that keeps the contrast',
-    'rgba(250,247,241,0.55)': '.overline.light, used on always-dark surfaces',
-    'rgba(250,247,241,0.72)': '.on-dark .overline, used on always-dark surfaces',
-    'rgba(250,247,241,0.85)': '.btn-light border, only used on always-dark surfaces',
-    'rgba(250,247,241,0.7)': '.text-link.light, only used on always-dark surfaces',
-    'rgba(250,247,241,0.78)': 'hero subline, on --bg-dark in both themes',
-    'rgba(250,247,241,0.8)': 'hero strip, on --bg-dark in both themes',
-    'rgba(250,247,241,0.6)': '.review-by on the homepage, which sits in an always-dark section',
-    'rgba(245,241,233,0.62)': 'footer, always dark',
-    'rgba(245,241,233,0.78)': 'footer links and contact lines, always dark',
-    'rgba(245,241,233,0.5)': 'footer fine print, always dark',
-    'rgba(24,18,13,0.9)': 'hero scrim over the photo',
-    'rgba(24,18,13,0.62)': 'hero scrim over the photo',
-    'rgba(24,18,13,0.08)': 'hero scrim over the photo',
-    'rgba(24,18,13,0.42)': 'hero scrim over the photo',
-    'rgba(24,18,13,0.55)': 'hero and montage scrim over the photo',
-    'rgba(24,18,13,0.66)': 'hero caption scrim over the photo',
-    'rgba(24,18,13,0)': 'scrim gradient stop over the photo',
-    'rgba(33,27,21,0.4)': 'shadow under the open nav panel',
-    'rgba(33,27,21,0.75)': 'sold out flag, dark in both themes',
-    'rgba(46,58,38,0.55)': 'shadow of the WhatsApp button',
-    'rgba(255,252,244,0.16)': 'the tilt highlight over a card photo',
-    'rgba(16,12,9,0.96)': 'lightbox backdrop, always dark',
-    'rgba(250,247,241,0.3)': 'lightbox nav border over the dark backdrop',
-    'rgba(250,247,241,0.12)': 'lightbox nav hover over the dark backdrop',
+    'rgba(250,247,241,0.55)': 'overline labels on always-dark bands',
+    'rgba(250,247,241,0.72)': 'secondary copy on always-dark bands and the footer brand line',
+    'rgba(30,44,37,0.16)': 'subtle shadow below outlined buttons',
+    'rgba(250,247,241,0.7)': 'text-link underline on always-dark bands',
+    'rgba(30,44,37,0.4)': 'shadow under the open navigation panel',
+    'rgba(30,44,37,0.74)': 'forest scrim over campaign and recommendation photography',
+    'rgba(30,44,37,0.46)': 'midpoint of the campaign photo scrim',
+    'rgba(30,44,37,0.04)': 'transparent end of the campaign photo scrim',
+    'rgba(30,44,37,0.5)': 'photo scrim and shadow beneath the WhatsApp action',
+    'rgba(30,44,37,0)': 'transparent stop in photo scrims',
+    'rgba(30,44,37,0.72)': 'lower-edge scrim over category and recommendation photography',
+    'rgba(30,44,37,0.82)': 'sold-out flag on product photography',
+    'rgba(250,247,241,0.82)': 'footer text and caption over the campaign photograph',
+    'rgba(250,247,241,0.65)': 'footer fine print on the deep forest surface',
+    'rgba(250,247,241,0.16)': 'tilt highlight over a product photo',
+    'rgba(10,16,12,0.96)': 'deep forest lightbox backdrop',
+    'rgba(250,247,241,0.3)': 'lightbox navigation boundary on the dark backdrop',
+    'rgba(250,247,241,0.12)': 'lightbox navigation hover on the dark backdrop',
     'rgba(0,0,0,0.5)': 'text shadow over photos',
+    'rgba(30,44,37,0.58)': 'lower scrim over editorial montage photography',
+    'rgba(30,44,37,0.42)': 'depth shadow under the layered hero image',
+    'rgba(30,44,37,0.24)': 'shadow under the foreground hero action',
+    'rgba(41,58,49,0.26)': 'fine border around the numbered hero action index',
+    'rgba(250,247,241,0.86)': 'proof-strip copy on the deep forest band',
   };
   const norm = (v) => v.replace(/\s+/g, '');
   const tokenBlocks = [':root {', ':root:not([data-theme="light"]) {', ':root[data-theme="dark"] {']

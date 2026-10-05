@@ -4,23 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
-<script>
-document.documentElement.classList.add('js');
-/* resolve theme before first paint: stored override wins, else follow the OS */
-(function () {
-  var t = null;
-  try { t = localStorage.getItem('bagged-up-theme'); } catch (e) {}
-  if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
-})();
-</script>
-<title>Bagged Up: Curated Handbags for the Modern Woman</title>
-<meta name="description" content="A curated handbag boutique delivering countrywide across Kenya. Pay on delivery via M-Pesa or cash. Order in minutes, on WhatsApp.">
+<script src="assets/js/theme-init.js"></script>
+<title>Bagged Up | Handbags chosen for city days</title>
+<meta name="description" content="A small edit of handbags for city days and late plans. Each piece is checked before dispatch. Delivered across Kenya, with pay on delivery by M-Pesa or cash.">
 <link rel="canonical" href="https://bagged-up.vercel.app/">
-<meta property="og:title" content="Bagged Up: Curated Handbags for the Modern Woman">
-<meta property="og:description" content="A curated handbag boutique delivering countrywide across Kenya. Pay on delivery via M-Pesa or cash. Order in minutes, on WhatsApp.">
+<meta property="og:title" content="Bagged Up | Handbags chosen for city days">
+<meta property="og:description" content="A small edit of handbags for city days and late plans. Each piece is checked before dispatch. Delivered across Kenya, with pay on delivery by M-Pesa or cash.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://bagged-up.vercel.app/">
-<meta property="og:image" content="https://bagged-up.vercel.app/assets/img/hero.jpg">
+<meta property="og:image" content="https://bagged-up.vercel.app/assets/img/style-crossbody.jpg">
 <meta property="og:site_name" content="Bagged Up">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
@@ -47,7 +39,7 @@ document.documentElement.classList.add('js');
       <a class="icon-btn" href="cart.html" aria-label="Shopping bag">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" aria-hidden="true"><path d="M5.5 8.5h13l-.9 11.2a1.6 1.6 0 0 1-1.6 1.3H8a1.6 1.6 0 0 1-1.6-1.3L5.5 8.5Z" stroke-linejoin="round"/><path d="M8.8 10.6V6.8a3.2 3.2 0 0 1 6.4 0v3.8" stroke-linecap="round"/></svg>
         <span class="cart-count" aria-hidden="true">0</span>
-      </a>
+</a>
       <button type="button" class="icon-btn menu-btn" aria-expanded="false" aria-label="Open menu" aria-controls="nav-panel">
         <svg class="i-open" viewBox="0 0 24 24" fill="none" stroke-width="1.6" aria-hidden="true"><path d="M3.5 7h17M3.5 12h17M3.5 17h11" stroke-linecap="round"/></svg><svg class="i-close hidden" viewBox="0 0 24 24" fill="none" stroke-width="1.6" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg>
       </button>
@@ -65,8 +57,8 @@ document.documentElement.classList.add('js');
     <div>
       <span class="overline">Orders &amp; Inquiries</span>
       <a class="wa-line" href="https://wa.me/254113599345?text=Hello%20Bagged%20Up%2C%20I%27d%20like%20to%20make%20an%20inquiry.">
-        <svg class="ic-fill" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2a9.9 9.9 0 0 0-8.57 14.87L2 22l5.28-1.38A9.9 9.9 0 1 0 12.04 2Zm0 1.7a8.2 8.2 0 1 1-4.18 15.26l-.3-.18-3.13.82.84-3.05-.2-.31A8.2 8.2 0 0 1 12.04 3.7Zm-3.1 3.62c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.5 0 1.47 1.07 2.9 1.22 3.1.15.2 2.1 3.28 5.13 4.47 2.53 1 2.9.86 3.42.8.52-.05 1.68-.68 1.92-1.35.24-.66.24-1.23.17-1.35-.07-.12-.27-.2-.56-.34-.3-.15-1.68-.83-1.94-.92-.26-.1-.45-.15-.64.15-.2.3-.75.96-.92 1.16-.17.2-.34.22-.63.07-.3-.15-1.12-.41-2.14-1.32-.79-.7-1.32-1.57-1.47-1.87-.15-.3-.02-.46.13-.6.13-.14.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.64-1.62-.9-2.2-.22-.5-.45-.5-.63-.5l-.54-.03Z"/></svg><span>+254 113 599 345</span>
-      </a>
+        <span class="wa-mark" aria-hidden="true"></span><span>+254 113 599 345</span>
+</a>
     </div>
     <div>
       <span class="overline">Help</span>
@@ -82,23 +74,30 @@ document.documentElement.classList.add('js');
 
 <main id="main">
 
-<section class="hero grain">
-  <div class="hero-media" aria-hidden="true"><img src="assets/img/hero.jpg" alt="" fetchpriority="high"></div>
+<section class="hero grain home-hero" aria-label="Bagged Up's City Collectors edit">
+  <span class="hero-type-plane" aria-hidden="true">BAGGED<br>UP</span>
+  <div class="hero-media">
+    <img src="assets/img/style-crossbody.jpg" alt="A warm brown shoulder bag carried on a sunlit city walk." fetchpriority="high" decoding="async">
+    <a class="btn btn-light hero-image-cta" href="#new-arrivals" aria-label="Shop the edit">
+      <span class="hero-cta-index" aria-hidden="true">01</span><span>Shop the edit</span>
+</a>
+  </div>
   <div class="container hero-inner">
-    <span class="overline kicker">New season 2026</span>
-    <h1>Curated handbags for the <em class="ax">modern woman</em></h1>
-    <p class="sub">A small edit of totes, crescents and occasion bags. Each one is picked by hand and delivered anywhere in Kenya.</p>
+    <span class="overline kicker">City Collectors <span aria-hidden="true">·</span> The Bagged Up edit</span>
+    <h1>A quieter kind of <em class="ax">statement.</em></h1>
+    <p class="sub">A small edit of bags for city days and late plans. Each piece is checked in person before dispatch.</p>
     <div class="hero-ctas">
-      <a class="btn btn-light" href="shop.html">Shop the collection</a>
-      <a class="btn btn-light" href="#new-arrivals" style="border-color:rgba(250,247,241,.4)">What's new</a>
+      <a class="hero-secondary" href="about.html">Read our story</a>
     </div>
   </div>
+  <div class="hero-side-note" aria-hidden="true"><span>City Collectors</span><span>01 <i>/</i> 01</span></div>
+  <a class="hero-scroll" href="#new-arrivals"><span>Scroll to the collection</span><span class="hero-scroll-mark" aria-hidden="true"></span></a>
   <div class="hero-strip">
-    <div class="container" style="display:flex;flex-wrap:wrap;gap:.6rem 2.2rem">
-      <span><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" aria-hidden="true"><path d="M2.5 6h11v10h-11zM13.5 9.5h4.2l2.8 3.3v3.2h-7z" stroke-linejoin="round"/><circle cx="6.5" cy="17.8" r="1.9"/><circle cx="17" cy="17.8" r="1.9"/></svg> Delivery countrywide</span>
-      <span><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="1.5"/><circle cx="12" cy="12" r="3"/><path d="M5.8 9.2h.01M18.2 14.8h.01" stroke-linecap="round"/></svg> Pay on delivery</span>
-      <span><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" aria-hidden="true"><path d="M12 2.8 4.8 5.6v5.2c0 4.6 3 8.4 7.2 10 4.2-1.6 7.2-5.4 7.2-10V5.6L12 2.8Z" stroke-linejoin="round"/><path d="m8.8 11.8 2.2 2.2 4.2-4.4" stroke-linecap="round" stroke-linejoin="round"/></svg> Quality checked, piece by piece</span>
-      <span><svg class="ic-fill" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2a9.9 9.9 0 0 0-8.57 14.87L2 22l5.28-1.38A9.9 9.9 0 1 0 12.04 2Zm0 1.7a8.2 8.2 0 1 1-4.18 15.26l-.3-.18-3.13.82.84-3.05-.2-.31A8.2 8.2 0 0 1 12.04 3.7Zm-3.1 3.62c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.5 0 1.47 1.07 2.9 1.22 3.1.15.2 2.1 3.28 5.13 4.47 2.53 1 2.9.86 3.42.8.52-.05 1.68-.68 1.92-1.35.24-.66.24-1.23.17-1.35-.07-.12-.27-.2-.56-.34-.3-.15-1.68-.83-1.94-.92-.26-.1-.45-.15-.64.15-.2.3-.75.96-.92 1.16-.17.2-.34.22-.63.07-.3-.15-1.12-.41-2.14-1.32-.79-.7-1.32-1.57-1.47-1.87-.15-.3-.02-.46.13-.6.13-.14.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.64-1.62-.9-2.2-.22-.5-.45-.5-.63-.5l-.54-.03Z"/></svg> Order on WhatsApp</span>
+    <div class="container home-proof">
+      <span><i>01</i> A small, considered edit</span>
+      <span><i>02</i> Inspected before dispatch</span>
+      <span><i>03</i> Pay on delivery</span>
+      <span><i>04</i> Delivered across Kenya</span>
     </div>
   </div>
 </section>
@@ -107,17 +106,17 @@ document.documentElement.classList.add('js');
   <div class="container">
     <div class="section-head">
       <div class="sh-l">
-        <span class="overline">Just In</span>
-        <h2>The collection, <em class="ax">newest first</em></h2>
+        <span class="overline">Just arrived</span>
+        <h2>New pieces, <em class="ax">ready for the city.</em></h2>
       </div>
-      <a class="text-link" href="shop.html">View all 50 pieces <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" aria-hidden="true"><path d="M4 12h15m0 0-6-6m6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      <a class="text-link" href="shop.html">View all 50 bags</a>
     </div>
     <div class="prod-grid">
 <article class="card rv" data-cat="shoulder-crescent" data-price="3199" data-name="Louis Vuitton Neverfull (Boxed)">
   <div class="card-media" data-alt-src="assets/products/louis-vuitton-neverfull-boxed-2.jpg">
     <a href="shop/louis-vuitton-neverfull-boxed.html" aria-label="Louis Vuitton Neverfull (Boxed)">
       <img src="assets/products/louis-vuitton-neverfull-boxed-1.jpg" alt="Louis Vuitton Neverfull (Boxed)" loading="lazy" width="800" height="1000">
-    </a>
+</a>
     <span class="flag dark">New In</span>
     <button class="quick" type="button" data-add="louis-vuitton-neverfull-boxed">Add to bag</button>
   </div>
@@ -134,7 +133,7 @@ document.documentElement.classList.add('js');
   <div class="card-media" data-alt-src="assets/products/pearl-accent-leather-bow-shoulder-bag-2.jpg">
     <a href="shop/pearl-accent-leather-bow-shoulder-bag.html" aria-label="Pearl Accent Leather Bow Shoulder Bag">
       <img src="assets/products/pearl-accent-leather-bow-shoulder-bag-1.jpg" alt="Pearl Accent Leather Bow Shoulder Bag" loading="lazy" width="800" height="1000">
-    </a>
+</a>
     <span class="flag dark">New In</span>
     <button class="quick" type="button" data-add="pearl-accent-leather-bow-shoulder-bag">Add to bag</button>
   </div>
@@ -151,7 +150,7 @@ document.documentElement.classList.add('js');
   <div class="card-media" data-alt-src="assets/products/black-crescent-shoulder-bag-2.jpg">
     <a href="shop/black-crescent-shoulder-bag.html" aria-label="Black Crescent Shoulder Bag">
       <img src="assets/products/black-crescent-shoulder-bag-1.jpg" alt="Black Crescent Shoulder Bag" loading="lazy" width="800" height="1000">
-    </a>
+</a>
     <span class="flag dark">New In</span>
     <button class="quick" type="button" data-add="black-crescent-shoulder-bag">Add to bag</button>
   </div>
@@ -168,7 +167,7 @@ document.documentElement.classList.add('js');
   <div class="card-media" data-alt-src="assets/products/peyton-lock-shoulder-bag-2.jpg">
     <a href="shop/peyton-lock-shoulder-bag.html" aria-label="Peyton Lock Shoulder Bag">
       <img src="assets/products/peyton-lock-shoulder-bag-1.jpg" alt="Peyton Lock Shoulder Bag" loading="lazy" width="800" height="1000">
-    </a>
+</a>
     <span class="flag dark">New In</span>
     <button class="quick" type="button" data-add="peyton-lock-shoulder-bag">Add to bag</button>
   </div>
@@ -185,7 +184,7 @@ document.documentElement.classList.add('js');
   <div class="card-media" data-alt-src="assets/products/y2k-aesthetic-printed-corduroy-crescent-bags-2.jpg">
     <a href="shop/y2k-aesthetic-printed-corduroy-crescent-bags.html" aria-label="Y2K Printed Corduroy Crescent Bag">
       <img src="assets/products/y2k-aesthetic-printed-corduroy-crescent-bags-1.jpg" alt="Y2K Printed Corduroy Crescent Bag" loading="lazy" width="800" height="1000">
-    </a>
+</a>
     
     <button class="quick" type="button" data-add="y2k-aesthetic-printed-corduroy-crescent-bags">Add to bag</button>
   </div>
@@ -202,7 +201,7 @@ document.documentElement.classList.add('js');
   <div class="card-media" data-alt-src="assets/products/monogram-print-handbag-2.jpg">
     <a href="shop/monogram-print-handbag.html" aria-label="Monogram Print Handbag">
       <img src="assets/products/monogram-print-handbag-1.jpg" alt="Monogram Print Handbag" loading="lazy" width="800" height="1000">
-    </a>
+</a>
     
     <button class="quick" type="button" data-add="monogram-print-handbag">Add to bag</button>
   </div>
@@ -219,7 +218,7 @@ document.documentElement.classList.add('js');
   <div class="card-media" data-alt-src="assets/products/charm-shoulder-pouch-2.jpg">
     <a href="shop/charm-shoulder-pouch.html" aria-label="Charm Shoulder Pouch">
       <img src="assets/products/charm-shoulder-pouch-1.jpg" alt="Charm Shoulder Pouch" loading="lazy" width="800" height="1000">
-    </a>
+</a>
     
     <button class="quick" type="button" data-add="charm-shoulder-pouch">Add to bag</button>
   </div>
@@ -236,7 +235,7 @@ document.documentElement.classList.add('js');
   <div class="card-media">
     <a href="shop/top-handle-crossbody-bag.html" aria-label="Top-Handle Crossbody Bag">
       <img src="assets/products/top-handle-crossbody-bag-1.jpg" alt="Top-Handle Crossbody Bag" loading="lazy" width="800" height="1000">
-    </a>
+</a>
     
     <button class="quick" type="button" data-add="top-handle-crossbody-bag">Add to bag</button>
   </div>
@@ -252,28 +251,90 @@ document.documentElement.classList.add('js');
   </div>
 </section>
 
+<section class="section bag-finder on-raised" id="bag-finder" aria-labelledby="finder-title">
+  <div class="container">
+    <div class="section-head finder-head">
+      <div>
+        <span class="overline">Start with your day · The Bagged Up edit</span>
+        <h2 id="finder-title">What are you <em class="ax">carrying?</em></h2>
+        <p class="lede">Choose a mood. We’ll show you a place to start.</p>
+      </div>
+      <span class="finder-index" aria-hidden="true">01 <i>/</i> 04</span>
+    </div>
+    <div class="finder-layout">
+      <nav class="finder-options" aria-label="Explore bags by occasion">
+        <a class="finder-option" href="shop.html?cat=shoulder-crescent" data-finder-product="black-crescent-shoulder-bag" data-finder-category="shoulder-crescent" data-finder-label="Everyday, easy" data-finder-index="01" aria-current="true">
+          <span class="finder-number">01</span>
+          <span class="finder-option-copy"><strong>Everyday, easy</strong><small>A little polish for the in-between bits.</small></span>
+</a>
+        <a class="finder-option" href="shop.html?cat=crossbody" data-finder-product="top-handle-crossbody-bag" data-finder-category="crossbody" data-finder-label="Hands-free days" data-finder-index="02">
+          <span class="finder-number">02</span>
+          <span class="finder-option-copy"><strong>Hands-free days</strong><small>For plans that refuse to stay in one place.</small></span>
+</a>
+        <a class="finder-option" href="shop.html?cat=totes" data-finder-product="canvas-tote-bag" data-finder-category="totes" data-finder-label="Carry the day" data-finder-index="03">
+          <span class="finder-number">03</span>
+          <span class="finder-option-copy"><strong>Carry the day</strong><small>Room for all the things that come with you.</small></span>
+</a>
+        <a class="finder-option" href="shop.html?cat=mini-occasion" data-finder-product="pleated-satin-minaudi-re" data-finder-category="mini-occasion" data-finder-label="After hours" data-finder-index="04">
+          <span class="finder-number">04</span>
+          <span class="finder-option-copy"><strong>After hours</strong><small>Small in scale. Ready to make an entrance.</small></span>
+</a>
+      </nav>
+      <article class="finder-showcase" aria-live="polite">
+        <a class="finder-image" id="finder-product-link" href="shop/black-crescent-shoulder-bag.html" aria-label="View Black Crescent Shoulder Bag">
+          <img id="finder-image" src="assets/products/black-crescent-shoulder-bag-1.jpg" alt="Black Crescent Shoulder Bag" width="800" height="1000" loading="lazy">
+          <span class="finder-image-caption"><span>Our pick for</span><strong id="finder-mood">Everyday, easy</strong></span>
+</a>
+        <div class="finder-product">
+          <div class="finder-product-copy">
+            <span class="overline" id="finder-index">01 / THE EVERYDAY EDIT</span>
+            <h3 id="finder-name">Black Crescent Shoulder Bag</h3>
+            <p id="finder-price">KSh 1,499</p>
+          </div>
+          <a class="text-link" id="finder-category-link" href="shop.html?cat=shoulder-crescent">Explore this edit</a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
 <section class="section on-raised">
   <div class="container split rev">
-    <div class="frame rv"><img src="assets/img/about.jpg" alt="The Bagged Up story" loading="lazy"></div>
+    <div class="frame story-collage rv">
+      <img src="assets/img/about.jpg" alt="A hand carrying a structured cream bag with a silk scarf" loading="lazy">
+      <div class="story-collage-inset">
+        <img src="assets/img/hero.jpg" alt="A burgundy structured handbag on a stone pedestal" loading="lazy">
+        <span>Chosen with care</span>
+      </div>
+    </div>
     <div class="rv" style="--d:.1s">
       <span class="overline">Our Story</span>
       <h2>Chosen slowly, so you can shop quickly</h2>
       <div class="body">
-        <p class="dropcap">Bagged Up started with one frustration: good bags were hard to find, and the listings were worse. So we do the digging for you, and keep a small, rotating edit of pieces we'd carry ourselves.</p>
-        <p>Every bag is inspected in person before it reaches the site. If it isn't something we'd gift our own sisters, it doesn't make the collection.</p>
+        <p class="dropcap">Bagged Up started with one frustration: good bags were hard to find, and the listings were worse. So we do the digging for you and keep a small, rotating edit of pieces we'd carry ourselves.</p>
+        <p>Every bag is inspected in person before it reaches the site. If we wouldn't give it to someone we love, it doesn't make the edit.</p>
       </div>
       <a class="btn" href="about.html">Read our story</a>
     </div>
   </div>
 </section>
 
-<section class="section on-dark grain quote-band" aria-label="Customer reviews">
-  <div class="container" style="text-align:center">
-    <div class="qmark rv" aria-hidden="true">“</div>
-    <span class="overline light rv" style="--d:.08s">What Customers Say</span>
-    <p class="review-quote bigger rv" style="--d:.14s;margin:0.8rem auto 0">“Good customer service, thank you!”</p>
-    <p class="review-by rv" style="--d:.2s">Millicent, verified buyer</p>
-    <p class="rv" style="--d:.26s;margin-top:2rem"><a class="text-link light" href="reviews.html">Read reviews &amp; share yours <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" aria-hidden="true"><path d="M4 12h15m0 0-6-6m6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></a></p>
+<section class="section on-dark grain quote-band" aria-labelledby="home-testimonial-title">
+  <div class="container">
+    <div class="home-testimonial rv">
+      <h2 class="overline light home-testimonial-title" id="home-testimonial-title">What Customers Say</h2>
+      <figure class="home-review">
+        <span class="qmark" aria-hidden="true">“</span>
+        <blockquote>
+          <p class="review-quote bigger">Good customer service, thank you!</p>
+        </blockquote>
+        <figcaption class="review-attribution">
+          <span class="review-by">Millicent</span>
+          <span class="home-review-verified"><span class="home-review-verified-dot" aria-hidden="true"></span>Verified buyer</span>
+        </figcaption>
+      </figure>
+    </div>
+    <p class="testimonial-action rv"><a class="text-link light" href="reviews.html">Read reviews &amp; share yours</a></p>
   </div>
 </section>
 
@@ -281,9 +342,9 @@ document.documentElement.classList.add('js');
   <div class="container inner">
     <div>
       <h2>Have a question about a <em class="ax">piece?</em></h2>
-      <p>Ask about sizing, colour or availability. We reply fast during business hours.</p>
+      <p>Ask about sizing, colour or availability. We reply during business hours.</p>
     </div>
-    <a class="btn btn-green" href="https://wa.me/254113599345?text=Hello%20Bagged%20Up%2C%20I%20have%20a%20question%20about%20a%20piece."><svg class="ic-fill" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2a9.9 9.9 0 0 0-8.57 14.87L2 22l5.28-1.38A9.9 9.9 0 1 0 12.04 2Zm0 1.7a8.2 8.2 0 1 1-4.18 15.26l-.3-.18-3.13.82.84-3.05-.2-.31A8.2 8.2 0 0 1 12.04 3.7Zm-3.1 3.62c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.5 0 1.47 1.07 2.9 1.22 3.1.15.2 2.1 3.28 5.13 4.47 2.53 1 2.9.86 3.42.8.52-.05 1.68-.68 1.92-1.35.24-.66.24-1.23.17-1.35-.07-.12-.27-.2-.56-.34-.3-.15-1.68-.83-1.94-.92-.26-.1-.45-.15-.64.15-.2.3-.75.96-.92 1.16-.17.2-.34.22-.63.07-.3-.15-1.12-.41-2.14-1.32-.79-.7-1.32-1.57-1.47-1.87-.15-.3-.02-.46.13-.6.13-.14.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.64-1.62-.9-2.2-.22-.5-.45-.5-.63-.5l-.54-.03Z"/></svg> Chat with Bagged Up</a>
+    <a class="btn btn-green" href="https://wa.me/254113599345?text=Hello%20Bagged%20Up%2C%20I%20have%20a%20question%20about%20a%20piece."><span class="wa-mark" aria-hidden="true"></span> Chat with Bagged Up</a>
   </div>
 </section>
 </main>
@@ -293,7 +354,7 @@ document.documentElement.classList.add('js');
     <div class="footer-grid">
       <div class="footer-brand">
         <span class="wordmark">Bagged Up</span>
-        <p>Curated handbags for the modern woman. Delivery countrywide, payment on delivery.</p>
+        <p>Bags for city days and late plans. Checked before dispatch. Pay on delivery across Kenya.</p>
       </div>
       <div class="footer-col">
         <span class="overline">Shop</span>
@@ -316,7 +377,7 @@ document.documentElement.classList.add('js');
       <div class="footer-col">
         <span class="overline">Get in touch</span>
         <ul class="footer-contact">
-          <li><svg class="ic-fill" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2a9.9 9.9 0 0 0-8.57 14.87L2 22l5.28-1.38A9.9 9.9 0 1 0 12.04 2Zm0 1.7a8.2 8.2 0 1 1-4.18 15.26l-.3-.18-3.13.82.84-3.05-.2-.31A8.2 8.2 0 0 1 12.04 3.7Zm-3.1 3.62c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.5 0 1.47 1.07 2.9 1.22 3.1.15.2 2.1 3.28 5.13 4.47 2.53 1 2.9.86 3.42.8.52-.05 1.68-.68 1.92-1.35.24-.66.24-1.23.17-1.35-.07-.12-.27-.2-.56-.34-.3-.15-1.68-.83-1.94-.92-.26-.1-.45-.15-.64.15-.2.3-.75.96-.92 1.16-.17.2-.34.22-.63.07-.3-.15-1.12-.41-2.14-1.32-.79-.7-1.32-1.57-1.47-1.87-.15-.3-.02-.46.13-.6.13-.14.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.64-1.62-.9-2.2-.22-.5-.45-.5-.63-.5l-.54-.03Z"/></svg><a href="https://wa.me/254113599345?text=Hello%20Bagged%20Up%2C%20I%27d%20like%20to%20make%20an%20inquiry." style="border-bottom:0">+254 113 599 345 (WhatsApp only)</a></li>
+          <li><span class="wa-mark" aria-hidden="true"></span><a href="https://wa.me/254113599345?text=Hello%20Bagged%20Up%2C%20I%27d%20like%20to%20make%20an%20inquiry." style="border-bottom:0">+254 113 599 345 (WhatsApp only)</a></li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 6.5V12l3.5 2.3" stroke-linecap="round"/></svg><span>Mon–Sat, 9:00 am – 7:00 pm EAT</span></li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" aria-hidden="true"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.6"/></svg><span>Nairobi, Kenya · countrywide delivery</span></li>
         </ul>
@@ -330,11 +391,12 @@ document.documentElement.classList.add('js');
   </div>
 </footer>
 <a class="wa-fab" href="https://wa.me/254113599345?text=Hello%20Bagged%20Up%2C%20I%27d%20like%20to%20make%20an%20inquiry." target="_blank" rel="noopener" aria-label="Chat with Bagged Up on WhatsApp">
-  <svg class="ic-fill" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2a9.9 9.9 0 0 0-8.57 14.87L2 22l5.28-1.38A9.9 9.9 0 1 0 12.04 2Zm0 1.7a8.2 8.2 0 1 1-4.18 15.26l-.3-.18-3.13.82.84-3.05-.2-.31A8.2 8.2 0 0 1 12.04 3.7Zm-3.1 3.62c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.5 0 1.47 1.07 2.9 1.22 3.1.15.2 2.1 3.28 5.13 4.47 2.53 1 2.9.86 3.42.8.52-.05 1.68-.68 1.92-1.35.24-.66.24-1.23.17-1.35-.07-.12-.27-.2-.56-.34-.3-.15-1.68-.83-1.94-.92-.26-.1-.45-.15-.64.15-.2.3-.75.96-.92 1.16-.17.2-.34.22-.63.07-.3-.15-1.12-.41-2.14-1.32-.79-.7-1.32-1.57-1.47-1.87-.15-.3-.02-.46.13-.6.13-.14.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.64-1.62-.9-2.2-.22-.5-.45-.5-.63-.5l-.54-.03Z"/></svg>
+  <span class="wa-mark" aria-hidden="true"></span>
 </a>
 
 <script src="assets/js/reviews.js"></script>
 <script src="assets/js/data.js"></script>
 <script src="assets/js/app.js" defer></script>
+<script src="assets/js/brand-motion.js" defer></script>
 </body>
 </html>

@@ -64,7 +64,7 @@ try {
 }
 if (!puppeteer) {
   console.log('\n  puppeteer-core is not installed, so layout checks are skipped.');
-  console.log('  npm i --no-save puppeteer-core, or see docs/screenshots/README.md\n');
+  console.log('  Run npm ci for the locked test tools, or see docs/screenshots/README.md\n');
   server.close();
   process.exit(0);
 }
@@ -244,7 +244,98 @@ const cardButtonOffsets = (page) => page.evaluate(() => [...document.querySelect
   await desk.close();
 }
 
-/* 5. the review card reads as one block */
+/* 5. the homepage testimonial is one centered figure, on desktop and phone */
+for (const [device, viewport] of [['phone', PHONE], ['desktop', DESKTOP]]) {
+  const page = await open('/', viewport);
+  await page.evaluate(() => document.querySelector('.quote-band').scrollIntoView({ block: 'center' }));
+  await new Promise((r) => setTimeout(r, 250));
+  const layout = await page.evaluate(() => {
+    const band = document.querySelector('.quote-band');
+    const panel = band?.querySelector('.home-testimonial');
+    const title = panel?.querySelector('#home-testimonial-title');
+    const figure = panel?.querySelector('figure.home-review');
+    const quote = figure?.querySelector('blockquote .review-quote');
+    const attribution = figure?.querySelector('figcaption.review-attribution');
+    if (!band || !panel || !title || !figure || !quote || !attribution) return null;
+    const box = (el) => {
+      const rect = el.getBoundingClientRect();
+      return { left: rect.left, right: rect.right, width: rect.width, center: rect.left + rect.width / 2 };
+    };
+    const panelBox = box(panel);
+    return {
+      labelled: band.getAttribute('aria-labelledby') === title.id,
+      figureSemantics: figure.tagName === 'FIGURE' && quote.closest('blockquote') && attribution.tagName === 'FIGCAPTION',
+      quoteText: quote.textContent.trim(),
+      attributionText: attribution.textContent.trim(),
+      panel: panelBox,
+      parts: [box(title), box(quote), box(attribution)],
+      viewportWidth: window.innerWidth,
+    };
+  });
+  check(`${device} testimonial label, quote and attribution form one aligned component`, () => {
+    assert(layout, 'the labelled testimonial figure is incomplete');
+    assert(layout.labelled, 'the section is not labelled by the testimonial title');
+    assert(layout.figureSemantics, 'the quote and attribution are not grouped in a figure');
+    assert(layout.quoteText === 'Good customer service, thank you!', `unexpected quote: ${layout.quoteText}`);
+    assert(layout.attributionText.includes('Millicent') && layout.attributionText.includes('Verified buyer'),
+      `reviewer attribution is incomplete: ${layout.attributionText}`);
+    const misalignment = Math.max(...layout.parts.map((part) => Math.abs(part.center - layout.panel.center)));
+    assert(misalignment <= 1.5, `testimonial elements are off center by ${misalignment.toFixed(1)}px`);
+    assert(layout.panel.left >= -1 && layout.panel.right <= layout.viewportWidth + 1,
+      `testimonial panel overflows the ${layout.viewportWidth}px viewport`);
+  });
+  await page.close();
+}
+
+/* 6. every homepage WhatsApp placement renders the shared vector mask */
+{
+  const page = await open('/', PHONE);
+  const icons = await page.evaluate(async () => {
+    const nodes = [...document.querySelectorAll('.wa-mark')];
+    const entries = nodes.map((node) => {
+      const style = getComputedStyle(node);
+      const rect = node.getBoundingClientRect();
+      return {
+        mask: style.maskImage || style.webkitMaskImage,
+        color: style.backgroundColor,
+        width: rect.width,
+        height: rect.height,
+        hidden: node.getAttribute('aria-hidden'),
+        placement: node.closest('.wa-fab') ? 'floating button'
+          : node.closest('.wa-band') ? 'CTA band'
+            : node.closest('.footer-contact') ? 'footer'
+              : node.closest('.wa-line') ? 'navigation' : 'other',
+      };
+    });
+    const assetStatus = await fetch('/assets/img/whatsapp-mark.svg').then((response) => response.status).catch(() => 0);
+    return { entries, assetStatus };
+  });
+  check('nav, CTA, footer and floating WhatsApp marks use one crisp, color-adaptive vector', () => {
+    assert(icons.entries.length === 4, `homepage has ${icons.entries.length} WhatsApp mark(s), expected 4`);
+    assert(icons.assetStatus === 200, `shared vector returned HTTP ${icons.assetStatus}`);
+    const bad = icons.entries.filter((icon) => !String(icon.mask).includes('whatsapp-mark.svg')
+      || icon.width < 18 || icon.height < 18 || icon.hidden !== 'true' || icon.color === 'rgba(0, 0, 0, 0)');
+    assert(bad.length === 0, `${bad.length} mark(s) are missing the mask, visible size, color or decorative label: ${JSON.stringify(bad)}`);
+  });
+  await page.close();
+
+  const contact = await open('/contact', DESKTOP);
+  const cardMark = await contact.evaluate(() => {
+    const mark = document.querySelector('.contact-card .wa-mark');
+    if (!mark) return null;
+    const rect = mark.getBoundingClientRect();
+    const style = getComputedStyle(mark);
+    return { width: rect.width, height: rect.height, mask: style.maskImage || style.webkitMaskImage };
+  });
+  check('the contact card uses the same WhatsApp mark at its larger icon size', () => {
+    assert(cardMark, 'contact card WhatsApp mark is missing');
+    assert(cardMark.width === 22 && cardMark.height === 22, `contact-card mark is ${cardMark.width}×${cardMark.height}px`);
+    assert(String(cardMark.mask).includes('whatsapp-mark.svg'), 'contact-card mark does not use the shared vector');
+  });
+  await contact.close();
+}
+
+/* 7. the review card reads as one block */
 {
   const page = await open('/reviews');
   const box = await page.evaluate(() => {
@@ -259,6 +350,146 @@ const cardButtonOffsets = (page) => page.evaluate(() => [...document.querySelect
     assert(box.sameWidth, 'the head and quote are different widths');
   });
   await page.close();
+}
+
+/* 8. the layered campaign action is clear, accessible and deliberately arrow-free */
+{
+  const page = await open('/', DESKTOP);
+  const button = await page.evaluate(() => {
+    const cta = document.querySelector('.home-hero .hero-media .hero-image-cta');
+    const index = cta?.querySelector('.hero-cta-index');
+    const media = document.querySelector('.home-hero .hero-media');
+    const plane = document.querySelector('.home-hero .hero-type-plane');
+    if (!cta || !index || !media || !plane) return null;
+    const style = getComputedStyle(cta);
+    const indexStyle = getComputedStyle(index);
+    const rect = cta.getBoundingClientRect();
+    const indexRect = index.getBoundingClientRect();
+    return {
+      label: cta.getAttribute('aria-label'),
+      background: style.backgroundColor,
+      color: style.color,
+      height: rect.height,
+      indexText: index.textContent.trim(),
+      indexBorder: indexStyle.borderTopStyle,
+      indexWidth: indexRect.width,
+      indexHeight: indexRect.height,
+      planeZ: Number(getComputedStyle(plane).zIndex),
+      mediaZ: Number(getComputedStyle(media).zIndex),
+      ctaZ: Number(style.zIndex),
+      insideMedia: cta.parentElement === media,
+      hasArrow: /[↗↖↘↙→←↑↓]/.test(cta.textContent),
+    };
+  });
+  check('hero primary CTA is a filled, high-contrast, touch-sized button with no arrow', () => {
+    assert(button, 'the hero action, index or art-direction layers are missing');
+    assert(button.label === 'Shop the edit', `accessible label is "${button.label}"`);
+    assert(button.background === 'rgb(250, 247, 241)', `button fill is ${button.background}`);
+    assert(button.color === 'rgb(30, 44, 37)', `button label is ${button.color}`);
+    assert(button.height >= 44, `button is only ${Math.round(button.height)}px tall`);
+    assert(button.indexText === '01', `button index is "${button.indexText}"`);
+    assert(button.indexBorder === 'solid', `button index border is ${button.indexBorder}`);
+    assert(button.indexWidth >= 30 && Math.abs(button.indexWidth - button.indexHeight) < 1,
+      `button index is ${Math.round(button.indexWidth)}×${Math.round(button.indexHeight)}px`);
+    assert(!button.hasArrow, 'the action contains a decorative arrow');
+    assert(button.insideMedia, 'the foreground action is detached from the campaign image');
+    assert(button.planeZ < button.mediaZ && button.mediaZ < button.ctaZ,
+      `hero layers are out of order: type ${button.planeZ}, image ${button.mediaZ}, action ${button.ctaZ}`);
+  });
+  await page.evaluate(() => document.documentElement.setAttribute('data-theme', 'dark'));
+  const darkButton = await page.evaluate(() => {
+    const cta = document.querySelector('.home-hero .hero-media .hero-image-cta');
+    return { background: getComputedStyle(cta).backgroundColor, color: getComputedStyle(cta).color };
+  });
+  check('hero primary CTA remains clear when dark theme is selected', () => {
+    assert(darkButton.background === 'rgb(250, 247, 241)', `dark-theme fill is ${darkButton.background}`);
+    assert(darkButton.color === 'rgb(30, 44, 37)', `dark-theme label is ${darkButton.color}`);
+  });
+  await page.close();
+}
+
+/* 9. custom pointer states, fine-pointer fallback and branded page transitions */
+{
+  const page = await open('/', DESKTOP);
+  const capability = await page.evaluate(() => ({
+    fine: matchMedia('(hover: hover) and (pointer: fine)').matches,
+    reduced: matchMedia('(prefers-reduced-motion: reduce)').matches,
+    forced: matchMedia('(forced-colors: active)').matches,
+  }));
+  let cursorStates = null;
+  if (capability.fine && !capability.reduced && !capability.forced) {
+    const box = await page.$eval('.site-header .wordmark', (el) => {
+      const r = el.getBoundingClientRect();
+      return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+    });
+    await page.mouse.move(box.x, box.y);
+    const hover = await page.evaluate(() => document.querySelector('.atelier-cursor')?.dataset.state || 'missing');
+    await page.mouse.down();
+    const pressed = await page.evaluate(() => document.querySelector('.atelier-cursor')?.dataset.state || 'missing');
+    await page.mouse.up();
+    const released = await page.evaluate(() => document.querySelector('.atelier-cursor')?.dataset.state || 'missing');
+    await page.evaluate(() => {
+      const selection = window.getSelection();
+      const range = document.createRange();
+      range.selectNodeContents(document.querySelector('.home-hero h1'));
+      selection.removeAllRanges();
+      selection.addRange(range);
+      document.dispatchEvent(new Event('selectionchange'));
+    });
+    const selected = await page.evaluate(() => document.querySelector('.atelier-cursor')?.dataset.state || 'missing');
+    cursorStates = { hover, pressed, released, selected };
+  }
+  const cursorFallback = capability.fine && !capability.reduced && !capability.forced
+    ? null
+    : await page.evaluate(() => !document.querySelector('.atelier-cursor')
+      && !document.documentElement.classList.contains('has-custom-cursor'));
+  check('custom pointer adapts to hover, press and text selection while preserving native fallbacks', () => {
+    if (capability.fine && !capability.reduced && !capability.forced) {
+      assert(cursorStates, 'no custom pointer state was recorded');
+      assert(cursorStates.hover === 'hover', `hover state is ${cursorStates.hover}`);
+      assert(cursorStates.pressed === 'pressed', `press state is ${cursorStates.pressed}`);
+      assert(cursorStates.released === 'hover', `release state is ${cursorStates.released}`);
+      assert(cursorStates.selected === 'selection', `selection state is ${cursorStates.selected}`);
+    } else {
+      assert(cursorFallback, 'native cursor was not preserved for this device or preference');
+    }
+  });
+  await page.close();
+
+  const transitionPage = await open('/about', DESKTOP);
+  const reduced = await transitionPage.evaluate(() => matchMedia('(prefers-reduced-motion: reduce)').matches);
+  if (reduced) {
+    const leaving = await transitionPage.evaluate(() => document.documentElement.classList.contains('page-leaving'));
+    check('branded page transition respects reduced-motion preference', () => {
+      assert(!leaving, 'unexpected active page-leaving class');
+    });
+  } else {
+    const curtainState = await transitionPage.evaluate(() => {
+      const link = document.createElement('a');
+      link.href = '/delivery.html';
+      link.textContent = 'Test destination';
+      document.body.appendChild(link);
+      const click = new MouseEvent('click', { bubbles: true, cancelable: true, button: 0 });
+      link.dispatchEvent(click);
+      const curtain = document.querySelector('.brand-transition');
+      return {
+        prevented: click.defaultPrevented,
+        leaving: document.documentElement.classList.contains('page-leaving'),
+        visible: curtain ? getComputedStyle(curtain).visibility : 'missing',
+        signatureMask: curtain ? getComputedStyle(curtain.querySelector('.brand-transition__signature')).maskImage : '',
+        loopMask: curtain ? getComputedStyle(curtain.querySelector('.brand-transition__loops')).maskImage : '',
+      };
+    });
+    check('internal page navigation shows the animated signature loading curtain', () => {
+      assert(curtainState.prevented, 'the navigation was not intercepted for its short transition');
+      assert(curtainState.leaving, 'page-leaving state was not applied');
+      assert(curtainState.visible === 'visible', `curtain visibility is ${curtainState.visible}`);
+      assert(String(curtainState.signatureMask).includes('signature-mark.svg'), 'the curtain omits the signature mark');
+      assert(String(curtainState.loopMask).includes('linked-loop-mark.svg'), 'the curtain omits the supporting linked-loop');
+    });
+    await transitionPage.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 5000 });
+  }
+  await transitionPage.close();
 }
 
 await browser.close();
