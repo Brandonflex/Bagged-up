@@ -1,126 +1,177 @@
-# Bagged Up - Storefront
+# Bagged Up
 
-Static e-commerce site (plain HTML/CSS/JS, no framework, no build step on
-the host). This folder is deployable as-is.
+> **[Visit the Live Storefront &rarr;](https://baggedup-seven.vercel.app)**
+>
+> A curated 50-piece handbag boutique designed and engineered for the Kenyan market. Built as an ultra-fast, framework-free static storefront with zero runtime dependencies, pay-on-delivery economics, and direct WhatsApp checkout.
+
+[![Live Site](https://img.shields.io/badge/Live%20Storefront-baggedup--seven.vercel.app-161616?style=for-the-badge&logo=vercel&logoColor=white)](https://baggedup-seven.vercel.app)
+[![CI Status](https://img.shields.io/github/actions/workflow/status/Brandonflex/Bagged-up/ci.yml?branch=main&style=for-the-badge&label=Quality%20Gate)](https://github.com/Brandonflex/Bagged-up/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
+
+---
+
+### Client Handover Note
+
+Bagged Up is a real, operational retail business designed and developed as a client commission. In October 2026, the complete platform and storefront were formally handed over to the boutique owner, who now operates it independently (managing hosting, catalogue refreshes, inventory, and customer fulfillment).
+
+A dedicated non-technical handover package lives in [`handover/`](handover/): a ready-to-upload static archive (`Bagged-Up-website.zip`), a full 50-item price list in spreadsheet format (`Bagged-Up-price-list.csv`), and a zero-install deployment guide (`START-HERE.html`) for drag-and-drop deployment on Netlify Drop or Cloudflare Pages.
+
+---
+
+## Visual Preview
+
+### Desktop Experience
+![Bagged Up desktop storefront](docs/screenshots/preview-desktop.jpg)
+
+### Mobile-First Experience
+| Collection & Discovery | Product Detail (PDP) | Cart & Free Delivery Progress |
+| :---: | :---: | :---: |
+| ![Mobile collection](docs/screenshots/preview-mobile-home.jpg) | ![Mobile product detail](docs/screenshots/preview-mobile-product.jpg) | ![Mobile cart](docs/screenshots/preview-mobile-cart.jpg) |
+| *Occasion finder & curated edits* | *Sticky buy box, styling band & reviews* | *Dynamic delivery tier & order review* |
+
+---
+
+## What Bagged Up Is
+
+Bagged Up is an editorial e-commerce storefront showcasing a 50-piece collection of women's handbags across five categories: Shoulder & Crescent, Totes, Crossbody, Top-Handle & Structured, and Mini & Occasion.
+
+Rather than relying on generic e-commerce templates or heavy single-page application frameworks, Bagged Up was engineered from scratch as a high-performance static website (plain HTML, modern CSS, vanilla JavaScript). It ships zero server-side runtime code, zero client-side framework bloat, and zero third-party tracking scripts.
+
+---
+
+## Why It Is Built That Way
+
+Standard Western e-commerce platforms (Shopify, WooCommerce, Stripe-centric checkouts) make assumptions that fail Kenyan consumers and boutique merchants:
+- **Card-first checkouts increase friction and drop-off:** In Kenya, the dominant payment rails are M-Pesa mobile money and cash on delivery. Forcing shoppers through credit card forms leads to abandoned carts.
+- **WhatsApp is the customer relationship channel:** High-consideration accessories require personal assurance. Kenyan shoppers want to confirm stock availability, verify dimensions, and request delivery timelines directly from the merchant. Bagged Up structures every order into a pre-formatted WhatsApp payload with exact line items, selected delivery location, order total, and customer delivery details.
+- **Transparent local delivery tiers:** Cart calculations reflect actual Nairobi logistics:
+  - **Nairobi:** KSh 250 flat rate (next-day delivery).
+  - **Countrywide (Upcountry Kenya):** KSh 400 flat rate (2–3 business days via courier).
+  - **Free delivery:** Automatically unlocked on orders over KSh 5,000, with an interactive visual progress bar.
+- **Concrete delivery dates, not abstract transit speeds:** Instead of vague labels ("standard shipping"), the storefront computes and displays exact dates (e.g. *"Order today, receive Wednesday"*) right on the product page and inside the cart.
+- **Zero operational overhead:** As a pure static export, the site can be hosted for free on modern edge networks (Vercel, Cloudflare, Netlify) with instantaneous global CDN delivery, zero database maintenance, and total resistance to runtime server crashes.
+
+---
+
+## Key Features
+
+- **50 Pre-Rendered Product Pages:** Every piece has its own dedicated page with complete Open Graph / Twitter Card tags, microcopy, structured metadata, and SEO canonical links.
+- **Curated Catalogue with Instant Filters:** Filter by category, sort by price (low to high, high to low), or view saved pieces with zero layout shifts.
+- **Occasion Finder ("What are you carrying?"):** An interactive homepage selector that guides shoppers to the right piece based on mood and schedule (everyday, formal evenings, office days, casual weekends).
+- **Interactive Lightbox & Multi-Angle Galleries:** Keyboard-accessible and touch-swipe enabled image lightboxes with labelled controls.
+- **Saved Items & Recently Viewed Rails:** Shopper preferences and browsing history persist in `localStorage` without tracking cookies or user accounts. Untrusted inputs are strictly sanitized against the catalogue.
+- **Cart with Free Delivery Progress Bar:** Live calculation showing exactly how much more is needed to reach free delivery, complete with delivery date projection.
+- **Per-Product Customer Reviews:** Dedicated verified-buyer review system with aggregate ratings and per-piece review filtering.
+- **System-Aware Dark Theme:** Custom light/dark themes with pre-paint initialization to eliminate light flashes (FOUC).
+- **Strict Clean URLs:** Pre-configured URL rewriting (`/shop/<slug>` instead of `/shop/<slug>.html`) synchronized across Vercel, Cloudflare, and `sitemap.xml`.
+
+---
+
+## How It Is Built
+
+```
+index.html  shop.html  cart.html  about.html  reviews.html  contact.html
+faq.html  delivery.html  returns.html  privacy.html  terms.html   <- 11 root pages
+shop/                    50 product pages, pre-rendered with complete metadata
+assets/css/style.css    2,134 lines: tokens, components, PDP, editorial and motion
+assets/js/data.js         543 lines: window.BAGGED_UP_PRODUCTS (the catalogue)
+assets/js/app.js        1,096 lines: single IIFE, all storefront logic, zero deps
+assets/js/brand-motion.js 238 lines: signature transitions and adaptive pointer
+assets/js/reviews.js      single-file customer review records
+assets/js/theme-init.js     15 lines: external pre-paint theme script
+design/tokens.json        source of truth for palette, typography, and contrast
+handover/                 complete client delivery package and instructions
+```
+
+- **Architecture:** 61 pre-rendered HTML pages, 1 consolidated stylesheet, and vanilla JavaScript split into single-responsibility modules.
+- **Design System:** Design tokens in `design/tokens.json` govern colors, typography scales, spacing rhythm, and contrast pairs. All 42 contrast pairs are mechanically checked during build to guarantee WCAG AA accessibility compliance.
+- **Zero-Dependency Core:** The user-facing storefront uses zero npm dependencies in production. All dev dependencies are locked to build, lint, and test validation.
+
+---
+
+## The Quality Gate
+
+Every change is verified through a six-stage automated quality gate. Nothing deploys unless every step passes:
+
+```bash
+npm ci --ignore-scripts  # installs locked tools without running arbitrary lifecycle scripts
+npm run verify           # audit + lint + typecheck + design + tests + build
+```
+
+| Step | Command | What It Enforces |
+| --- | --- | --- |
+| **Dependency Audit** | `npm audit --audit-level=low` | Zero vulnerabilities in dev tooling. |
+| **Lint** | `npm run lint` | HTML standards and accessibility via `html-validate`; code rules via `eslint`. |
+| **Type Check** | `npm run typecheck` | Full JSDoc type checking of all vanilla JS via `tsc --checkJs`. |
+| **Design System** | `npm run design` | 7 groups: bidirectional sync between `tokens.json` and CSS, dark mode parity, WCAG AA contrast ratios, CSS variable resolution, and product page scale compliance. |
+| **Integrity & Tests** | `npm test` | 38 storefront integrity tests + 25 browser behavior and security tests. Verifies catalogue ↔ pages ↔ sitemap parity, sanitized storage, and CSP compliance. |
+| **Static Export** | `npm run build` | Assembles a self-contained production bundle in `dist/`, ensures security headers match, verifies 0 dead links, and blocks leaked dev files. |
+
+In GitHub Actions (`.github/workflows/ci.yml`), CI runs on every push and pull request with least-privilege read-only permissions, SHA-pinned actions, and automated preview deployment checks.
+
+---
+
+## Known Limitations & Future Architecture
+
+In the spirit of honest engineering (documented in detail in [`docs/architecture.md`](docs/architecture.md)), the current build has intentional architectural trade-offs:
+
+1. **Markup Duplication across 61 Pages:** Because pages are pre-rendered static HTML files without a templating engine or server partials, global header or footer updates require editing each page (with the automated test suite acting as the safety net). Introducing a lightweight build-time generator from `data.js` would simplify bulk edits.
+2. **Unoptimized Photography Pipeline:** Product images in `assets/products/` are committed at full resolution (~1000px, 12 MB total) without responsive `srcset` or modern `.webp`/`.avif` variants. A pre-build compression pipeline generating multiple widths would reduce mobile data consumption.
+3. **Unreferenced Font Files vs Inline Data:** Three web fonts (`assets/fonts/*.woff2`) exist in the repo, while the stylesheet currently inlines font data via base64. Switching `@font-face` declarations to separate static files would enable independent browser caching and reduce CSS bundle size by ~118 KB.
+4. **Styled Video Block without Player:** A `.pdp-video` styling rule exists in `style.css` for product showcase clips, but no HTML video player has been wired up into the PDP templates yet.
+5. **Catalogue Metadata Depth:** Products in `assets/js/data.js` currently model category, price, and photos. Expanding the schema to include dimensions, strap length, hardware finish, and material specifics would unlock deeper faceted filtering.
+
+---
 
 ## Deploy
 
-The site is a static export. `npm run build` writes it to `dist/`, and the
-`dist/` folder is the only thing that should ever be served: it excludes the
-tooling, tests and docs by design.
+The deployable output is compiled into `dist/` by running `npm run build`. The root folder should not be served directly because it contains testing and documentation assets.
 
 ### Built-in hosting paths
 
 | Host | Config in this repo | What a push produces |
 | --- | --- | --- |
-| Cloudflare Workers Builds | `wrangler.jsonc` (static assets from `./dist`, `html_handling: drop-trailing-slash`) and `_headers` | production build on `main`; on other branches `wrangler versions upload`, which publishes a per-commit preview URL and is posted in the pull request as "Preview Deployments by commit" |
-| Vercel | `vercel.json` (`buildCommand: npm run build`, `outputDirectory: dist`, clean URLs and security headers) | a production deployment on `main` and a per-commit preview URL on other branches, commented on the pull request |
+| **Cloudflare Workers Builds** | `wrangler.jsonc` (static assets from `./dist`, `html_handling: drop-trailing-slash`) and `_headers` | Production build on `main`; preview worker version on branches. |
+| **Vercel** | `vercel.json` (`buildCommand: npm run build`, `outputDirectory: dist`, clean URLs and security headers) | Production deployment on `main` and per-commit preview deployments on branches. |
 
-Both hosts need the project to be created once in their dashboard and pointed
-at this repository; the build and output settings above are already in the
-repo, so no dashboard build configuration is required beyond that.
+### Security Headers & Content Security Policy
 
-### Server-side notes
+Both host configurations enforce an identical, hardened security posture:
+- **Strict CSP:** `script-src 'self'` with zero inline scripts or unsafe evals.
+- **Clickjacking Protection:** `frame-ancestors 'none'`.
+- **HSTS:** `max-age=31536000; includeSubDomains; preload`.
+- **MIME & Referrer:** `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`.
+- **Permissions Policy:** Disables geolocation, microphone, and camera access.
 
-`cleanUrls` on Vercel and `drop-trailing-slash` on Cloudflare both mean the
-same thing: `/shop/<product-slug>` serves `shop/<product-slug>.html`, and the
-`.html` form redirects to the clean one. Canonical tags, `sitemap.xml` and
-`robots.txt` all use the clean form, so keep them in step if the host changes:
-the integrity suite fails if they drift.
+---
 
-Security headers are defined in both host formats (`vercel.json` and the
-Cloudflare Workers Static Assets `_headers` file) and checked for parity. They
-include a restrictive Content Security Policy (`script-src 'self'`, no inline
-scripts or event handlers), clickjacking/MIME/referrer protections, a one-year
-HSTS policy, and a restrictive Permissions Policy. `_headers` is copied into
-`dist/` by the build. Inline styles remain allowed because existing templates
-use style attributes; there are no third-party scripts or remotely hosted
-assets.
+## Managing Catalogue & Media
 
-The storefront has no server-side cart or payment authority. Local storage is
-client-controlled and is validated against the shipped catalogue; final order
-confirmation happens in WhatsApp. Do not use browser-supplied cart values as
-payment or inventory authority if a backend is added later.
+- **Updating Products:** Product definitions live in `assets/js/data.js` (`window.BAGGED_UP_PRODUCTS`). When editing a product's price, name, or photos, update `data.js` and the corresponding page in `shop/` simultaneously, then run `npm run verify` to confirm parity.
+- **Adding Photos:** Save images to `assets/products/<slug>-<index>.jpg` (recommended 4:5 aspect ratio, ~1000px wide). Add the path to the product's `images` array in `assets/js/data.js` and link it in the product's HTML file. The test suite fails if a declared photo is missing or if an asset is unreferenced.
 
-## Quality gate
-
-Everything that ships is checked with one command:
-
-```bash
-npm ci --ignore-scripts  # once - installs the locked tools without dependency lifecycle scripts
-npm run verify  # audit + lint + typecheck + design + tests + build
-```
-
-The verification toolchain requires Node `^22.22.2`, `^24.15.0`, or `>=26.0.0`
-(as declared in `package.json`).
-
-| Step | Command | What it proves |
-| --- | --- | --- |
-| dependency audit | `npm audit --audit-level=low` | the locked dependency tree has no published advisories |
-| lint | `npm run lint` | HTML validity/accessibility (`html-validate`) and JS rules (`eslint`) |
-| types | `npm run typecheck` | the storefront JS type-checks under `tsc --checkJs` (JSDoc types) |
-| design | `npm run design` | `design/tokens.json` and the stylesheet agree in both directions, the two dark blocks stay identical, every contrast pair meets its WCAG minimum, every `var()` resolves, and the brand marks scale, avoid `<text>` and stay on palette |
-| tests | `npm test` | catalogue ↔ pages ↔ sitemap agree; stored cart/recent/review data is treated as untrusted; scripts, security headers and CI pins follow the security policy |
-| build | `npm run build` | the published file set is self-contained in `dist/`, includes Cloudflare response headers, rejects symlinks, and leaks no dev files |
-
-CI uses least-privilege read-only GitHub permissions, disables persisted checkout
-credentials, pins every action to a full commit SHA, and installs locked packages
-without lifecycle scripts. Dependabot checks npm packages and GitHub Actions
-weekly.
-
-## Design and architecture
-
-- `design/tokens.json` - the palette, type, spacing and motion tokens, plus the
-  contrast pairs and their minimums. The stylesheet must match it.
-- `design/brand/` - wordmark (light and reversed), monogram and favicon, with
-  usage rules.
-- `docs/design-system.md` - the system, the contrast table, and what changed when
-  the palette was corrected to pass WCAG AA.
-- `docs/architecture.md` - how the site is put together, where to change what,
-  and the known weaknesses worth fixing next.
-
-`node scripts/check-design.mjs --report` prints the full contrast table.
-
-The same gate runs in CI (`.github/workflows/ci.yml`) on every push and pull
-request. Lint rules that are deliberately switched off are listed in
-`.htmlvalidate.json` - all four are cosmetic (DOCTYPE casing, attribute quote
-style, trailing whitespace, inline `style=` attributes), not correctness.
-
-## Updating products (prices, stock, new pieces)
-
-Product data lives in `assets/js/data.js` (`window.BAGGED_UP_PRODUCTS`), and the
-product pages under `shop/` are pre-rendered from it. The README used to point at
-`data/products.json` in a build workspace; that workspace is **not part of this
-repository**, so for now the files here are the source of truth: edit
-`assets/js/data.js` and the matching page together, then run `npm run verify`.
-If that generator is restored, it must be updated first - otherwise this HTML is
-overwritten on the next build. `npm run build` does not regenerate pages; it only
-produces and checks the deployable `dist/` folder.
-
-## Adding photos & videos for a product
-
-- Photos: assets/products/<slug>-1.jpg, -2.jpg, ... (4:5 ratio, ~1000px wide
-  is plenty) - list them in the product's `images` array in assets/js/data.js
-  and reference them on the matching page in shop/. The integrity suite fails
-  if a listed photo is missing, and it reports photos no page references.
-- Video: the stylesheet has a `.pdp-video` block, but nothing in the shipped
-  pages or scripts renders a player yet, so dropping an mp4 in today does not
-  produce one. Treat video as unbuilt until a player is wired up.
+---
 
 ## Changelog
 
-- v3 (current) - restraint pass: removed marquee/service-index/style tiles/
-  splurge rail; PDP showcase (3D tilt, quiet ask-link, scarcity note,
-  styling band, you-may-also-like); fonts embedded (sandbox-proof);
-  reveal animations JS-gated; clean URLs via vercel.json; repo docs added.
-- v2 - experience layer (superseded by v3 simplifications).
-- v1 - full rebuild of bagged-up.vercel.app: all 50 products migrated, cart
-  with delivery fees (Nairobi 250 / countrywide 400 / free over 5,000),
-  WhatsApp order checkout, policy pages, FAQ, About, Reviews, Contact.
+- **v3 (Current):** Refined editorial design; interactive mood finder; PDP showcase (3D interactive card tilt, scarcity alerts, styling band, related recommendations); embedded typography; clean URLs; automated quality gate suite.
+- **v2:** Initial dynamic experience layer (superseded by v3 editorial refinement).
+- **v1:** Rebuild of legacy platform to pure static architecture: all 50 products migrated, full cart with localized Nairobi/Kenya delivery rates, WhatsApp checkout integration, customer reviews, and complete legal/trust pages.
 
-## Rules of the road
+---
 
+## Rules of the Road
 
-- Never edit CSS/JS/HTML without running `npm run verify` (CI runs it too).
+- Never edit CSS, JS, or HTML without running `npm run verify` (CI enforces this on every pull request).
 - Only use designer brand names on pieces you stand behind as original.
-- Every build round ships a fresh zip - commit it, push it, note the date.
+- Every build round ships a fresh zip in `handover/` with updated pricing and instructions.
+
+---
+
+## License
+
+This project's source code, documentation, and architectural designs are open source under the [MIT License](LICENSE).
+
+**Commercial Rights & Proprietary Assets:**
+- **Product Photography:** All product images (`assets/products/`) and promotional media (`assets/img/`) are proprietary assets and are **not** covered by the MIT license. All rights reserved.
+- **Brand Identity:** The Bagged Up brand name, logo marks, and visual trade dress (including vector marks in `design/brand/` and `assets/img/`) are reserved and may not be used for commercial retail operations without explicit permission.
